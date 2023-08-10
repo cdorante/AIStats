@@ -1,0 +1,10 @@
+# ignorar .Rproj.user
+.Rproj.user/
+# quarto
+.quarto/
+$ markdown files
+Workshop01_files/
+Workshop02_files/
+Workshop04_files/
+Workshop05_files/
+Workshop06_files/

@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Alberto Dorantes D., Ph.D.">
+<meta name="author" content="Monterrey Tech, Queretaro Campus">
+
+<title>Workshop 1, Advanced AI - Statistics Module</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="Workshop01_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Workshop01_files/libs/quarto-html/quarto.js"></script>
+<script src="Workshop01_files/libs/quarto-html/popper.min.js"></script>
+<script src="Workshop01_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Workshop01_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Workshop01_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Workshop01_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Workshop01_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Workshop01_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Workshop01_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Content</h2>
+   
+  <ul>
+  <li><a href="#workshop-directions" id="toc-workshop-directions" class="nav-link active" data-scroll-target="#workshop-directions"><span class="header-section-number">1</span> Workshop Directions</a></li>
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics"><span class="header-section-number">2</span> Descriptive Statistics</a>
+  <ul>
+  <li><a href="#central-tendency-measures" id="toc-central-tendency-measures" class="nav-link" data-scroll-target="#central-tendency-measures"><span class="header-section-number">2.1</span> Central tendency measures</a>
+  <ul class="collapse">
+  <li><a href="#arithmetic-mean" id="toc-arithmetic-mean" class="nav-link" data-scroll-target="#arithmetic-mean"><span class="header-section-number">2.1.1</span> Arithmetic mean</a></li>
+  <li><a href="#the-median" id="toc-the-median" class="nav-link" data-scroll-target="#the-median"><span class="header-section-number">2.1.2</span> The Median</a></li>
+  <li><a href="#mode" id="toc-mode" class="nav-link" data-scroll-target="#mode"><span class="header-section-number">2.1.3</span> Mode</a></li>
+  </ul></li>
+  <li><a href="#dispersion-measures" id="toc-dispersion-measures" class="nav-link" data-scroll-target="#dispersion-measures"><span class="header-section-number">2.2</span> Dispersion measures</a>
+  <ul class="collapse">
+  <li><a href="#variance-and-standard-deviation" id="toc-variance-and-standard-deviation" class="nav-link" data-scroll-target="#variance-and-standard-deviation"><span class="header-section-number">2.2.1</span> Variance and standard deviation</a></li>
+  </ul></li>
+  <li><a href="#sec-challenge1" id="toc-sec-challenge1" class="nav-link" data-scroll-target="#sec-challenge1"><span class="header-section-number">2.3</span> CHALLENGE: Data management and Descriptive Statistics</a>
+  <ul class="collapse">
+  <li><a href="#data-collection-and-visualization" id="toc-data-collection-and-visualization" class="nav-link" data-scroll-target="#data-collection-and-visualization"><span class="header-section-number">2.3.1</span> Data collection and visualization</a></li>
+  <li><a href="#data-transformations" id="toc-data-transformations" class="nav-link" data-scroll-target="#data-transformations"><span class="header-section-number">2.3.2</span> Data transformations</a>
+  <ul class="collapse">
+  <li><a href="#return-calculation" id="toc-return-calculation" class="nav-link" data-scroll-target="#return-calculation"><span class="header-section-number">2.3.2.1</span> Return calculation</a></li>
+  <li><a href="#reviewing-the-concept-of-natural-logarithm" id="toc-reviewing-the-concept-of-natural-logarithm" class="nav-link" data-scroll-target="#reviewing-the-concept-of-natural-logarithm"><span class="header-section-number">2.3.2.2</span> Reviewing the concept of natural logarithm</a></li>
+  <li><a href="#continuously-compounded-returns" id="toc-continuously-compounded-returns" class="nav-link" data-scroll-target="#continuously-compounded-returns"><span class="header-section-number">2.3.2.3</span> Continuously compounded returns</a></li>
+  <li><a href="#descriptive-statistics-of-returns" id="toc-descriptive-statistics-of-returns" class="nav-link" data-scroll-target="#descriptive-statistics-of-returns"><span class="header-section-number">2.3.2.4</span> Descriptive statistics of returns</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#the-histogram" id="toc-the-histogram" class="nav-link" data-scroll-target="#the-histogram"><span class="header-section-number">3</span> The Histogram</a>
+  <ul>
+  <li><a href="#interesting-facts-about-the-history-of-the-histogram" id="toc-interesting-facts-about-the-history-of-the-histogram" class="nav-link" data-scroll-target="#interesting-facts-about-the-history-of-the-histogram"><span class="header-section-number">3.1</span> Interesting facts about the History of the Histogram</a></li>
+  <li><a href="#challenges-histogram" id="toc-challenges-histogram" class="nav-link" data-scroll-target="#challenges-histogram"><span class="header-section-number">3.2</span> CHALLENGES: Histogram</a></li>
+  </ul></li>
+  <li><a href="#probability-density-functions-pdf" id="toc-probability-density-functions-pdf" class="nav-link" data-scroll-target="#probability-density-functions-pdf"><span class="header-section-number">4</span> Probability Density Functions (PDF)</a>
+  <ul>
+  <li><a href="#probability-density-function-of-a-discrete-random-variable" id="toc-probability-density-function-of-a-discrete-random-variable" class="nav-link" data-scroll-target="#probability-density-function-of-a-discrete-random-variable"><span class="header-section-number">4.1</span> Probability Density Function of a Discrete random variable</a></li>
+  <li><a href="#probability-density-function-pdf-of-a-continuous-random-variable" id="toc-probability-density-function-pdf-of-a-continuous-random-variable" class="nav-link" data-scroll-target="#probability-density-function-pdf-of-a-continuous-random-variable"><span class="header-section-number">4.2</span> Probability density function (PDF) of a Continuous Random Variable</a></li>
+  </ul></li>
+  <li><a href="#the-normal-distribution-function" id="toc-the-normal-distribution-function" class="nav-link" data-scroll-target="#the-normal-distribution-function"><span class="header-section-number">5</span> The Normal Distribution Function</a>
+  <ul>
+  <li><a href="#interesting-facts-about-the-history-of-the-normal-distribution" id="toc-interesting-facts-about-the-history-of-the-normal-distribution" class="nav-link" data-scroll-target="#interesting-facts-about-the-history-of-the-normal-distribution"><span class="header-section-number">5.1</span> Interesting facts about the History of the Normal Distribution</a></li>
+  <li><a href="#challenge-simulating-the-normal-distribution" id="toc-challenge-simulating-the-normal-distribution" class="nav-link" data-scroll-target="#challenge-simulating-the-normal-distribution"><span class="header-section-number">5.2</span> CHALLENGE: Simulating the normal distribution</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">6</span> References</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Workshop 1, Advanced AI - Statistics Module</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Alberto Dorantes D., Ph.D. </p>
+             <p>Monterrey Tech, Queretaro Campus </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    In this workshop we review the basics of a) descriptive statistics, b) the histogram, c) data trasformations and cleaning, and d) the normal distribution.
+  </div>
+</div>
+
+</header>
+
+<section id="workshop-directions" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Workshop Directions</h1>
+<p>You have to follow this workshop in class to learn about topics. You have to do your own Markdown note/document for every workshop we cover.</p>
+<p>You must submit your workshop before we start with the next workshop. What you have to write in your workshop? You have to:</p>
+<ul>
+<li><p>Write the Workshop #, your Name, and date</p></li>
+<li><p>You have to <strong>REPLICATE</strong> and <strong>RUN</strong> all the Python code, and</p></li>
+<li><p>DO ALL <strong>CHALLENGES</strong> stated in sections. These challenges can be Python code or just responding <strong>QUESTIONS</strong> with your own words and in <strong>CAPITAL LETTERS</strong>. You have to <strong>WRITE CLEARLY</strong> so that I can see your <strong>LINE OF THINKING!</strong></p></li>
+</ul>
+<p>The submissions of your workshops is a <strong>REQUISITE</strong> for grading your 2 final deliverable documents of the Statistics Module.</p>
+<p>i strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.</p>
+</section>
+<section id="descriptive-statistics" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Descriptive Statistics</h1>
+<p>Descriptive statistics are used to summarize information from raw data related to any phenomenon. Descriptive statistics usually gave us a first general idea of the phenomenon. In Finance, for example, we are interested in knowing the average past return on an investment or how much on average portfolio returns move up and down over time.</p>
+<p>The most important descriptive statistics are a) measures of central tendency and b) measures of dispersion.</p>
+<section id="central-tendency-measures" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="central-tendency-measures"><span class="header-section-number">2.1</span> Central tendency measures</h2>
+<p>The main central tendency measures are:</p>
+<ul>
+<li><p>Arithmetic mean</p></li>
+<li><p>Median</p></li>
+<li><p>Mode</p></li>
+</ul>
+<section id="arithmetic-mean" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="arithmetic-mean"><span class="header-section-number">2.1.1</span> Arithmetic mean</h3>
+<p>An arithmetic mean of a variable X is a simple measure that tells us the average value of all valid values of X, assuming that each value has the same importance (or weight). The variable X can be representing any attribute of a subject. A subject can be an individual, a group, a team, a business unit, a company, a financial portfolio, an industry, a region, a country, etc. An example of a variable X can be the monthly sales amount of a company for the last 3 years. In this case, the variable X will have 36 observations (36 monthly sales). The subject here is a company and the variable or attribute is the company sales over time. Another example can be a variable that represents the daily returns of a financial portfolio over the last 2 years. In this case, the variable might have about 500 observations considering 250 business days each year. The subject in this example is a financial portfolio, that might be composed of more than one stock and/or bond.</p>
+<p>To calculate the arithmetic mean if a variable X we simply sum all the non-missing values of the variable and then divide them by the number of non-missing values. Then, the calculation is as follows:</p>
+<p><span class="math display">\[
+\bar{X}=\frac{{\displaystyle {\displaystyle \sum_{i=1}^{N}X_{i}}}}{N}
+\]</span></p>
+<p>Where N is the number of non-missing values (observations) of X. A missing value of a variable happens when the variable X for a specific observation has no value. It is important to note that a missing value is not zero value. When we work with real world datasets, it is very common to find non-missing values in many variables.</p>
+</section>
+<section id="the-median" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="the-median"><span class="header-section-number">2.1.2</span> The Median</h3>
+<p>Another measure of central tendency is the median. The median of a variable is its 50 percentile, which is the mid point of its values. We need to sort the values of the variable in descending order, and then find the value that is exactly in the middle.</p>
+<p>For example, if I want to know what is the typical size of company that trades shares in the stock market I can calculate the median of firm size. These firms are called public firms. Good measures for firm size are total assets (book value) and market value. In this example I will use total assets at the end of 2018 for all public Mexican firms. At the end of 2018 there were 146 Mexican public firms in the market exchange (“Bolsa Mexicana de Valores”). I will show how to calcuate the median total assets of these 146 firms.</p>
+<p>The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (sorted alphabetically)</p>
+<table class="table">
+<caption>Mexican firms in the BMV</caption>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 10%">
+<col style="width: 25%">
+<col style="width: 49%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Firm</th>
+<th>row #</th>
+<th>Industry</th>
+<th>2018 Total Assets (in thousand pesos)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ACCEL</td>
+<td>1</td>
+<td>Services</td>
+<td>$6,454,560.00</td>
+</tr>
+<tr class="even">
+<td>AEROMEXICO</td>
+<td>2</td>
+<td>Transport Services</td>
+<td>$76,772,848.00</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td>VOLARIS</td>
+<td>148</td>
+<td>Transport Services</td>
+<td>$22,310,652.00</td>
+</tr>
+<tr class="odd">
+<td>WALMART</td>
+<td>149</td>
+<td>Retail</td>
+<td>$306,528,832.00</td>
+</tr>
+</tbody>
+</table>
+<p>Now I sort this list from the lowest to the highest value of 2018 total assets:</p>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 8%">
+<col style="width: 21%">
+<col style="width: 11%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Firm</th>
+<th>row #</th>
+<th>Industry</th>
+<th>Size Rank</th>
+<th>2018 Total Assets (in thousand pesos)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>INGEAL</td>
+<td>98</td>
+<td>Food &amp; Beverages</td>
+<td>1</td>
+<td>$171,104.00</td>
+</tr>
+<tr class="even">
+<td>HIMEXSA</td>
+<td>88</td>
+<td>Textile</td>
+<td>2</td>
+<td>$494,378.00</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td>FHIPO14</td>
+<td>45</td>
+<td>Real State</td>
+<td>73</td>
+<td>$27,979,1184.00</td>
+</tr>
+<tr class="odd">
+<td>TVAZTECA</td>
+<td>139</td>
+<td>Telecommunications</td>
+<td>74</td>
+<td>$27,988,054.00</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>AMERICA MOVIL</td>
+<td>8</td>
+<td>Telecommunications</td>
+<td>145</td>
+<td>$1,429,223,392.00</td>
+</tr>
+<tr class="even">
+<td>GFBANORTE</td>
+<td>69</td>
+<td>Financial Services</td>
+<td>146</td>
+<td>$1,620,470,400.00</td>
+</tr>
+</tbody>
+</table>
+<p>The median total assets is the mid point of the list. However, in this case, I have 146 firms, so it is not possible to find an exact mid point. Then, I need to calculate the arithmetic average assets of the 2 firms that are in the middle (firms in positions 73 and 74). Then the median will be equal to $27,983,619.00 thousand pesos (about 27 billion pesos), which is the average value between FHIPO14 and TVAZTECA assets. The arithmetic mean for total assets considering the 146 firms is $97,860,896.23 thousand pesos (about 97.8 billion pesos), which is much bigger than the median. Then, which might be the best measure that better represents a typical size of Mexican firms?</p>
+<p>Then, what is the difference between the mean and the median? When the variable does not follow a probability distribution close to a normal distribution, then the best measure for central tendecy is the median, not the mean.</p>
+<p>What is a normal distribution? It is a very common probability distribution of random variables. I will further explain probability distribution later. For now, just consider that many variables in business and nature follow a close-to-normal distribution.</p>
+<p>The median gives of a better representation of the “average” value of a variable compared with the arithmetic mean when the distribution of the values does NOT follow a normal distribution. In the case of 2018 total assets we can explore its distribution using a histogram:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="hist1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>I will later explain in more detail what a histogram is.</p>
+<p>This histogram does not look like a normal distributed variable. This histogram is said to be “skewed” to the right since there are very few firms with very high values of total assets. Normal distributed variable look like a bell shape curve where most of the values are around the arithmetic mean. In this case, we can see that most of the firms (close to 100 firms) have a range of total assets between 0 and 25 thousand million pesos. Then, only 46 firms have assets bigger than 25 thousand million (or 25 billion pesos). Actually I can see that there are very few firms with assets greater than 1,000 thousand million pesos (or greater than 1 trillion pesos), and one above 1,500 trillion pesos. Looking at the previous table we can see that AMERICA MOVIL and GFBANORTE have assets greater than 1,400 trillion pesos.</p>
+<p>With the histogram we can see that most of the firms (about 67%, 100 out of 146) have assets less than 25 billion pesos. The arithmetic mean of total assets is more than 97 billion, and the median total assets (or 50 percentile) is about 27 billion. The arithmetic mean is very sensible to extreme values, while the median is not. If we use the mean as a measure of a typical size of a Mexican firm we would be very far from the most common values of total assets. Then, the best measure of a typical size will be the median, which is about 27 billion pesos.</p>
+<p>In sum, for skewed distribution the median will also be a better measure for central tendency. Actually, in the case of normal distributed variables, the median will be very close to the mean, so the median can be always be a good measure of central tendency.</p>
+<p>Examples of business variables that with a skewed distribution similar to total assets are employee salaries, income of families in a country, any variable from the income statement such as firm sales, firm profits.</p>
+</section>
+<section id="mode" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="mode"><span class="header-section-number">2.1.3</span> Mode</h3>
+<p>Mode is the value that most appear in the variable. Mode can be calculated only for discrete variables, not for continuous variables. repeats the most. In Finance the mode is rarely used</p>
+</section>
+</section>
+<section id="dispersion-measures" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="dispersion-measures"><span class="header-section-number">2.2</span> Dispersion measures</h2>
+<section id="variance-and-standard-deviation" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="variance-and-standard-deviation"><span class="header-section-number">2.2.1</span> Variance and standard deviation</h3>
+<p>Both variance and standard deviation are used to measure how much on average the individual values of a variable change from the mean.</p>
+<p>The variance of a variable X is the average of squared deviations from each individual value <span class="math inline">\(X_i\)</span> from its mean:</p>
+<p><span class="math display">\[
+Var(X)=\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}-\bar{X}\right)^{2}=\sigma_{X}^{2}
+\]</span></p>
+<p>Where:</p>
+<p><span class="math inline">\(X_i\)</span> = Value i of the variable X</p>
+<p><span class="math inline">\(\overline{X}=\frac{1}{n}\sum_{i=1}^{n}X_{i}\)</span> = Arithmetic average of X</p>
+<p>Why the variance is the average of squared deviations? The reason is because if we do not square the deviations, then they will cancel out each other since some deviations are positive and other negative! Then, the squaring is just a <em>trick</em> to avoid canceling the positive with the negative deviations.</p>
+<p>The result of the variance will be a number that our brain cannot easily interpret. To have a more reasonable measure of linear deviation, then we just take the square root of the variance, and then, we will be able to interpret that number as the average deviations of all points from their mean. This measure is called <strong>standard devation</strong>:</p>
+<p><span class="math display">\[
+SD(X)=\sqrt{Var(X)}= \sqrt{\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}-\bar{X}\right)^{2}}=\sigma_{X}
+\]</span></p>
+<p>The variance can also be expressed as the expected value of squared deviations:</p>
+<p><span class="math display">\[
+Var(X)=E[(X-\bar{X})^2]
+\]</span></p>
+<p>Doing the multiplication of the squared term:</p>
+<p><span class="math display">\[
+Var(X)=E[(X^2-X\bar{X}-\bar{X}X+\bar{X}^2)]
+\]</span></p>
+<p>Since <span class="math inline">\(\bar{X}\)</span> and <span class="math inline">\(\bar{Y}\)</span> are constants, I can take them out of the expectation:</p>
+<p><span class="math display">\[
+Var(X)=E[X^2]-\bar{X}E[X]-\bar{X}E[X]+\bar{X}^2
+\]</span></p>
+<p>Since <span class="math inline">\(E[X]=\bar{X}\)</span>, then:</p>
+<p><span class="math display">\[
+Var(X)=E[X^2]-\bar{X}^2
+\]</span></p>
+<p>Then, the variance can be defined as the expected value of X squared minus its squared mean.</p>
+<p>Also, we can express the variance of X as:</p>
+<p><span class="math display">\[
+Var(X)=\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}\right)^2-\bar{X}^2
+\]</span></p>
+<p>Most Statistics books and Statistics software use (N-1) instead of N as the denominator of the variance formula to get a more conservative value of the variance. This measure is called <strong><em>sample</em></strong> <strong>variance</strong>. When we divide by N in the variance formula, we are calculating the <strong><em>population</em></strong> <strong>variance</strong>. Both formulas provide very similar results, but the sample variance will be a bit bigger than the population variance, so it is a more conservative value.</p>
+<p>In Statistics, the sample variance is an unbiased measure of the underlying (real) variance.</p>
+<p>Then, we can re-write the formula for <strong>sample variance</strong> of X as:</p>
+<p><span class="math display">\[
+Var(X)=\frac{1}{\left(N-1\right)}\sum_{i=1}^{n}\left(X_{i}-\bar{X}\right)^{2}=\sigma_{X}^{2}
+\]</span> And the <strong>sample standard deviation</strong> of X can be written as:</p>
+<p><span class="math display">\[
+SD(X)=\sqrt[2]{Var(X)}=\sqrt{\frac{1}{(n-1)}\sum_{i=1}^{n}(X_{i}-\bar{X})^{2}}
+\]</span></p>
+<p><span class="math display">\[
+SD(X)=\frac{\sqrt{\sum_{i=1}^{n}(X_{i}-\bar{X})^{2}}}{\sqrt{(n-1)}}=\sigma_{X}
+\]</span></p>
+</section>
+</section>
+<section id="sec-challenge1" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="sec-challenge1"><span class="header-section-number">2.3</span> CHALLENGE: Data management and Descriptive Statistics</h2>
+<p>For this <a href="#sec-challenge1">Section&nbsp;2.3</a>, you have to replicate and run all the code.</p>
+<p>We will use real financial data.</p>
+<section id="data-collection-and-visualization" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="data-collection-and-visualization"><span class="header-section-number">2.3.1</span> Data collection and visualization</h3>
+<p>Import the following Python libraries:</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You might have to install the pandas_datareader first. The pandas_datareader library has functions to download online data from Yahoo Finance where you can find financial real historical data for stocks, ETFs, cryptocurrencies, etc from most of the financial markets around the world.</p>
+<p>Download daily prices for Bitcoin from 2017:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BTC<span class="op">=</span>yf.download(tickers<span class="op">=</span><span class="st">"BTC-USD"</span>, start<span class="op">=</span><span class="st">"2017-01-01"</span>,interval<span class="op">=</span><span class="st">"1mo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
+</div>
+</div>
+<p>Show the content of the data:</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>BTC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">High</th>
+<th data-quarto-table-cell-role="th">Low</th>
+<th data-quarto-table-cell-role="th">Close</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Volume</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017-01-01</td>
+<td>963.658020</td>
+<td>1191.099976</td>
+<td>755.755981</td>
+<td>970.403015</td>
+<td>970.403015</td>
+<td>5143971692</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-02-01</td>
+<td>970.940979</td>
+<td>1200.390015</td>
+<td>946.690979</td>
+<td>1179.969971</td>
+<td>1179.969971</td>
+<td>4282761200</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017-03-01</td>
+<td>1180.040039</td>
+<td>1280.310059</td>
+<td>903.713013</td>
+<td>1071.790039</td>
+<td>1071.790039</td>
+<td>10872455960</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-04-01</td>
+<td>1071.709961</td>
+<td>1347.910034</td>
+<td>1061.089966</td>
+<td>1347.890015</td>
+<td>1347.890015</td>
+<td>9757448112</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017-05-01</td>
+<td>1348.300049</td>
+<td>2763.709961</td>
+<td>1348.300049</td>
+<td>2286.409912</td>
+<td>2286.409912</td>
+<td>34261856864</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-05-01</td>
+<td>29227.103516</td>
+<td>29820.126953</td>
+<td>25878.429688</td>
+<td>27219.658203</td>
+<td>27219.658203</td>
+<td>443473015479</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2023-06-01</td>
+<td>27218.412109</td>
+<td>31389.539062</td>
+<td>24797.167969</td>
+<td>30477.251953</td>
+<td>30477.251953</td>
+<td>481734214225</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-07-01</td>
+<td>30471.847656</td>
+<td>31814.515625</td>
+<td>28934.294922</td>
+<td>29230.111328</td>
+<td>29230.111328</td>
+<td>382224489090</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2023-08-01</td>
+<td>29230.873047</td>
+<td>30176.796875</td>
+<td>28657.023438</td>
+<td>29765.492188</td>
+<td>29765.492188</td>
+<td>107358944137</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-08-10</td>
+<td>29558.984375</td>
+<td>29612.193359</td>
+<td>29558.984375</td>
+<td>29560.082031</td>
+<td>29560.082031</td>
+<td>18306693120</td>
+</tr>
+</tbody>
+</table>
+
+<p>81 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>Python automatically shows you only the first and last rows of the dataset. Now show the last quotations:</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>BTC.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">High</th>
+<th data-quarto-table-cell-role="th">Low</th>
+<th data-quarto-table-cell-role="th">Close</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Volume</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-05-01</td>
+<td>29227.103516</td>
+<td>29820.126953</td>
+<td>25878.429688</td>
+<td>27219.658203</td>
+<td>27219.658203</td>
+<td>443473015479</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2023-06-01</td>
+<td>27218.412109</td>
+<td>31389.539062</td>
+<td>24797.167969</td>
+<td>30477.251953</td>
+<td>30477.251953</td>
+<td>481734214225</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-07-01</td>
+<td>30471.847656</td>
+<td>31814.515625</td>
+<td>28934.294922</td>
+<td>29230.111328</td>
+<td>29230.111328</td>
+<td>382224489090</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2023-08-01</td>
+<td>29230.873047</td>
+<td>30176.796875</td>
+<td>28657.023438</td>
+<td>29765.492188</td>
+<td>29765.492188</td>
+<td>107358944137</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-08-10</td>
+<td>29558.984375</td>
+<td>29612.193359</td>
+<td>29558.984375</td>
+<td>29560.082031</td>
+<td>29560.082031</td>
+<td>18306693120</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For each period, Yahoo Finance keeps track of the open, high, low, close and adjusted prices. Also, it keeps track of volume that was traded in every period. The adjusted prices are used for stocks, not for currencies. Adjusted prices considered dividend payments and also stock splits.</p>
+<p>Then, for the Bitcoin series we can use close price to calculate daily returns.</p>
+<p>Import the matplotlib and do a plot for the Bitcoin closing prices:</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.pyplot <span class="im">import</span><span class="op">*</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>plot(BTC[<span class="st">"Adj Close"</span>])</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="Workshop01_files/figure-html/cell-6-output-1.png" width="592" height="411"></p>
+</div>
+</div>
+<p>We can check the data types of each variable (column) in the dataset:</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>BTC.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+DatetimeIndex: 81 entries, 2017-01-01 to 2023-08-10
+Data columns (total 6 columns):
+ #   Column     Non-Null Count  Dtype  
+---  ------     --------------  -----  
+ 0   Open       81 non-null     float64
+ 1   High       81 non-null     float64
+ 2   Low        81 non-null     float64
+ 3   Close      81 non-null     float64
+ 4   Adj Close  81 non-null     float64
+ 5   Volume     81 non-null     int64  
+dtypes: float64(5), int64(1)
+memory usage: 4.4 KB</code></pre>
+</div>
+</div>
+</section>
+<section id="data-transformations" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="data-transformations"><span class="header-section-number">2.3.2</span> Data transformations</h3>
+<p>We will calculate a) the natural logarithm of prices and b) returns.</p>
+<p>The logarithm of prices are very useful for statistical analyis. The return of a price or an investment is the % change of the price from one period to the next.</p>
+<section id="return-calculation" class="level4" data-number="2.3.2.1">
+<h4 data-number="2.3.2.1" class="anchored" data-anchor-id="return-calculation"><span class="header-section-number">2.3.2.1</span> Return calculation</h4>
+<p>A financial simple return for a stock (<span class="math inline">\(R_{t}\)</span>) is calculated as a percentage change of price from the previous period (t-1) to the present period (t):</p>
+<p><span class="math display">\[
+R_{t}=\frac{\left(price_{t}-price_{t-1}\right)}{price_{t-1}}=\frac{price_{t}}{price_{t-1}}-1
+\]</span> For example, if the adjusted price of a stock at the end of January 2021 was $100.00, and its previous (December 2020) adjusted price was $80.00, then the monthly simple return of the stock in January 2021 will be:</p>
+<p><span class="math display">\[
+R_{Jan2021}=\frac{price_{Jan2021}}{price_{Dec2020}}-1=\frac{100}{80}-1=0.25
+\]</span></p>
+<p>We can use returns in decimal or in percentage (multiplying by 100). We will keep using decimals.</p>
+<p>In Finance it is very recommended to calculate continuously compounded returns (cc returns) and using cc returns instead of simple returns for data analysis, statistics and econometric models. cc returns are calculated from the natural logarithm of prices.</p>
+</section>
+<section id="reviewing-the-concept-of-natural-logarithm" class="level4" data-number="2.3.2.2">
+<h4 data-number="2.3.2.2" class="anchored" data-anchor-id="reviewing-the-concept-of-natural-logarithm"><span class="header-section-number">2.3.2.2</span> Reviewing the concept of natural logarithm</h4>
+<p><em>What is a natural logarithm?</em></p>
+<p>The natural logarithm of a number is the <strong>exponent</strong> that the number e (=2.71…) needs to be raised to get another number. For example, let’s name x=natural logarithm of a stock price p.&nbsp;Then:</p>
+<p><span class="math display">\[
+e^x = p
+\]</span> The way to get the value of x that satisfies this equality is actually getting the natural log of p:</p>
+<p><span class="math display">\[
+x = log_e(p)
+\]</span> Then, we have to remember that <strong>the natural logarithm is actually an exponent that you need to raise the number e</strong> to get a specific number.</p>
+<p>The natural log is the logarithm of base <span class="math inline">\(e\)</span> (=2.71…). The number <span class="math inline">\(e\)</span> is an irrational number (it cannot be expressed as a division of 2 natural numbers), and it is also called the <em>Euler constant</em>. Leonard Euler (1707-1783) took the idea of the logarithm from the great mathematician Jacob Bernoulli, and discovered very astonishing features of the <span class="math inline">\(e\)</span> number. Euler is considered the most productive mathematician of all times. Some historians believe that Jacob Bernoulli discovered the number <span class="math inline">\(e\)</span> around 1690 when he was playing with calculations to know how an amount of money grows over time with an interest rate.</p>
+<p>How <span class="math inline">\(e\)</span> is related to the grow of financial amounts over time?</p>
+<p>Here is a simple example:</p>
+<p>If I invest $100.00 with an annual interest rate of 50%, then the end balance of my investment at the end of the first year (at the beginning of year 2) will be:</p>
+<p><span class="math display">\[
+I_2=100*(1+0.50)^1=150
+\]</span></p>
+<p>If the interest rate is 100%, then I would get:</p>
+<p><span class="math display">\[
+I_2=100*(1+1)^1=200
+\]</span> Then, the general formula to get the final amount of my investment at the beginning of year 2, for any interest rate R can be:</p>
+<p><span class="math display">\[
+I_2=I_1*(1+R)^1
+\]</span> The (1+R) is the growth factor of my investment.</p>
+<p>In Finance, the investment amount is called <em>principal</em>. If the interests are calculated (compounded) each month instead of each year, then I would end up with a higher amount at the end of the year.</p>
+<p>Monthly compounding means that a monthly interest rate is applied to the amount to get the interest of the month, and then the interest of the month is added to the investment (principal). Then, for month 2 the principal will be higher than the initial investment. At the end of month 2 the interest will be calculated using the updated principal amount. Putting in simple math terms, the final balance of an investment at the beginning of year 2 when doing monthly compounding will be:</p>
+<p><span class="math display">\[
+I_2=I_1*\left(1+\frac{R}{N}\right)^{1*N}
+\]</span></p>
+<p>For monthly compounding, N=12, so the monthly interest rate is equal to the annual interest rate R divided by N (R/N). Then, with an annual rate of 100% and monthly compounding (N=12):</p>
+<p><span class="math display">\[
+I_2=100*\left(1+\frac{1}{12}\right)^{1*12}=100*(2.613..)
+\]</span></p>
+<p>In this case, the growth factor is <span class="math inline">\((1+1/12)^{12}\)</span>, which is equal to 2.613.</p>
+<p>Instead of compounding each month, if the compounding is every <em>moment</em>, then we are doing a <strong>continuously compounded</strong> rate.</p>
+<p>If we do a continuously compounding for the previous example, then the <em>growth factor</em> for one year becomes the astonishing Euler constant e:</p>
+<p>Let’s do an example for a compounding of each second (1 year has 31,536,000 seconds). The investment at the end of the year 1 (or at the beginning of year 2) will be:</p>
+<p><span class="math display">\[
+I_2=100*\left(1+\frac{1}{31536000}\right)^{1*31536000}=100*(2.718282..)\cong100*e^1
+\]</span></p>
+<p>Now we see that <span class="math inline">\(e^1\)</span> is the GROWTH FACTOR after 1 year if we do the compounding of the interests every moment!</p>
+<p>We can generalize to any other annual interest rate R, so that <span class="math inline">\(e^R\)</span> is the growth factor for an annual nominal rate R when the interests are compounded every moment.</p>
+<p>When compounding every instant, we use small r instead of R for the interest rate. Then, the growth factor will be: <span class="math inline">\(e^r\)</span></p>
+<p>Then we can do a relationship between this growth rate and an effective equivalent rate:</p>
+<p><span class="math display">\[
+\left(1+EffectiveRate\right)=e^{r}
+\]</span></p>
+<p>If we apply the natural logarithm to both sides of the equation:</p>
+<p><span class="math display">\[
+ln\left(1+EffectiveRate\right)=ln\left(e^r\right)
+\]</span></p>
+<p>Since the <em>natural logarithm function is the inverse of the exponential function</em>, then:</p>
+<p><span class="math display">\[
+ln\left(1+EffectiveRate\right)=r
+\]</span> In the previous example with a nominal rate of 100%, when doing a continuously compounding, then the effective rate will be:</p>
+<p><span class="math display">\[
+\left(1+EffectiveRate\right)=e^{r}=2.7182
+\]</span></p>
+<p><span class="math display">\[
+EffectiveRate=e^{r}-1
+\]</span> Doing the calculation of the effective rate for this example:</p>
+<p><span class="math display">\[
+EffectiveRate=e^{1}-1 = 2.7182.. - 1 = 1.7182 = 171.82\%
+\]</span></p>
+<p>Then, when compounding every moment, starting with a nominal rate of 100% annual interest rate, the actual effective annual rate would be 171.82%!</p>
+</section>
+<section id="continuously-compounded-returns" class="level4" data-number="2.3.2.3">
+<h4 data-number="2.3.2.3" class="anchored" data-anchor-id="continuously-compounded-returns"><span class="header-section-number">2.3.2.3</span> Continuously compounded returns</h4>
+<p>One way to calculate cc returns is by subtracting the log of the current price (at t) minus the log of the previous price (at t-1):</p>
+<p><span class="math display">\[
+r_{t}=log(price_{t})-log(price_{t-1})
+\]</span> This is also called as the difference of the log of the price.</p>
+<p>We can also calculate cc returns as the log of the current adjusted price (at t) divided by the previous adjusted price (at t-1):</p>
+<p><span class="math display">\[
+r_{t}=log\left(\frac{price_{t}}{price_{t-1}}\right)
+\]</span></p>
+<p>cc returns are usually represented by small r, while simple returns are represented by capital R.</p>
+<p>In Python we can get the previous value of a variable using the shift(n) function. This function works for Panda dataframes. Then we can calculate a new column for the simple returns of Bitcoin as follows:</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>BTC[<span class="st">"R"</span>] <span class="op">=</span> (BTC[<span class="st">"Adj Close"</span>] <span class="op">/</span> BTC[<span class="st">"Adj Close"</span>].shift(<span class="dv">1</span>)) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(BTC[<span class="st">"R"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Date
+2017-01-01         NaN
+2017-02-01    0.215959
+2017-03-01   -0.091680
+2017-04-01    0.257606
+2017-05-01    0.696288
+                ...   
+2023-05-01   -0.070011
+2023-06-01    0.119678
+2023-07-01   -0.040920
+2023-08-01    0.018316
+2023-08-10   -0.006901
+Name: R, Length: 81, dtype: float64</code></pre>
+</div>
+</div>
+<p>Now we calculate cc returns in a new column using the shift function:</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>BTC[<span class="st">"r"</span>] <span class="op">=</span> np.log(BTC[<span class="st">'Adj Close'</span>]) <span class="op">-</span> np.log(BTC[<span class="st">'Adj Close'</span>].shift(<span class="dv">1</span>))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>BTCR <span class="op">=</span> BTC[[<span class="st">'R'</span>,<span class="st">'r'</span>]].copy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We have a null value for the first day since we cannot calculate returns for day 1. We can drop the rows with NA values to ease data calculations:</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>BTCR<span class="op">=</span> BTCR.dropna()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="descriptive-statistics-of-returns" class="level4" data-number="2.3.2.4">
+<h4 data-number="2.3.2.4" class="anchored" data-anchor-id="descriptive-statistics-of-returns"><span class="header-section-number">2.3.2.4</span> Descriptive statistics of returns</h4>
+<p>We can use the describe function applied to the r column as follows:</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sumret <span class="op">=</span> BTC[<span class="st">"R"</span>].describe()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sumret</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>count    80.000000
+mean      0.069698
+std       0.240864
+min      -0.377688
+25%      -0.076935
+50%       0.017807
+75%       0.232525
+max       0.696288
+Name: R, dtype: float64</code></pre>
+</div>
+</div>
+<p>We see that the mean of daily Bitcoin returns is very close to 0 (0.2%), while standard deviation is above 4.1%! The worse day of Bitcoin was about -37.1%! and the best day was 25.2% of return.</p>
+<p>To know which days were the worse, we can do a selection based on a condition. Let’s see which days had a daily return less than 15%:</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>BTCR[BTCR[<span class="st">"R"</span>]<span class="op">&lt;-</span><span class="fl">0.15</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">R</th>
+<th data-quarto-table-cell-role="th">r</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-01-01</td>
+<td>-0.277987</td>
+<td>-0.325713</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2018-03-01</td>
+<td>-0.329333</td>
+<td>-0.399482</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-05-01</td>
+<td>-0.188991</td>
+<td>-0.209476</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2018-11-01</td>
+<td>-0.364116</td>
+<td>-0.452739</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019-11-01</td>
+<td>-0.177177</td>
+<td>-0.195014</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-03-01</td>
+<td>-0.251278</td>
+<td>-0.289387</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-05-01</td>
+<td>-0.353546</td>
+<td>-0.436253</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-01</td>
+<td>-0.187684</td>
+<td>-0.207865</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022-01-01</td>
+<td>-0.168947</td>
+<td>-0.185061</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022-04-01</td>
+<td>-0.171806</td>
+<td>-0.188507</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022-05-01</td>
+<td>-0.157035</td>
+<td>-0.170830</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022-06-01</td>
+<td>-0.377688</td>
+<td>-0.474314</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022-11-01</td>
+<td>-0.162336</td>
+<td>-0.177139</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The worst day for the Bitcoin was March 12, 2020, which is the beginning of the COVID crisis.</p>
+<p>To know the best days for Bitcoin:</p>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>BTCR[BTCR[<span class="st">"R"</span>]<span class="op">&gt;</span><span class="fl">0.15</span>].sort_values(by<span class="op">=</span>[<span class="st">'R'</span>], ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">R</th>
+<th data-quarto-table-cell-role="th">r</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017-05-01</td>
+<td>0.696288</td>
+<td>0.528442</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-08-01</td>
+<td>0.635768</td>
+<td>0.492113</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019-05-01</td>
+<td>0.602493</td>
+<td>0.471561</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-11-01</td>
+<td>0.582091</td>
+<td>0.458748</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017-10-01</td>
+<td>0.490858</td>
+<td>0.399352</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-12-01</td>
+<td>0.477732</td>
+<td>0.390508</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020-11-01</td>
+<td>0.424123</td>
+<td>0.353556</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-10-01</td>
+<td>0.400267</td>
+<td>0.336663</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-01-01</td>
+<td>0.398356</td>
+<td>0.335297</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-12-01</td>
+<td>0.383326</td>
+<td>0.324490</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-02-01</td>
+<td>0.363088</td>
+<td>0.309752</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-04-01</td>
+<td>0.344779</td>
+<td>0.296230</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-04-01</td>
+<td>0.325089</td>
+<td>0.281480</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-03-01</td>
+<td>0.305311</td>
+<td>0.266441</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019-04-01</td>
+<td>0.303337</td>
+<td>0.264928</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-01-01</td>
+<td>0.299840</td>
+<td>0.262241</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020-10-01</td>
+<td>0.277853</td>
+<td>0.245181</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019-06-01</td>
+<td>0.261549</td>
+<td>0.232340</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2017-04-01</td>
+<td>0.257606</td>
+<td>0.229210</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-07-01</td>
+<td>0.239163</td>
+<td>0.214436</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2023-03-01</td>
+<td>0.230313</td>
+<td>0.207268</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-02-01</td>
+<td>0.215959</td>
+<td>0.195533</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2018-07-01</td>
+<td>0.214934</td>
+<td>0.194690</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-07-01</td>
+<td>0.187934</td>
+<td>0.172216</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022-07-01</td>
+<td>0.179541</td>
+<td>0.165125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2017-07-01</td>
+<td>0.159019</td>
+<td>0.147574</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We can also get the main descriptive statistics using specific functions like:</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The daily average return of Bitcoin is "</span>, BTCR[<span class="st">"r"</span>].mean())</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The daily variance of Bitcoin is "</span>, BTCR[<span class="st">"r"</span>].var())</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The daily standard deviation (volatility) of Bitcoin return is "</span>, BTCR[<span class="st">"r"</span>].std())</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The daily median return of Bitcoin is "</span>,BTCR[<span class="st">"r"</span>].median())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The daily average return of Bitcoin is  0.042705858567528766
+The daily variance of Bitcoin is  0.05006491510194982
+The daily standard deviation (volatility) of Bitcoin return is  0.22375190524764213
+The daily median return of Bitcoin is  0.017650040913925302</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="the-histogram" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> The Histogram</h1>
+<p>The histogram was invented to illustrate how the values of a random variable are distributed in its whole range of values. The histogram is a frequency plot. The ranges of values of a variable that are more frequent will have a higher vertical bar compared with the ranges that are less frequent.</p>
+<p>With the histogram of a random variable we can appreciate which are the most common values, the least common values, the possible mean and standard deviation of the variable.</p>
+<p>In my opinion, the most important foundations/pilars of both, Statistics and the theory of Probability are:</p>
+<ul>
+<li><p>The invention of the <strong>Histogram</strong></p></li>
+<li><p>The discovery of the <strong>Central Limit Theorem</strong></p></li>
+</ul>
+<p>Although the idea of a histogram sounds a very simple idea, it took many centuries to be developed, but it has profound impact in the development of Probability theory and Statistics, which both are the pilars of all sciences.</p>
+<p>I enjoy learning about the origins of the great ideas of humanity. The idea of the histogram was invented to decipher encrypted messages.</p>
+<section id="interesting-facts-about-the-history-of-the-histogram" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="interesting-facts-about-the-history-of-the-histogram"><span class="header-section-number">3.1</span> Interesting facts about the History of the Histogram</h2>
+<p>It is documented that the encryption of messages -cryptography- was commonly used since the beginning of civilizations. Unfortunately, it seems cryptography was invented by ancient Kingdoms mainly for war strategies. According to Herodotus, in the 500s BC, the Greeks used cryptography to win a war against the powerful Persian troops <span class="citation" data-cites="2000_SinghSimon_BOOK">(<a href="#ref-2000_SinghSimon_BOOK" role="doc-biblioref">Singh 2000</a>)</span>.</p>
+<p>Cryptography refers to the methods of ciphering messages, while cryptanalysis refers to the methods to decipher encrypted messages.</p>
+<p>The Arabs in the years 800-900 AD were among the first to decipher encrypted messages thanks to their invention about the idea of the histogram. According to <span class="citation" data-cites="2000_SinghSimon_BOOK">Singh (<a href="#ref-2000_SinghSimon_BOOK" role="doc-biblioref">2000</a>)</span> and <span class="citation" data-cites="1992_AlKaditIbrahimA">Al-Kadit (<a href="#ref-1992_AlKaditIbrahimA" role="doc-biblioref">1992</a>)</span>, in 1987 several ancient Arabic manuscripts related to cryptography and cryptanalysis (written between the year 800 AD and 1,500 AD) were discovered in Istanbul, Turkey (they were translated into English until 2002). This is a very fascinating story!</p>
+<p>Below is an example of a frequency plot by Arabic philosopher Al-Kindi in the 850 AD compared with a recent frequency plot by Al-Kadi:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="literature/Al-Khindi%20Histogram1.JPG" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure taken from <span class="citation" data-cites="1992_AlKaditIbrahimA">Al-Kadit (<a href="#ref-1992_AlKaditIbrahimA" role="doc-biblioref">1992</a>)</span></figcaption>
+</figure>
+</div>
+<p>The encrypted messages at that time were written with the Caesar shift method. Then, to decipher an encrypted message, the Arabs used to count all characters to create a frequency plot, and then try to match the encrypted characters with the Arab characters. Finally, the replaced the corresponding Arabic matched characters in the original message to decipher it.</p>
+<p>Interestingly, the idea of the frequency waited about 1,000 years to be used by French mathematiticans to develop the foundations of the Statistics discipline. In the1700s and early 1,800s, the french mathematicians Abraham De Moivre and Pierre-Simon Laplace used this idea to develop the <strong>Central Limt Theory</strong> (CLT).</p>
+<p>I believe the CLT is one of the most important and fascinating mathematical discoveries of all time.</p>
+<p>The English scientist Karl Pearson coined the term <strong>histogram</strong> in 1891 when he was developing statistical methods applied to Biology.</p>
+<p>Why the <strong>histogram</strong> is so important in Statistics? I hope we will find this out during this course!</p>
+</section>
+<section id="challenges-histogram" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="challenges-histogram"><span class="header-section-number">3.2</span> CHALLENGES: Histogram</h2>
+<ul>
+<li><p>Do a histogram for daily Bitcoin cc returns. Hints: use the plot.hist function for pandas dataframes, and the BTC dataframe.</p></li>
+<li><p>Interpret the histogram with your own words and in CAPITAL LETTERS</p></li>
+</ul>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>R_bitcoin <span class="op">=</span> pd.DataFrame(BTCR[[<span class="st">"R"</span>]])</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>hist<span class="op">=</span>R_bitcoin.plot.hist(bins<span class="op">=</span><span class="dv">12</span>,alpha<span class="op">=</span><span class="fl">0.5</span>,title<span class="op">=</span><span class="st">"Histogram of daily Bitcoin Returns"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Workshop01_files/figure-html/cell-15-output-1.png" width="597" height="431"></p>
+</div>
+</div>
+<p>We use the histogram to visualize random variables with historical values. For expected values of random variables we can use the concept of probability density function, which is analogous to the concept of the histogram, but applied to the expectation of possible values of a random variable.</p>
+</section>
+</section>
+<section id="probability-density-functions-pdf" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Probability Density Functions (PDF)</h1>
+<section id="probability-density-function-of-a-discrete-random-variable" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="probability-density-function-of-a-discrete-random-variable"><span class="header-section-number">4.1</span> Probability Density Function of a Discrete random variable</h2>
+<p>The Probability Density Function (PDF) of a discrete random variable X is the probability of X to be equal to a specific value <span class="math inline">\(x_{i}\)</span>:</p>
+<p><span class="math display">\[
+f(x)=P(X=x_{i})
+\]</span> For example, when throwing a dice there are six possible outcomes: 1,2,3,4,5 and 6. All of them with the same probability since these outcomes are independent events. Every outcome has a 1/6 chance of happening. The PDF for a fair six-sided dice can be defined as:</p>
+<p><span class="math display">\[
+f(x)=P(X=x_{i})=\frac{1}{6}
+\]</span></p>
+<p>Where <span class="math inline">\(x_i\)</span>=1,2,3,4,5,6</p>
+<p>Now, instead of considering the probability of every independent outcome to take place, you might wonder about the probability of getting any number equal or less than x_{i} when throwing a dice. It seems pretty obvious that the probability would be 50% for x_{i}=3 and 100% for x_{i}=6. In plain words, we can say that getting 1,2 or 3 are 50% of the cases when throwing a dice, and a range from 1 to 6 will cover all the possibilities.</p>
+<p>Mathematically we can express the Cumulative Density Function (CDF) as:</p>
+<p><span class="math display">\[
+f(x)={\sum_{i=1}^{n}}P(X=x_{i})
+\]</span> Following the example of the dice, we can compute the CDF for every possible outcome as follows:</p>
+<p><span class="math inline">\(P(X\leq1)=\frac{1}{6}=0.17\)</span></p>
+<p><span class="math inline">\(P(X\leq2)=\frac{2}{6}=0.33\)</span></p>
+<p><span class="math inline">\(P(X\leq3)=\frac{3}{6}=0.50\)</span></p>
+<p><span class="math inline">\(P(X\leq4)=\frac{4}{6}=0.67\)</span></p>
+<p><span class="math inline">\(P(X\leq5)=\frac{5}{6}=0.83\)</span></p>
+<p><span class="math inline">\(P(X\leq6)=\frac{1}{6}=1\)</span></p>
+<p>We have covered the PDF and the CDF for a six-sided dice which results are very intuitive if you have played with a dice, but what about if we combine the results from two dices? In any case, knowing about the possibilities of the combination of two dices will be most useful than the results of one single dice since most of the games and casinos around the world use a couple of dices, right? When we consider the sum of two dices (S), the range of possible outcomes goes from 2 to 12, so the PDF is defined as <span class="math inline">\(f(S)=P(S=x_{i})\)</span>, where i=2,3,4..,12. In this case we have a total of 36 possible combinations, where only one combination will give an outcome equal to 2 or 12, there are two different combinations to get a 3 or 11, and so on. The outcome with higher probability to happen is a 7, there are six combinations that will result in a 7, as you can see in the table and graph below:</p>
+<table class="table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>S</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>11</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td>f(S)</td>
+<td>1/36</td>
+<td>2/36</td>
+<td>3/36</td>
+<td>4/36</td>
+<td>5/36</td>
+<td>6/36</td>
+<td>5/36</td>
+<td>4/36</td>
+<td>3/36</td>
+<td>2/36</td>
+<td>1/36</td>
+</tr>
+</tbody>
+</table>
+<p>We can see this PDF as follows:</p>
+<p><img src="PDF_Two_dices.PNG" class="img-fluid"></p>
+<p>The shape of this PDF for the combination outcome of two dices looks like the famous “bell-shaped” of the <em>normal distribution</em>. However there is an elemental difference between this PDF and the normal distribution; the normal distribution is the probabilistic distribution of a <strong>continuous random variable</strong>, but not a discrete random variable such as the outcome from two dices.</p>
+</section>
+<section id="probability-density-function-pdf-of-a-continuous-random-variable" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="probability-density-function-pdf-of-a-continuous-random-variable"><span class="header-section-number">4.2</span> Probability density function (PDF) of a Continuous Random Variable</h2>
+<p>As seen in previous section, the CDF of a discrete random variable is defined as the sum of the probabilities of the independent outcomes. However, when using a continuous random variable the CDF will be defined as the <em>integration</em> of the function <span class="math inline">\(f(x)\)</span> (<span class="math inline">\(f(x)\)</span> is the PDF).</p>
+<p>In this case we will not compute the probability of the variable X to take particular value, as we did with a discrete variable. Instead of doing that, we will calculate the probability of the continuous variable X to be within a specific <em>range</em> limited by a and b. The probability of a continuous variable to take a specific value is zero. The CDF will be 1 or 100% for all possible values that x can take, so:</p>
+<p><span class="math display">\[
+\sideset{}{_{-\infty}^{\infty}}\intop f(x)\,dx=1
+\]</span></p>
+<p><span class="math display">\[
+\sideset{}{_{a}^{b}}\intop f(x),dx=P(a\leq x\leq b)
+\]</span> The probability that a continuous random variable X is between a and b, is equal to the area under the PDF on the interval [a,b]. For example, if a PDF is defined as <span class="math inline">\(f(x)=3x^{2};0&lt;=x&lt;=1\)</span> we can then compute the CDF for the interval between 0.5 and 1 as follows:</p>
+<p><span class="math inline">\(PDF=f(x)=3x^{2}\)</span></p>
+<p><span class="math inline">\(CDF=\sideset{}{_{0.5}^{1}}\intop3x^{2}\,dx=3(x^{3})/3\mid_{0.5}^{1}\)</span></p>
+<p><span class="math inline">\(CDF=x^{3}\mid_{0.5}^{1}=1^{3}-0.5^{3}=1-0.125=0.875=87.5\%\)</span></p>
+<p>As demonstrated, given a <span class="math inline">\(PDF=f(x)=3x^{2}\)</span>, the probability that X is between 0.5 and 1 is equal to 87.5%. In the same way, if you would like to know the probability that X is between 0 and 0.5, all we have to do is to evaluate the CDF for those limits.</p>
+<p><span class="math inline">\(CDF=\sideset{}{_{0}^{0.5}}\intop3x^{2}\,dx\)</span></p>
+<p><span class="math inline">\(CDF=\sideset{}{_{0}^{0.5}}\intop3x^{2}\,dx=3(x^{3})/3\mid_{0}^{0.5}\)</span></p>
+<p><span class="math inline">\(CDF=x^{3}\mid_{0}^{0.5}=0.5^{3}-0=0.125=12.5\%\)</span></p>
+<p>If you see, that makes sense since 12.5% is the complement of 87.5%, so that the probability that x lies between 0 and 1 will be 1. This is true since the possible range of x as defined for this PDF is 0&lt;=x&lt;=1, so the probability of x being in any place of this range must be one or 100%. Note that not any arbitrary function is a PDF. A very important condition is that the integral of the function between the possible range of x must be equal to one.</p>
+<p>Now we move to the most famous PDF, the Normal Distribution Function.</p>
+</section>
+</section>
+<section id="the-normal-distribution-function" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> The Normal Distribution Function</h1>
+<p>In statistics, the most popular continuous PDF is the well-known “bell-shaped” normal distribution, which PDF is defined as:</p>
+<p><span class="math display">\[
+f(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{\left(-\frac{1}{2}\frac{(x-\mu)^{2}}{\sigma^{2}}\right)}\
+\]</span> where x can take any real value <span class="math inline">\(-\infty&lt;x&lt;\infty\)</span></p>
+<p>where <span class="math inline">\(\mu\)</span> is the mean of the distribution and <span class="math inline">\(\sigma^{2}\)</span> is the variance of the distribution. For simplification purposes, the normal distribution can also be denoted as <span class="math inline">\(X\sim N(\mu,\sigma^{2})\)</span> where X is the continuous random variable, <span class="math inline">\("\sim"\)</span> means <em>distributed as</em> and N means <em>normal distribution</em>.</p>
+<p>So the only two parameters to be defined in order to know the behavior of the continuous random variable X are:</p>
+<ul>
+<li>The mean of X and</li>
+<li>the the variance of X.</li>
+</ul>
+<p>The normal distribution is symmetric around <span class="math inline">\(\mu\)</span>.</p>
+<p>Other interesting property of the normal distribution is the probabilities according to different ranges of X:</p>
+<p>• For the range (<span class="math inline">\(\mu-\sigma)&lt;=x&lt;=(\mu+\sigma\)</span>), the area under the curve is approximately 68%</p>
+<p>• For the range (<span class="math inline">\(\mu-2\sigma)&lt;=x&lt;=(\mu+2\sigma\)</span>), the area under the curve is approximately 95%</p>
+<p>• For the range (<span class="math inline">\(\mu-3\sigma)&lt;=x&lt;=(\mu+3\sigma\)</span>), the area under the curve is approximately 99.7%.</p>
+<p><img src="Normal.PNG" class="img-fluid"></p>
+<p>If our variable of interest is simple returns (R) and these returns follow a normal distribution <span class="math inline">\(r\sim N(\mu,\sigma^{2})\)</span>, the expected value of the future cc returns will be the mean of the distribution, while the standard deviation can be seen as a measure of risk.</p>
+<section id="interesting-facts-about-the-history-of-the-normal-distribution" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="interesting-facts-about-the-history-of-the-normal-distribution"><span class="header-section-number">5.1</span> Interesting facts about the History of the Normal Distribution</h2>
+<p>The Normal Distribution function is one of the most interesting finding in Statistics. The normal distribution can explain many phenomena in our real world; from financial returns to human behaviour, to human characteristics such as height, etc.</p>
+<p>Many people believe that Carl Friedrich Gauss was the person who discover it, but it is not quite true. The French mathematician Abraham de Moivre was the first to discover the normal distribution when he found the distribution of the sum of binomial independent random variables.</p>
+<p>Very interesting Story… it’s pending … check later for an update!</p>
+</section>
+<section id="challenge-simulating-the-normal-distribution" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="challenge-simulating-the-normal-distribution"><span class="header-section-number">5.2</span> CHALLENGE: Simulating the normal distribution</h2>
+<p>Use the mean and standard deviation of the historical cc returns of Bitcoin and simulate the same # of returns as the days we dowloaded in the BTCR dataframe.</p>
+<p>In one plot show both, the real distribution of historical cc returns and the simulated normal distribution.</p>
+<div class="cell" data-execution_count="15">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>pyplot.clf()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>rmean <span class="op">=</span> BTCR[<span class="st">"r"</span>].mean()</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>rsd <span class="op">=</span> BTCR[<span class="st">"r"</span>].std()</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> BTCR[<span class="st">"r"</span>].count()</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>simr<span class="op">=</span> np.random.normal(loc<span class="op">=</span>rmean,scale<span class="op">=</span>rsd, size<span class="op">=</span>N)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>realr <span class="op">=</span> BTCR[<span class="st">"r"</span>].to_numpy()</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> <span class="dv">12</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>pyplot.hist(simr,bins,alpha<span class="op">=</span><span class="fl">0.5</span>,label<span class="op">=</span><span class="st">'simulated rets'</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>pyplot.hist(realr,bins,alpha<span class="op">=</span><span class="fl">0.5</span>,label<span class="op">=</span><span class="st">'real rets'</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>pyplot.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>pyplot.title(label<span class="op">=</span><span class="st">'Histogram of real and simulated cc returns of Bitcoin'</span>)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>pyplot.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="Workshop01_files/figure-html/cell-16-output-1.png" width="566" height="431"></p>
+</div>
+</div>
+<p>DO YOU SEE A DIFFERENCE BEWEEN THE REAL VS THE SIMULATED RETURNS? BRIEFLY EXPLAIN.</p>
+</section>
+</section>
+<section id="references" class="level1 unnumbered" data-number="6">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">6 References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-1992_AlKaditIbrahimA" class="csl-entry" role="listitem">
+Al-Kadit, Ibrahim A. 1992. <span>“Origins of Cryptology: The Arab Contributions.”</span> <em>Cryptologia</em> 16 (2): 97–126.
+</div>
+<div id="ref-2000_SinghSimon_BOOK" class="csl-entry" role="listitem">
+Singh, Simon. 2000. <em>The Code Book: The Science of Secrecy from Ancient Egypt to Quantum Cryptography</em>. Anchor Books.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
