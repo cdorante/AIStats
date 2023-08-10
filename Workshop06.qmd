@@ -1,0 +1,277 @@
+---
+title: "Workshop 6, Advanced AI - Statistics Module"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: In this workshop we practice with data management and learn about the multiple regression model. 
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+      collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Introduction
+
+Last workshop we practice how to interpret a simple regression model. Unlike the simple regression model, the multiple regression model has 2 or more independent (or explanatory) variables. Before we start with the multiple regression model we will review dataset structures and practice with data management. We will use a big financial dataset that contains real financial statement variables from most of the US public firms that participate in the New York Exchange (NYSE) and the NASDAQ.
+
+# Data set structures
+
+Most data set structures for statistic modelling are the following:
+
+1.  Time-series: in this structure each observation of the dataset refers to one specific period (hour, day, week, month, quarter, or year) and each column represents an attribute of one subject. A subject can be a company, an index, an industry, a person, a product, etc).
+
+2.  Cross-sectional structure: in this structure, each observation of the dataset refers to the information of one subject, and each column represents an attribute of each subject. The values for the attributes are usually for ONLY ONE period.
+
+3.  Panel-data structure: this is a kind of combination of the time-series and cross-sectional structures. In this structure, we have more than one subject, and for each subject we can have more than one period.
+
+Then, we can consider the market model as a pulled "time-series" regression model. A cross-sectional regression model would be a model where the independent variable(s) represent(s) a specific characteristic of many subjects in only **one period** of time. In this model, the dependent variable would be a feature or characteristic of the subjects in one point in time.
+
+An example of a cross-sectional regression would be to analyze how annual earnings per share (when announced at the end of the year) of a set of 100 firms is related to the stock price change (return) of these firms right after the end of the year. In this case, the subjects are the 100 public firms; the dependent variable is the stock return of each of the 100 firms; and the independent variable would be the earnings per share of these 100 firms disclosed to investors at the end of the year. As we can see, we are looking only at one point in time, but we analyze the relationship between two variables or two features of the many subjects.
+
+Then, a panel-regression structure combines time-series with cross-sectional structures.
+
+Two different regression models can be run for a panel data structure. The first one is called pulled time series regression. This regression model is the same as the time series regression model but instead of having series of only one subject, we have series of more than one subject. The second regression model is called panel data regression. Unlike the pulled time series model, this model accounts for changes in both subjects and periods.
+
+Taking the same example I gave for the cross-sectional regression, if we add 10 years of data for each of the 100 firms, then we would have a panel-data, so we can design either a) a pulled time-series regression, or b) a panel-data regression. For the pulled time-series regression, we run the regression as if all observations were from only one subject. For the panel-data regression model, we would need to estimate a more sophisticated model since there are basically two sources or types of relations: a) how changes in the dependent variable of subjects are related to changes in the independent variables of the same subjects, and b) how average (taking the average over time) changes in the dependent variable among different subjects are related to average changes in the independent variable. The first type of relation is called within-subjects differences, while the second one is called between-subjects differences. For now, we will not examine in detail panel-regression models, but it is important to have the distinction about the different types of regression models.
+
+# Data management for panel datasets
+
+In Statistics, data management skills are very important. Most of the time, before designing and running an econometric model, it is needed to do simple and sophisticated data management. It is very common to merge datasets before we start our analysis.
+
+We will practice with data management using a dataset of US public firms. With this dataset we practice how to collapse a dataset and merge one dataset with another considering the data structures. We also practice about data cleaning, variable calculations, descriptive statistics, visualization, data transformation, multiple regression and diagnosis to detect problems for regression.
+
+## Data collection
+
+Download the csv panel datasets from the web:
+
+```{python}
+import pandas as pd
+import requests
+import io
+
+# You can download the datasets from the web using the commented code
+
+# This web page needs to receive a header to download data files:
+#headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
+#url="https://www.apradie.com/datos/us2022q2a.csv"
+#s = requests.get(url,headers=headers).content
+
+#usdata = pd.read_csv(io.StringIO(s.decode('utf-8')))
+usdata = pd.read_csv("datasetfw/us2022q2a.csv")
+
+# I see the number of rows and columns of the dataset:
+usdata.shape
+
+#url="https://www.apradie.com/datos/usfirms2022.csv"
+#s = requests.get(url,headers=headers).content
+#usfirms = pd.read_csv(io.StringIO(s.decode('utf-8')))
+usfirms = pd.read_csv("datasetfw/usfirms2022.csv")
+```
+
+## Data selection and merging
+
+These datasets have real quarterly financial data of public US firms (from the NYSE and NASDAQ) for many years.
+
+The usdata is a panel dataset, which is a combination of cross sectional and time-series dataset.
+
+The usfirms2022 dataset is a catalog of US public and active firms, and the us2022q2a.csv has historical quarterly financial data for these US firms.
+
+In order to prepare a dataset for descriptive statistics, I will select the most recent financial quarter of the panel dataset, which is 2022Q2. This subset will have only one row for one firm with the most recent financial data:
+
+```{python}
+type(usdata['q'])
+# q is an object (string) column
+data2022q2 = usdata[usdata['q']=="2022q2"]
+```
+
+The data2022q2 has financial information, but it does not have general information of firms such as firm name and industry. Then, I will merge the data2022q2 with the usfirms dataset
+
+Using the usdata, I will pull the firm name and industry, so it will be possible to do descriptive statistics by industry and identify some firms with specific characteristics:
+
+```{python}
+# I see the column names:
+usfirms.columns
+# I select only the columns I will attach to the historical panel data:
+usfirms1 = usfirms[["Ticker","Name","Sector NAICS\nlevel 1","Sector\nEconomatica"]]
+#usfirms1 = usfirms.loc[:,['Ticker','Name','Sector NAICS\nlevel 1','Sector\nEconomatica']]
+
+# I rename the columns to have the same name for the firm identifier:
+usfirms1.columns=['firm','Name','Industry','Sector']
+#I merge both datasets using firm as the common column to do the match:
+data2022q2 = pd.merge(data2022q2, usfirms1, on="firm", how='left')
+
+```
+
+We did a merge with usfirms1 using the firm column to do the match. I did a left join, so the merge function use the first (left) dataset to search on the second (right) dataset, and if there is no match, then it will keep the row, but with NA values for the new columns. This merge function performs a very similar algorithm than the traditional vlookup Excel function.
+
+## Basic descriptive statistics
+
+We now can do some descriptive statistics to learn about the US firms:
+
+We can calculate a new column for market capitalization:
+
+```{python}
+pd.options.display.float_format = '{:,.2f}'.format
+
+data2022q2['marketcap'] = data2022q2.adjprice * data2022q2.sharesoutstanding
+
+data2022q2['marketcap'].describe()
+
+
+```
+
+```{python}
+data2022q2.groupby("Industry").agg(
+  {
+    "marketcap": ["min","max","median"],
+    "totalassets": ["min","max","median"],
+  }
+)
+
+
+```
+
+```{python}
+
+data2022q2[["Industry","marketcap","totalassets"]].groupby("Industry").median()
+
+```
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.clf()
+sns.set(font_scale=0.75)
+box1 = sns.boxplot(x='Industry',y='marketcap',data=data2022q2)
+box1.set_yscale("log")
+box1.set_xticklabels(box1.get_xticklabels(),rotation=90)
+```
+
+About profit margin:
+
+```{python}
+import numpy as np
+data2022q2['ebit'] = data2022q2['revenue'] - data2022q2['cogs'] - data2022q2['sgae']
+data2022q2['profitmargin'] = np.where(data2022q2['revenue'] ==0, np.NaN, 
+      data2022q2.ebit / data2022q2.revenue)
+
+data2022q2[["Industry","profitmargin"]].groupby("Industry").median()
+      
+      
+```
+
+```{python}
+data2022q2.loc[data2022q2['profitmargin']<-1000,:]
+data2022q2.profitmargin.sort_values()
+```
+
+```{python}
+plt.clf()
+sns.set(font_scale=0.75)
+box1 = sns.boxplot(x='Industry',y='profitmargin',data=data2022q2[data2022q2['profitmargin']>-1])
+box1.set_xticklabels(box1.get_xticklabels(),rotation=90)
+```
+
+## Downloading the S&P500
+
+Now we download the S&P500 market index from Yahoo, and later integrate this information into the usdata:
+
+```{python}
+import pandas_datareader as pdr
+from datetime import date
+sp500 = pdr.get_data_yahoo('^GSPC', start = date(1999,1,1), end=date(2022,6,30), interval='m')
+```
+
+## Collapsing the S&P500 monthly dataset to a quarterly dataset
+
+Since the usdata has quarterly data, we collapse the previous monthly dataset into a quarterly dataset. Since the sp500 dataset has the S&P500 market index, it can be treated as a stock price to calculate return. Then, to collapse the monthly data into quarters, we need to get the last monthly value for each quarter, so we need to get the closing index at the end of the quarter.
+
+To do so, I convert the index, which is a date, to a quarter variable/column:
+
+```{python}
+
+# I create a column for the quarter since I need it to group by quarter
+sp500['qdate'] = pd.PeriodIndex(sp500.index, freq="Q")
+sp500.qdate
+
+```
+
+We change the name of the Adj Close column:
+
+```{python}
+sp500.rename(columns = {'Adj Close':'SP500'}, inplace = True)
+sp500.columns
+```
+
+Now we collapse the dataset into a quarterly dataset. We group by quarter and for each quarter get the last monthly index:
+
+```{python}
+sp500q = sp500.groupby('qdate')['SP500'].last().to_frame()
+sp500q.tail()
+```
+
+Once we have quarterly index for the S&P500 we can calculate quarterly continuously compounded returns:
+
+```{python}
+import numpy as np
+sp500q['marketr']= np.log(sp500q['SP500']) - np.log(sp500q['SP500'].shift(4))
+```
+
+## Many-to-1 merging
+
+Now we merge the usdata with the sp500q since both have quarterly data. I first create a quarter column in the usdata with the same name and type than that of sp500q.
+
+```{python}
+# Create the qdate column:
+usdata['qdate'] = pd.PeriodIndex(usdata.q, freq="Q")
+
+usdata.qdate.head(4)
+
+# Merge many-to-1 usdata with the sp500q
+usdata = pd.merge(usdata, sp500q, on="qdate", how="left",validate="m:1")
+
+```
+
+We did a many-to-1 merge since the usdata has a panel-data structure and the sp500q has a time-series structure.
+
+## Creating a Multi-index for the panel dataset
+
+We need to create a multi-index since the dataset has a panel-data structure. The first index will be the ticker of the firm and the second will be the quarter
+
+```{python}
+
+usdata.set_index(['firm','qdate'], inplace=True)
+
+```
+
+Now with this multi-index we can calculate stock returns for all firms all quarters:
+
+```{python}
+usdata['r']= np.log(usdata['adjprice']) - np.log(usdata.groupby(['firm'])['adjprice'].shift(4))
+#usdata.loc['ADT':'ADTN',['adjprice','r']].iloc[85:96,]
+
+```
+
+# Introduction to Multiple Regression
+
+In the simple regression model we had only one independent variable and one dependent variable. In the Multiple regression model we can have 2 or more independent variables and only one dependent variable.
+
+The method to estimate the beta coefficients and their standard errors is the same OLS method used in the simple regression model.
+
+# References

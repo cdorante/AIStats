@@ -1,0 +1,552 @@
+---
+title: "Workshop 3, Advanced AI - Statistics Module"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: In this workshop we continue learning about hypothesis testing and we start learning about measures of linear relationships.
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+      collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Workshop Directions
+
+You have to follow this workshop in class to learn about topics. You have to do your own Markdown note/document for every workshop we cover.
+
+You must submit your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
+
+-   Write the Workshop #, your Name, and date
+
+-   You have to **REPLICATE** and **RUN** all the Python code, and
+
+-   DO ALL **CHALLENGES** stated in sections. These challenges can be Python code or just responding **QUESTIONS** with your own words and in **CAPITAL LETTERS**. You have to **WRITE CLEARLY** so that I can see your **LINE OF THINKING!**
+
+The submissions of your workshops is a **REQUISITE** for grading your 2 final deliverable documents of the Statistics Module.
+
+I strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
+
+# Hypothesis testing - comparing the mean of 2 groups
+
+Last workshop we learn about hypothesis testing for the mean of one group. This test is usually named **one-sample t-test**.
+
+Now we will do a hypothesis testing to compare the means of two groups. This test is usually named **two-sample t-test**.
+
+In the case of the two-sample t-test we try to check whether the mean of a group is greater than the mean of another group.
+
+Imagine we have two random variables $X$ and $Y$ and we take a random sample of each variable to check whether the mean of $X$ is greater than the mean of $Y$.
+
+We start writing the null and alternative hypothesis as follows:
+
+$$
+H0:\mu_{x}=\mu_{y}
+$$
+
+$$
+Ha:\mu_{x}\neq\mu_{y}
+$$ We do simple algebra to leave a number in the right-hand side of the equality, and a random variable in the left-hand side of the equation. Then, we re-write these hypotheses as:
+
+$$
+H0:(\mu_{x}-\mu_{y})=0
+$$
+
+$$
+Ha:(\mu_{x}-\mu_{y})\neq0
+$$ The Greek letter $\mu$ is used to represent the population mean of a variable.
+
+To test this hypothesis we take a random sample of X and Y and calculate their means.
+
+Then, in this case, the **variable of study** is the difference of 2 means! Then, we can name the **variable of study** as diff:
+
+$$ 
+diff = (\mu_{x}-\mu_{y})
+$$ Since we use sample means instead of population means, we can re-define this difference as:
+
+$$ 
+diff = (\bar{X}-\bar{Y})
+$$
+
+The steps for all hypothesis tests are basically the same. What changes is the calculation of the **standard deviation of the variable of study**, which is usually names **standard error**.
+
+For the case of one-sample t-test, the standard error was calculated as $\frac{SD}{\sqrt{N}}$, where $SD$ is the individual sample standard deviation of the variable, and $N$ is the sample size.
+
+In the case of two-sample t-test, the standard error $SE$ can be calculated using different formulas depending on the assumptions of the test. In this workshop, we will assume that the population variances of both groups are NOT EQUAL, and the sample size of both groups is the same ($N$). For these assumptions, the formula is the following:
+
+$$
+SD(diff)=SE=\sqrt{\frac{Var(X)+Var(Y)}{N}}
+$$
+
+But, where does this formula come from?
+
+We can easily derive this formula by applying basic probability rules to the variance of a difference of 2 means. Let's do so.
+
+The variances of each group of X and Y might be different, so we can estimate the variance of the DIFFERENCE as:
+
+$$
+Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})
+$$ This is true if only if $\bar{X}$ and $\bar{Y}$ are independent. We will assume that both random variables are not dependent of each other. This might not apply for certain real-world problems, but we will assume that for simplicity. If there is dependence I need to add another term that is equal to 2 times the covariance between both variables.
+
+Why the variance of a difference of 2 random variables is the SUM of their variance? This sounds counter-intuitive, but it is correct. The intuition behind this is that when we make the difference we do not know which random variable will be negative or positive. If a value of $\bar{Y}_i<0$ then we will end up with a SUM instead of a difference!
+
+As we learned in the CLT, the variance of the mean of a random variable is reduced according to its sample size: $Var(\bar{X)}=\frac{Var(X)}{N}$. Then:
+
+$$
+Var(\bar{X}-\bar{Y})=\frac{Var(X)}{N}+\frac{Var(Y)}{N}
+$$
+
+Factorizing the expression:
+
+$$
+Var(\bar{X})=\frac{1}{N}\left[Var(X)+Var(Y)\right]
+$$ We take the squared root to get the expected standard deviation of $(\bar{X}-\bar{Y})$:
+
+$$
+SD(\bar{X})=\sqrt{\frac{1}{N}\left[Var(X)+Var(Y)\right]}
+$$ Then, the method for hypothesis testing is the same we did in the case of one-sample t-test. We just need to use this formula as the denominator of the t-statistic.
+
+The, the t-statistic for the two-sample t-test is calculated as:
+
+$$
+t=\frac{(\bar{X}-\bar{Y})-0}{\sqrt{\frac{Var(X)+Var(Y)}{N}}}
+$$ Remember that the value of t is the \# of standard deviations of the variable of study (in this case, the difference of the 2 means) that the empirical difference we got from the data is away from the hypothetical value, zero.
+
+The rule of thumb we have used is that if $|t|>2$ we have have statistical evidence at least at the 95% confidence level to reject the null hypothesis (or to support our alternative hypothesis).
+
+# Confidence level, Type I Error and pvalue
+
+The **confidence level** of a test is related to the **error** level of the test. For a confidence level of 95% there is a probability that we make a mistaken conclusion of rejecting the null hypothesis. Then, for a 95% confidence level, we can end up in a mistaken conclusion 5% of the time. This error is also called the **Type I Error**.
+
+The **pvalue** of the test is actually the exact probability of making a Type I Error after we calculate the exact t-statistic. In other words, **the pvalue is the probability that we will be wrong if we reject the null hypothesis** (and support our hypothesis).
+
+For each value of a t-statistic, there is a corresponding pvalue. We can relate both values in the following figure of the t-Student PDF:
+
+![Illustrating t-Statistics vs pvalue](pvalue.png){#figpvalue fig-align="center"}
+
+For a 95% confidence level and 2-tailed pvalue, the critical t value is close to 2 (is not exactly 2); it can change according to N, the \# of observation of the sample.
+
+When the sample size N\>30, the t-Student distribution approximates the Z normal distribution. In the above figure we can see that when N\>30 and t=2, the approximates pvalues are: **1-tailed pvalue** = 2.5%, and **2-tailed pvalues**=5%.
+
+Then, what is 1-tailed and 2-tailed pvalues? The 2-tailed pvalue will always be twice the value of the 1-tailed pvalue since the t-Student distribution is symetric.
+
+We always want to have a very small pvalue in order to reject H0. Then, the 1-tailed pvalue seems to be the one to use. However, the 2-tailed pvalue is a more conservative value (the diablito will feel ok with this value). Most of the statistical software and computer languages report 2-tailed pvalue.
+
+Then, which pvalue is the right to use? It depends on the context. When there is a theory that supports the alternative hypothesis, we can use the 1-tailed pvalue. For now, we can be conservative and use the 2-tailed pvalue for our t-tests.
+
+Then, we can define the p-value of a t-test (in terms of the confidence level of the test) as:
+
+$$
+pvalue=(1-ConfidenceLevel)
+$$
+
+In the case of 1-tailed pvalue and a 95% confidence evel, the critical t-value is less than 2; it is approximately 1.65:
+
+![Illustrating 1-tailed t and pvalues](pvalue2.png){#figpvalue2 fig-align="center"}
+
+The pvalue cannot be calculated with an analytic formula since the integral of the Z normal or t-Student PDF has no close analytic solution. We need to use **tables**. Fortunately, all statistic software and most computer languages can easily calculate pvalues for any hypothesis test.
+
+## CHALLENGE - IS AMD MEAN RETURN HIGHER THAN INTEL MEAN RETURN?
+
+Do a t-test to check whether the mean monthly cc return of AMD (AMD) is greater than the mean monthly return of Intel. Use data from Jan 2017 to date.
+
+```{python}
+#| code-fold: true
+import pandas_datareader as pdr
+import pandas as pd
+import numpy as np
+
+# Getting price data and selecting adjusted price columns:
+sprices = pdr.get_data_yahoo(['AMD','INTC'],start="01/01/2017", end="08/15/2022",interval="m")
+sprices=sprices['Adj Close']
+
+```
+
+```{python}
+#| code-fold: true
+
+# Calculating returns:
+sr = np.log(sprices) - np.log(sprices.shift(1))
+# Deleting the first month with NAs:
+sr=sr.dropna()
+
+```
+
+```{python}
+#| code-fold: true
+
+# Stating the hypotheses: 
+# H0: (mean(rAMD) - mean(rINTEL)) = 0
+# Ha: (mean(rAMD) - mean(rINTEL)) <> 0
+
+# Calculating the standard error of the difference of the means:
+N = sr['AMD'].count()
+amdvar = sr['AMD'].var()
+intelvar = sr['INTC'].var()
+sediff = np.sqrt((1/N) * (amdvar + intelvar ) )
+
+# Calculating the t-Statistic:
+t = (sr['AMD'].mean() - sr['INTC'].mean()) / sediff
+t
+```
+
+```{python}
+#| code-fold: true
+# Calculating the pvalue from the t-Statistic:
+from scipy import stats as st
+# The st.t.sf function calculates the 1-tailed pvalue, so we multiply it by 2 to get the 2-tailed pvalue
+# the degrees of freedom for 2-independent-means t-test is calculated with the following formula:
+df = ( ((N-1) / N**2) * (amdvar + intelvar)**2  / ( (amdvar/N)**2 + (intelvar/N)**2  ) )
+# Now we calculate the pvalue with the t and df:
+pvalue = 2 * st.t.sf(np.abs(t), df)
+pvalue
+
+```
+
+```{python}
+#| code-fold: true
+# Using the ttest_ind function from stats:
+st.ttest_ind(sr['AMD'],sr['INTC'],equal_var=False)
+# We got the same result as above!
+# With this function we avoid calculating all steps of the hypothesis test!
+
+```
+
+```{python}
+#| code-fold: true
+import researchpy as rp
+# Using the ttest function from researchpy:
+rp.ttest(sr['AMD'],sr['INTC'],equal_variances=False)
+# We got the same result as above!
+# With this function we avoid calculating all steps of the hypothesis test!
+
+```
+
+# Measures of linear relationship
+
+We might be interested in learning whether there is a pattern of *movement* of a random variable when another random variable moves up or down. An important pattern we can measure is the linear relationship. The main two measures of linear relationship between 2 random variables are:
+
+-   Covariance and
+
+-   Correlation
+
+Let's start with an example. Imagine we want to see whether there is a relationship between the S&P500 and Microsoft stock.
+
+The S&P500 is an index that represents the 500 biggest US companies, which is a good representation of the US financial market. We will use monthly data for the last 3-4 years.
+
+Let's download the price data and do the corresponding return calculation. Instead of pandas, we will use yfinance to download online data from Yahoo Finance.
+
+```{python}
+import numpy as np
+import pandas as pd
+import pandas_datareader as pdr
+import yfinance as yf
+import matplotlib
+import matplotlib.pyplot as plt
+
+# We download price data for Microsoft and the S&P500 index:
+prices=yf.download(tickers="MSFT ^GSPC", start="2019-01-01",interval="1mo")
+# We select Adjusted closing prices and drop any row with NA values:
+adjprices = prices['Adj Close'].dropna()
+
+```
+
+GSPC stands for Global Standard & Poors Composite, which is the S&P500 index.
+
+Now we will do some informative plots to start learning about the possible relationship between GSPC and MSFT.
+
+Unfortunately, the range of stock prices and market indexes can vary a lot, so this makes difficult to compare price movements in one plot. For example, if we plot the MSFT prices and the S&P500:
+
+```{python}
+plt.clf()
+adjprices.plot(y=['MSFT','^GSPC'])
+plt.show()
+
+```
+
+It looks like the GSPC has had a better performance, but this is misleading since both investment have different range of prices.
+
+When comparing the performance of 2 or more stock prices and/or indexes, it is a good idea to generate an index for each series, so that we can emulate how much \$1.00 invested in each stock/index would have moved over time. We can divide the stock price of any month by the stock price of the first month to get a growth factor:
+
+```{python}
+adjprices['iMSFT'] = adjprices['MSFT'] / adjprices['MSFT'][0]
+adjprices['iGSPC'] = adjprices['^GSPC'] / adjprices['^GSPC'][0]
+
+```
+
+This growth factor is like an index of the original variable. Now we can plot these 2 new indexes over time and see which investment was better:
+
+```{python}
+plt.clf()
+adjprices.plot(y=['iMSFT','iGSPC'])
+plt.show()
+```
+
+Now we have a much better picture of which instrument has had better performance over time. The line of each instrument represents how much \$1.00 invested the instrument would have been changing over time.
+
+Now we calculate continuously compounded monthly returns. With pandas most of the data management functions works row-wise. In other words, operations are performed to all columns by row:
+
+```{python}
+r = np.log(adjprices) - np.log(adjprices.shift(1))
+# Dropping rows with NA values (the first month will have NAs)
+r = r.dropna()
+# Selecting only 2 columns (out of the 4 columns):
+r = r[['MSFT','^GSPC']]
+# Renameing the column names:
+r.columns = ['MSFT','GSPC']
+```
+
+Now the r dataframe will have 2 columns for both cc historical returns:
+
+```{python}
+r.head()
+
+```
+
+To learn about the possible relationship between the GSPC and MSFT we can look at their prices and also we can look at their returns.
+
+We start with a scatter plot to see whether there is a linear relationship between the MSFT prices and the GSPC index:
+
+```{python}
+plt.clf()
+r.plot.scatter(x='GSPC', y='MSFT',c='DarkBlue')
+plt.show()
+```
+
+What do you see?
+
+We can also do a scatter plot to visualize the relationship between the MSFT returns and GSPC returns:
+
+```{python}
+plt.clf()
+adjprices.plot.scatter(x='^GSPC', y='MSFT',c='DarkBlue')
+plt.show()
+
+```
+
+What do you see? Which plot conveys a stronger linear relationship?
+
+The scatter plot using the prices conveys an apparent stronger linear relationship compared to the scatter plot using returns.
+
+Stock returns are variables that usually does NOT grow over time; they look like a plot of heart bits:
+
+```{python}
+plt.clf()
+r.plot(y=['MSFT','GSPC'])
+plt.show()
+```
+
+Stock returns behave like a **stationary** variable since they do not have a growing or declining trend over time. A stationary variable is a variable that has a similar average and standard deviation in any time period.
+
+Stock prices (and indexes) are variables that usually grow over time (sooner or later). These variables are called **non-stationary** variables. A non-stationary variable usually changes its mean depending on the time period.
+
+In statistics, we have to be very careful when looking at linear relationships when using non-stationary variables, like stock prices. It is very likely that we end up with **spurious** measures of linear relationships when we use non-stationary variables. To learn more about the risk of estimating spurious relationships, we will cover this issue in the topic of time-series regression models (covered in a more advanced module).
+
+Then, in this case it is better to look at linear relationship between stock returns (not prices).
+
+## Covariance
+
+The Covariance between 2 random variables, X and Y, is a measure of linear relationship.
+
+**The Covariance is the average of product deviations between X and Y from their corresponding means.**
+
+For a sample of N and 2 random variables X and Y, we can calculate the **population covariance** as:
+
+$$
+Cov(X,Y)=\frac{1}{N}\left[(X_{1}-\bar{X})(Y_{1}-\bar{Y})+...+(X_{N}-\bar{X})(Y_{N}-\bar{Y})\right]
+$$
+
+We can easily express this average as:
+
+$$
+Cov(X,Y)=\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}-\bar{X}\right)\left(Y_{i}-\bar{Y}\right)
+$$
+
+The covariance is also defined as the expected value of the product deviations:
+
+$$
+Cov(X,Y)=E[(X-\bar{X})(Y-\bar{Y})]
+$$ Doing some math:
+
+$$
+Cov(X,Y)=E[(XY-X\bar{Y}-\bar{X}Y+\bar{X}\bar{Y})]
+$$
+
+Applying the expectation to each term:
+
+$$
+Cov(X,Y)=E[XY]-E[X\bar{Y}]-E[\bar{X}Y]+E[\bar{X}\bar{Y}]
+$$
+
+Since $\bar{X}$ and $\bar{Y}$ are constant, we can take them out of the expectation.
+
+$$
+Cov(X,Y)=E[XY]-\bar{Y}E[X]-\bar{X}E[Y]+\bar{X}\bar{Y}
+$$
+
+Since $E[X]=\bar{X}$ and $E[Y]=\bar{Y}$, then:
+
+$$
+Cov(X,Y)=E[XY]-\bar{Y}\bar{X}-\bar{X}\bar{Y}+\bar{X}\bar{Y}
+$$ Simplifying:
+
+$$
+Cov(X,Y)=E[XY]-\bar{Y}\bar{X}
+$$
+
+Then, we can express the covariance as
+
+$$
+Cov(X,Y)=\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}Y_{i}\right)-\bar{X}\bar{Y}
+$$
+
+Since the Variance is a special case of the Covariance - the variance is the covariance of a variable with itself- then we can also say that:
+
+$$
+Var(X)=E[X^2]-\bar{X}^2
+$$ Also: $$
+Var(X)=\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}\right)^2-\bar{X}^2
+$$
+
+The sample covariance formula is very similar, but it divides by N-1 instead of N to get the average of product deviations:
+
+$$
+Cov(X,Y)=\frac{1}{N-1}\sum_{i=1}^{N}\left(X_{i}-\bar{X}\right)\left(Y_{i}-\bar{Y}\right)
+$$
+
+Why dividing by N-1 instead of N? In Statistics, we assume that we work with samples and never have access to the population, so when calculating a sample measure, we always miss data. The sample formula will calculate a more conservative than the population formula. That is the reason why we use N-1 as **degree of freedom** instead of N.
+
+Sample covariance will be always a little bit greater than population covariance, but they will be similar. When N is large (N\>30), population and sample covariance values will be almost the same. The sample covariance formula is the default formula for all statistical software.
+
+If Cov(X,Y)\>0, we can say that, on average, there is a positive linear relationship between X and Y. If Cov(X,Y)\<0, we can say that there is a negative relationship between X and Y.
+
+A positive linear relationship between X and Y means that if X increases, it is likely that Y will also increase; and if X decreases, it is likely that Y will also decrease.
+
+A negative linear relationship value between X and Y means that if X increases, it is likely that Y will decrease; and if X decreases, it is likely that Y will increase.
+
+If we can test that Cov(X,Y) is **positive and significant**, we need to do a hypothesis test. If the pvalue\<0.05 and the Cov(X,Y) is positive, then we can say that we have a 95% confidence that there is a linear relationship.
+
+There is no constraint in the possible values of Cov(X,Y) that we can get:
+
+$$
+-\infty<Cov(X,Y)<\infty
+$$
+
+We can interpret the sign of covariance, but we CANNOT interpret its magnitude. Fortunately, the correlation is a very practical measure of linear relationship since we can interpret its sign and magnitude since the possible values of correlation goes from -1 to 1 and represent percentage of linear relationship.
+
+Actually, the correlation between X and Y is a **standardized** measure of the covariance.
+
+## Correlation
+
+Correlation is a very practical measure of linear relationship between 2 random variables. It is actually a **scaled** version of the Covariance:
+
+$$
+Corr(X,Y)=\frac{Cov(X,Y)}{SD(X)SD(Y)}
+$$
+
+If we divide Cov(X,Y) by the product of the standard deviations of X and Y, we get the correlation, which can have values only between -1 and +1.
+
+$$
+-1<=Corr(X,Y)<=1
+$$
+
+If Corr(X,Y) = +1, that means that X moves exactly in the same way than Y, so Y is proportional (in the same direction) than X; actually Y should be equal to X multiplied by number.
+
+If Corr(X,Y) = -1 means that Y moves exactly proportional to X, but in the opposite direction.
+
+If Corr(X,Y) = 0 means that the movements of Y are not related to the movements of X. In other words, that X and Y move independent of each other; in this case, there is no clear linear pattern of how Y moves when X moves.
+
+If 0\<Corr(X,Y)\<1 means that there is a positive linear relationship between X and Y. The strength of this relationship is given by the magnitude of the correlation. For example, if Corr(X,Y) = 0.50, that means that if X increases, there is a probability of 50% that Y will also increase.
+
+If -1\<Corr(X,Y)\<0 means that there is a negative linear relationship between X and Y. The strength of this relationship is given by the magnitude of the correlation. For example, if Corr(X,Y) = - 0.50, that means that if X increases, there is a probability of 50% that Y will decrease (and vice versa).
+
+If we want to test that Corr(X,Y) is **positive and significant**, we need to do a hypothesis test. The formula for the standard error (standard deviation of the correlation) is:
+
+$$
+SD(corr)=\sqrt{\frac{(1-corr^{2})}{(N-2)}}
+$$
+
+Then, the t-Statistic for this hypothesis test will be:
+
+$$
+t=\frac{corr}{\sqrt{\frac{(1-corr^{2})}{(N-2)}}}
+$$
+
+If Corr(X,Y)\>0 and t\>2 (its pvalue will be \<0.05), then we can say that we have a 95% confidence that there is a positive linear relationship; in other words, that the correlation is positive and statistically significant (significantly greater than zero).
+
+## Calculating covariance and correlation
+
+We can program the covariance of 2 variables according to the formula:
+
+```{python}
+msft_mean = r['MSFT'].mean()
+gspc_mean = r['GSPC'].mean()
+N = r['GSPC'].count()
+sum_of_prod = ((r['MSFT'] - msft_mean) * (r['GSPC'] - gspc_mean) ).sum()  
+cov = sum_of_prod / (N-1)
+cov
+```
+
+Fortunately, we have the numpy function cov to calculate the covariance:
+
+```{python}
+covm = np.cov(r['MSFT'],r['GSPC'])
+covm
+```
+
+The cov function calculates the **covariance matrix** using both returns. We can find the covariance in the non-diagonal elements, which will be the same values since the covariance matrix is symetric.
+
+The diagonal values have the variances of each return since the covariance of one variable with itself is actually its variance (Cov(X,X) = Var(X) ) .
+
+Then, to extract the covariance between MSFT and GSPC returns we can extract the element in the row 1 and column 2 of the matrix:
+
+```{python}
+cov = covm[0,1]
+cov
+```
+
+This value is exactly the same we calculated manually.
+
+We can use the corrcoef function of numpy to calculate the correlation matrix:
+
+```{python}
+
+corr = np.corrcoef(r['MSFT'],r['GSPC'])
+corr
+
+```
+
+The correlation matrix will have +1 in its diagonal since the correlation of one variable with itself is +1. The non-diagonal value will be the actual correlation between the corresponding 2 variables (the one in the row, and the one in the column).
+
+We could also manually calculate correlation using the previous covariance:
+
+```{python}
+corr2 = cov / (r['MSFT'].std() * r['GSPC'].std())
+corr2
+
+```
+
+We can use the scipy pearsonr function to calculate correlation and also the 2-tailed pvalue to see whether the correlation is statistically different than zero:
+
+```{python}
+from scipy.stats import pearsonr
+corr2 = pearsonr(r['MSFT'],r['GSPC'])
+corr2
+```
+
+The pvalue is almost zero ($2.4 * 10^{-10}$) . MSFT and GSPC returns have a positive and very significant correlation (at the 99.9999...% confidence level).
+
+# References

@@ -1,0 +1,347 @@
+---
+title: "Workshop 5, Advanced AI - Statistics Module"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: In this workshop we practice the interpretation of simple regression and start with the multiple regression model.
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+      collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Workshop Directions
+
+You have to follow this workshop in class to learn about topics. You have to do your own Markdown note/document for every workshop we cover.
+
+You must submit your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
+
+-   Write the Workshop #, your Name, and date
+
+-   You have to **REPLICATE** and **RUN** all the Python code, and
+
+-   DO ALL **CHALLENGES** stated in sections. These challenges can be Python code or just responding **QUESTIONS** with your own words and in **CAPITAL LETTERS**. You have to **WRITE CLEARLY** so that I can see your **LINE OF THINKING!**
+
+The submissions of your workshops is a **REQUISITE** for grading your 2 final deliverable documents of the Statistics Module.
+
+I strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
+
+# Introduction
+
+Last workshop we learn about the simple regression model. We run a market regression model to learn about the linear relationship between the market return and a stock return. The beta1 coefficient in the model reflects the magnitude, sign and significance of this relationship. The beta0 coefficient is the expected value of the dependent variable -in this case, the stock return- when the independent variable - the market return- is zero.
+
+In this workshop we will go in more depth about the interpretations of the beta coefficients, their standard errors, t-values and pvalues. In addition, we start with the multiple regression model.
+
+# Interpretation of beta coefficients
+
+In a simple regression model we have the independent variable (X or **IV**), and the dependent variable (Y or **DV**). We assume that we are interested on learning about the DV, and how it can change with changes in other, the IV.
+
+In the simple regression model, we can provide a general interpretation of the beta coefficients as follows:
+
+-   **beta1** is the **measure of linear relationship** between the DV and the IV; if beta1\>0, then, on average the linear relationship will be positive; if beta1\<0, on average the linear relationship will be negative.
+
+-   **beta1** is a measure of **sensitivity** of the DV with changes in +1 unit of the IV. Then, beta1 is how much (on average), the DV moves if the IV moves in +1 unit. This is the reason why beta1 represents the slope of the regression line.
+
+-   **beta0** is the expected value of the DV when the IV=0. If beta0=0, then the regression line will pass by the origin (X=0, Y=0). beta0 is the **intercept** since it is the point in the Y axis where the regression line passes. beta0 defines how high or low the regression line will be.
+
+It is easy to think that beta0 and beta1 are constants. However, beta0 and beta1 are constantly changing! they are random variables that can be expresses as a linear combination of the random variables X, Y and the error. Then, since beta0 and beta1 are linear combination of random variables, then according to the CLT, both will behave like a normal distributed variable with mean equal to their OLS estimated value and standard deviation equal to the OLS standard error.
+
+It depends on the context of the variables of a regression model, the coefficients can give us interesting insights about the relationship between the variables.
+
+For example, in the case of market regression model, the insights we can get from the beta coefficients are:
+
+-   beta1 is a measure of **risk** of the stock in relation with the market; it tells us how **sensitive** a stock return is when the market return moves:
+
+    -   If **beta1=1** or is **NOT significantly different than 1**, this means that the stock is practically **equally risky** than the market;
+
+    -   if **beta1\>1** and is **significantly bigger than 1**, this means that the stock is **significantly** **riskier** than the market;
+
+    -   if **beta1\<1** and is **significantly less than 1**, this means that the stock is **significantly less risky** than the market;
+
+    -   if **beta1=0** and is **NOT significantly different than 0**, this means that the stock is **not significantly related to the market**.
+
+    -   If **beta0=0** and is **NOT significantly different than 0**, this means that the stock is NOT offering excess returns or less returns over the market; in other words, when the market returns=0, it is expected that the stock also will have returns=0.
+
+    -   if **beta0\>0** and is **significantly greater than 0**, this means that the stock is significantly offering returns over the market; in other words, the stock is **significantly beating the market**. it is supposed that according to the efficient hypothesis in financial markets, there is NO stock, instrument or portfolio that systematically beats the market.
+
+    -   if **beta0\<0** and is **significantly less than 0**, this means that the stock is significantly offering returns bellow the market
+
+Level of significance of the beta coefficients
+
+The regression output automatically performs hypothesis testing for the beta coefficients. One hypothesis test is performed for each beta coefficient.
+
+The hypotheses for each test are:
+
+-   H0: beta = 0
+
+-   Ha: beta \<\> 0
+
+Then, the t-Statistic and pvalues are estimated with this null value (beta=0). If we want to check whether beta1 is significantly \> 1, we CANNOT use the t-value nor the pvalue reported in the regression output! We can do our own test or we can use the 95% confidence interval reported in the regression output (if the value 1 is NOT included in the 95%C.I. this means that the beta1 is significantly different than 1).
+
+The regression output reported by most statistical software includes the following for each beta coefficient:
+
+-   beta coefficient (OLS BLUE - Best, Linear, Unbiased estimator). It is the mean value of its 95% Confidence Interval
+
+-   Standard error (SE) - the standard deviation of the beta coefficient; it is the average movement or variability that the beta will have with new data
+
+-   t-Statistic or tvalue - the \# of standard deviations of the coefficient that the estimated beta value is away from the zero (the null value)
+
+-   pvalue - the probability that I will be wrong if I reject the null hypothesis, which states that the beta = 0.
+
+-   95% confidence interval - the minimum and maximum possible values that the beta can have 95% of the time when new observations are considered.
+
+# Interpreting coefficients with an example
+
+Let's work with a market regression model for ALFA using data from Jan 2018 to July 2022.
+
+## Data collection and return calculation
+
+```{python}
+import pandas_datareader as pdr
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+# Getting price data and selecting adjusted price columns:
+sprices = pdr.get_data_yahoo(['ALFAA.MX','^MXX'],start="01/01/2018", end="07/31/2022",interval="m")
+sprices = sprices['Adj Close']
+
+# Calculating returns:
+sr = np.log(sprices) - np.log(sprices.shift(1))
+# Deleting the first month with NAs:
+sr=sr.dropna()
+sr.columns=['ALFAA','MXX']
+```
+
+Visualizing linear relationship
+
+We do a scatter plot including the regression line:
+
+```{python}
+#| code-fold: true
+# Scatter plots can be misleading when ranges of X and Y are very different.
+# In this case, Alfa had a very bad month in the COVID crisis with more than 60% loss!! 
+# Then, we can re-do the scatter plot trying to make the X and Y axis using the same range of values 
+plt.clf()
+x=sr['MXX']
+y = sr['ALFAA']
+plt.scatter(x, y)
+# Now I add the regression line:
+b1,b0 = np.polyfit(x,y,1)
+yfit = b0+b1*x
+
+plt.plot(x, yfit,c="orange")
+
+plt.xticks(np.arange(-0.50,0.5,0.1))
+plt.xlabel("Market returns")
+plt.ylabel("Alfa returns")
+
+plt.show()
+```
+
+```{python}
+# Another faster way to plot a scatter and the regression line:
+# I use the seaborn library:
+import seaborn as sns
+plt.clf()
+
+sns.regplot(x=x, y=y)
+plt.xticks(np.arange(-0.50,0.5,0.1))
+plt.xlabel("Market returns")
+plt.ylabel("Alfa returns")
+
+plt.show()
+```
+
+**WHAT DOES THE PLOT TELL YOU? BRIEFLY EXPLAIN**
+
+IT TELLS ME THAT THERE IS A POSITIVE RELATION BETWEEN ALFA AND IPC. THAT MEANS, THAT IF IPC INCREASES, I WOULD EXPECT THAT ALFA HAVE AN INCREASE, AS WELL. HOWEVER, I ALSO SEE SOME DOTS FAR AWAY FROM THE REGRESSION LINE, WHICH MEANS THAT SUCH POSITIVE RELATION IS NOT DETERMINISTIC.
+
+IT SEEMS THAT THIS STOCK IS VERY SENSITIVE TO CHANGES IN THE MARKET RETURN SINCE THE SLOPE OF THE LINE SEEMS TO BE HIGHER THAN 1 (HIGHER THAN 45 DEGREES). FOR EACH +1% CHANGE IN THE MARKET RETURN, IT SEEMS THAT THE STOCK RETURNS MOVES MORE THAN +1%. BUT THE SAME WOULD HAPPEN IN NEGATIVE CHANGES; WHEN THE MARKET RETURN LOSES 1% (-1%), THEN THE STOCK RETURN IS EXPECTED TO LOSE MORE THAN 1%! THEN IT SEEMS THAT THE STOCK RETURN IS RISKIER THAN THE MARKET. WE WILL CHECK THIS BY LOOKING AT BETA1 IN THE REGRESSION OUTPUT!
+
+## Running the regression with the OLS method
+
+```{python}
+
+import statsmodels.api as sm
+X = sm.add_constant(x)
+
+mkmodel = sm.OLS(y,X).fit()
+ 
+print(mkmodel.summary())
+```
+
+```{python}
+# Another way to run the same model using the ols function (instead of the OLS function):
+import statsmodels.formula.api as smf
+
+mkmodel2 = smf.ols('ALFAA ~ MXX',data=sr).fit()
+ 
+print(mkmodel2.summary())
+```
+
+We can also estimate the OLS beta coefficients using matrix algebra:
+
+```{python}
+# Using matrix algebra to estimate the beta coefficients:
+sr['constant'] = 1
+selcols = ['constant','MXX']
+x = sr[selcols].values
+y = sr['ALFAA'].values
+
+xtx = np.matmul(x.transpose(),x)
+xty = np.matmul(x.transpose(),y)
+invtxt = np.linalg.inv(xtx)
+
+betas = np.matmul(invtxt,xty)
+betas
+```
+
+Writing the regression equation
+
+```{python}
+#| echo: false
+
+from IPython.display import display, Markdown
+display(Markdown("""
+The regression equation is: E[ALFAret]= {b0} + {b1}*MXXret.
+""".format(b0=b0,b1=b1)))
+```
+
+## Interpretation of the regression output
+
+THE IMPORTANT OUTPUT IS IN THE **COEFFICIENTS TABLE**. THE (intercept) ROW IS THE INFORMATION OF THE BETA0 COEFFICIENT ($b_0$), WHILE THE MXX ROW IS THE INFORMATION ABOUT THE BETA1 COEFFICIENT ($b_1$). THE ESTIMATE COLUMN HAS THE MEAN VALUE FOR $b_0$ AND $b_1$; WE CAN ALSO SEE THE STANDARD ERRORS, t-value AND p-value OF THE $b_0$ AND $b_1$.
+
+FOR $b_0$, THE HYPOTHESIS TEST IS THE FOLLOWING:
+
+H0: $b_0$ = 0
+
+Ha: $b_0$ \< 0 (IN THIS CASE, $b_0$\<0 SINCE $b_0$ IS NEGATIVE IN THE OUTPUT)
+
+IN THIS HYPOTHESIS, THE VARIABLE OF ANALYSIS IS BETA0 ($b_0$).
+
+FOLLOWING THE HYPOTHESIS TEST METHOD, WE CALCULATE THE CORRESPONDING t-value OF THIS HYPOTHESIS AS FOLLOWS:
+
+$$
+t=\frac{(B_{0}-0)}{SD(B_{0})}
+$$
+
+THEN, t = (-0.0078 - 0) / 0.015 = -0.521. THIS VALUE IS AUTOMATICALLY CALCULATED IN THE REGRESSION OUTPUT IN THE COEFFICIENTS TABLE IN THE ROW (intercept).
+
+REMEMBER THAT t-value IS THE DISTANCE BETWEEN THE ESTIMATED BETA VALUE AND ITS HYPOTHETICAL VALUE, WHICH IS ZERO. BUT THIS DISTANCE IS MEASURED IN STANDARD DEVIATIONS OF THE BETA. REMEMBER THAT THE STANDARD ERROR OF THE VARIABLE OF ANALYSIS IS CALLED STANDARD ERROR (IN THIS CASE, THE STD.ERROR OF $b_0$ = 0.015.
+
+SINCE THE ABSOLUTE VALUE OF THE t-value OF $b_0$ IS LESS THAN 2, THEN WE CANNOT REJECT THE NULL HYPOTHESIS. IN OTHER WORDS, WE CAN SAY THAT $b_0$ IS NOT SIGNIFICANTLY LESS THAN ZERO (AT THE 95% CONFIDENCE LEVEL).
+
+FOR BETA1 THE HYPOTHESIS TEST IS THE SAME:
+
+H0: $b_1$ = 0 (THERE IS NO RELATIONSHIP BETWEEN THE MARKET AND THE STOCK RETURN)
+
+Ha: $b_1$ \> 0 (THERE IS A POSITIVE RELATIONSHIP BETWEEN THE THE MARKET AND THE STOCK RETURN)
+
+IN THIS HYPOTHESIS, THE VARIABLE OF ANALYSIS IS BETA1 ($b_1$).
+
+FOLLOWING THE HYPOTHESIS TEST METHOD, WE CALCULATE THE CORRESPONDING t-value OF THIS HYPOTHESIS AS FOLLOWS:
+
+$$
+t=\frac{(B_{1}-0)}{SD(B_{1})}
+$$
+
+THEN, t = (1.539 - 0) / 0.287 = 5.36. THIS VALUE IS AUTOMATICALLY CALCULATED IN THE REGRESSION OUTPUT IN THE COEFFICIENTS TABLE IN THE SECOND ROW OF THE COEFFICIENT TABLE.
+
+REMEMBER THAT t-value IS THE DISTANCE BETWEEN THE ESTIMATED VALUE OF THE BETA AND ITS HYPOTHETICAL VALUE, WHICH IS ZERO. BUT THIS DISTANCE IS MEASURED IN STANDARD DEVIATIONS OF THE BETA. REMEMBER THAT THE STANDARD ERROR OF THE VARIABLE OF ANALYSIS IS CALLED STANDARD ERROR (IN THIS CASE, THE STD.ERROR OF $b_1$ = 0.287).
+
+SINCE THE ABSOLUTE VALUE OF THE t-value OF $b_1$ IS MUCH GREATER THAN 2, THEN WE HAVE ENOUGH STATISTICAL EVIDENCE AT THE 95% CONFIDENCE TO SAY THAT WE REJECT THE NULL HYPOTHESIS. IN OTHER WORDS, WE CAN SAY THAT $b_1$ IS SIGNIFICANTLY GREATER THAN ZERO. WE CAN ALSO SAY THAT WE HAVE ENOUGH STATISTICAL EVIDENCE TO SAY THAT THERE IS A POSITIVE RELATIONSHIP BETWEEN THE STOCK AND THE MARKET RETURN.
+
+## MORE ABOUT THE INTERPRETATION OF THE BETA COEFFICIENTS AND THEIR t-values AND p-values
+
+THEN, IN THIS OUTPUT WE SEE THAT $b_0$ = -0.0078, AND $b_1$ = 1.539. WE CAN ALSO SEE THE STANDARD ERROR, t-value AND p-value OF BOTH $b_0$ AND $b_1$.
+
+$b_0$ ON AVERAGE IS NEGATIVE, BUT IT IS NOT SIGNIFICANTLY NEGATIVE (AT THE 95% CONFIDENCE) SINCE ITS p-value\>0.05 AND ITS ABSOLUTE VALUE OF t-value\<2. THEN I CAN SAY THAT IT SEEMS THAT ALFA RETURN ON AVERAGE UNDERPERFORMS THE MARKET RETURN BY -0.78% (SINCE $b_0$ = -0.0078). IN OTHER WORDS, THE EXPECTED RETURN OF ALFA WHEN THE MARKET RETURN IS ZERO IS NEGATIVE. HOWEVER, THIS IS NOT SIGNIFICANTLY LESS THAN ZERO SINCE ITS p-value\>0.05! THEN, I DO NOT HAVE STATISTICAL EVIDENCE AT THE 95% CONFIDENCE LEVEL TO SAY THAT ALFA UNDERPERFORMS THE MARKET.
+
+$b_1$ IS +1.53 (ON AVERAGE). SINCE ITS p-value\<0.05 I CAN SAY THA $b_1$ IS SIGNFICANTLY GREATER THAN ZERO (AT THE 95% CONFIDENCE INTERVAL). IN OTHER WORDS, I HAVE STRONG STATISTICAL EVIDENCE TO SAY THAT ALFA RETURN IS POSITIVELY RELATED TO THE MARKET RETURN SINCE ITS $b_1$ IS SIGNIFICANTLY GREATER THAN ZERO.
+
+INTERPRETING THE MAGNITUDE OF $b_1$, WE CAN SAY THAT IF THE MARKET RETURN INCREASES BY +1%, I SHOULD EXPECT THAT, ON AVERAGE,THE RETURN OF ALFA WILL INCREASE BY 1.53%. THE SAME HAPPENS IF THE MARKET RETURN LOSSES 1%, THEN IT IS EXPECTED THAT ALFA RETURN, ON AVERAGE, LOSSES ABOUT 1.53%. THEN, ON AVERAGE IT SEEMS THAT ALFA IS RISKIER THAN THE MARKET (ON AVERAGE). BUT WE NEED TO CHECK WHETHER IT IS SIGNIFICANTLY RISKIER THAN THE MARKET.
+
+AN IMPORTANT ANALYSIS OF $b_1$ IS TO CHECK WHETHER $b_1$ IS SIGNIFICANTLY MORE RISKY OR LESS RISKY THAN THE MARKET. IN OTHER WORDS, IT IS IMPORTANT TO CHECK WHETHER $b_1$ IS LESS THAN 1 OR GREATER THAN 1. TO DO THIS CAN DO ANOTHER HYPOTHESIS TEST TO CHECK WHETHER $b_1$ IS SIGNIFICANTLY GREATER THAN 1!
+
+WE CAN DO THE FOLLOWING HYPOTHESIS TEST TO CHECK WHETHER ALFA IS RISKIER THAN THE MARKET:
+
+H0: $b_1$ = 1 (ALFA IS EQUALLY RISKY THAN THE MARKET)
+
+Ha: $b_1$ \> 1 (ALFA IS RISKIER THAN THE MARKET)
+
+IN THIS HYPOTHESIS, THE VARIABLE OF ANALYSIS IS BETA1 ($b_1$).
+
+FOLLOWING THE HYPOTHESIS TEST METHOD, WE CALCULATE THE CORRESPONDING t-value OF THIS HYPOTHESIS AS FOLLOWS:
+
+$$
+t=\frac{(B_{1}-1)}{SD(B_{1})}
+$$ THEN, t = (1.539 - 1) / 0.287 = 1.87. THIS VALUE IS NOT AUTOMATICALLY CALCULATED IN THE REGRESSION OUTPUT.
+
+SINCE t-value is close to 2, IT IS HARD TO SAY THAT BETA1 IS SIGNIFICANTLY GREATER THAN 1 AT THE 95% CONFIDENCE INTERVAL. WE NEED TO CALCULAT ITS CORRESPONDING p-value. IF THE P-VALUE IS 0.06, THEN WE CAN SAY THAT WE HAVE EVIDENCE AT THE 94% CONFIDENCE TO REJECT THE NULL HYPOTHESIS. IN OTHER WORDS, WE CAN SAY THAT ALFA IS SIGNIFICANTLY RISKIER THAN THE MARKET (AT THE 94% CONFIDENCE LEVEL).
+
+IT IS IMPORTANT THAT YOU USE YOUR CRITERIA FOR THE P-VALUE OF THE TEST ACCORDING TO THE CONTEXT OF THE PROBLEM. IT IS NOT AN EASY RULE TO REJECT THE NULL IF THE t-VALUE is \>2!
+
+## 95% CONFIDENCE INTERVAL OF THE BETA COEFFICIENTS
+
+WE CAN USE THE 95% CONFIDENCE INTERVAL OF BETA COEFFICIENTS AS AN ALTERNATIVE TO MAKE CONCLUSIONS ABOUT $b_0$ AND $b_1$ (INSTEAD OF USING t-values AND p-values).
+
+IN THIS CASE WE SEE THAT THE MINIMUM VALUE OF THE 95% C.I. OF $b_1$ IS 0.963, AND ITS MAXIMUM IS 2.11. THESE VALUES ARE CACLULATED FROM THE MEAN BETA AND ADDING AND SUBTRACTING ABOUT 2 TIMES ITS STANDARD ERROR.
+
+THE FIRST ROW SHOWS THE 95% CONFIDENCE INTERVAL FOR $b_0$, AND THE SECOND ROW SHOWS THE CONFIDENCE INTERVAL OF $b_1$.
+
+**HOW WE INTERPRET THE 95% CONFIDENCE INTERVAL FOR** $b_0$?
+
+IN THE NEAR FUTURE, $b_0$ CAN HAVE A VALUE BETWEEN `r cibetas[1,1]` AND `r cibetas[1,2]` 95% OF THE TIME. IN OTHER WORDS $b_0$ CAN MOVE FROM A NEGATIVE VALUE TO ZERO TO A POSITIVE VALUE. THEN, WE CANNOT SAY THAT 95% OF THE TIME, $b_0$ WILL BE NEGATIVE. IN OTHER WORDS, WE CONCLUDE THAT $b_0$ IS NOT SIGNIFICANTLY NEGATIVE AT THE 95% CONFIDENCE LEVEL.
+
+HOW OFTEN $b_0$ WILL BE NEGATIVE? LOOKING AT THE 95% CONFIDENCE INTERVAL, $b_0$ WILL BE NEGATIVE MORE THAN 50% OF THE TIME. BEING MORE SPECIFIC, WE CALCULATE THIS BY SUBTRACTING THE p-value FROM 1: (1-pvalue). IN THIS CASE, THE P-VALUE= 0.6. THEN (1-0.6)= 40% OF THE TIME $b_0$ WILL BE POSITIVE!
+
+**HOW WE INTERPRET THE 95% CONFIDENCE INTERVAL FOR** $b_1$?
+
+IN THE NEAR FUTURE, $b_1$ CAN MOVE BETWEEN 0.96 AND 2.11 95% OF THE TIME. IN OTHER WORDS, $b_1$ CAN HAVE A VALUE GREATER THAN 1 AROUND 93% OF THE TIME. THEN, WE CAN SAY THAT $b_1$ IS SIGNIFICANTLY POSITIVE AND GREATER THAN 1 AT THE 93%. IN OTHER WORDS, ALFA IS SIGNIFICANTLY RISKIER THAN THE MARKET SINCE ITS $b_1$\>1 AT LEAST 93% OF THE TIME.
+
+# Predictions with the regression model
+
+Once we have an estimation of the regression beta coefficients, we can easily use the regression equation to predict the expected value of the dependent variable given a specific value of the independent variable:
+
+# Multiple regression
+
+## Data set structures
+
+In time-series econometrics there are basically the following dataset structures or types:
+
+1.  Time-series: in this structure you can have many periods, and information for one "subject" (subject can be company, index, industry, etc). Also, you can have more than one subject, but the information is placed as new column for each subject.
+
+2.  Cross-sectional structure: in this structure, you usually have many "subjects", for ONLY ONE period
+
+3.  Panel-data structure: it is combination of time-series and cross-sectional. In this structure, we have more than one subject, and for each subject we can have more than one period. Example:
+
+## Introduction to Data management
+
+In Statistics, data management skills are very important. Most of the time, before designing and running an econometric model, it is needed to do simple and sophisticated data management. It is very common to merge data sets before we start our econometric analysis.
+
+We will practice with data management using the dataset for the final project. With this dataset we will learn how to collapse a dataset and merge one dataset with another considering the data structures. We also practice about data cleaning, variable calculations, descriptive statistics, visualization, data transformation, multiple regression and diagnosis to detect problems for regression.
+
+In this case, you have to create a dataset with quarterly information for the IPyC market index using monthly data. Then, you have to merge this dataset with a panel-dataset of financial information for all US stocks.
+
+Download the dataset from .
+
+This dataset has real quarterly financial data of US firms (from the NYSE and NASDAQ) for many years. This information comes from Economatica, a leading software and database economic and financial information. This dataset is a panel dataset, which is a combination of cross sectional and time-series dataset. Navigate through the data to learn more about this dataset. Save this dataset with a name.
+
+# References

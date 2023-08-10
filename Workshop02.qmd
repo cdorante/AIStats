@@ -1,0 +1,396 @@
+---
+title: "Workshop 2, Advanced AI - Statistics Module"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: In this workshop we learn about a) The Central Limit Theore and b) Hypothesis Testing.   
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+    collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Workshop Directions
+
+You have to follow this workshop in class to learn about topics. You have to do your own Markdown note/document for every workshop we cover.
+
+You must submit your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
+
+-   Write the Workshop #, your Name, and date
+
+-   You have to **REPLICATE** and **RUN** all the Python code, and
+
+-   DO ALL **CHALLENGES** stated in sections. These challenges can be Python code or just responding **QUESTIONS** with your own words and in **CAPITAL LETTERS**. You have to **WRITE CLEARLY** so that I can see your **LINE OF THINKING!**
+
+The submissions of your workshops is a **REQUISITE** for grading your 2 final deliverable documents of the Statistics Module.
+
+I strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
+
+# The Central Limit Theorem
+
+The Central Limit Theorem (CLT) is one of the most important discoveries in the history of mathematics and statistics. Actually, thanks to this discovery, the field of Statistics was further developed at the the end of the 19th and beginning of the 20th century.
+
+Instead of explaining the CLT in mathematical, formal terms, I designed a fun exercise with random numbers in order to understand what the CLT is about. Creating random numbers that follow specific probability distributions is usually called Monte Carlos simulation.
+
+For this exercise we will generate random numbers that follow the uniform and the normal probability distributions.
+
+Before we do this exercise, I will review the uniform probability distribution.
+
+## The Uniform Probability Distribution
+
+The probability density function (PDF)for a uniform variable is the following:
+
+$$
+f(x)=\left\{ \begin{array}{c}
+\frac{1}{(b-a)};a<=x<=b\\
+0;otherwise
+\end{array}\right\} 
+$$
+
+Then the function is equal to zero for values outside the range between a and b.
+
+The area under the line $(1 / (b-a))$ is 1 (100%) since it a PDF. You can check that this is true with any example.
+
+For example, if a=0 and b=40, then for the range from 0 to 40 the function is $f(x)=1/40$. If we imagine the plot of this function, this will be a rectangle with base = 40 and hight = 1/40, so the area will be equal to 1.
+
+The expected value of this x random variable is given by:
+
+$$
+E(x)=\frac{a+b}{2}
+$$ This is actually the mid point of the range from a to b.
+
+If a=0 and b=40, then the expected value of x will be: $$
+E(x)= 40/2 = 20
+$$
+
+The expected value of a random variable is the *theoretical* mean of the random variable according to its probability distribution.
+
+The variance of a variable with the uniform distribution is:
+
+$$
+Var(x)=\frac{(b-a)^2}{12}
+$$ In our example, a=0, b=40, then the expected variance of x will be:
+
+$$
+Var(x)=(40-0)^2 / 12 = 133.333
+$$
+
+Now we will simulate numbers of a uniform random distributed variable.
+
+## Monte Carlo simulation
+
+You have to install the symbulate Python package.
+
+This package was created by Dr. Kevin Ross and Dr. Dennis Sun @2019_KevinRossandDennisL.Sun, professors from Cal Poly University at San Luis Obispo, California (Dr. Sun is also Senior Data Scientist at Google, Inc).
+
+We load the symbulate and the matplotlib libraries:
+
+```{python}
+from symbulate import *
+#'exec(%matplotlib inline)' 
+import matplotlib
+
+import matplotlib.pyplot as plt
+
+
+```
+
+### Simulating numbers with the UNIFORM probability distribution
+
+We define a uniform random variable X and simulate 10,000 uniform random numbers with values from 0 to 40:
+
+```{python}
+# clear the plot space:
+plt.clf()
+# Define the probability type of function as uniform (probability space)
+P = Uniform(0,40)
+# Define X as a random variable of the type P (uniform)
+X =RV(P)
+# Simulate the values of X and save the in the x array: 
+x=X.sim(10000)
+x.plot()
+plt.show()
+
+```
+
+### CHALLENGE
+
+A)  CALCULATE THE MEAN AND STANDARD DEVIATION OF THIS SIMULATED UNIFORM x VARIABLE. HOW CLOSE WERE THESE MEAN AND STANDARD DEVIATION FROM THE THEORETICAL MEAN AND STANDARD DEVIATION?
+
+B)  INTERPET THE ABOVE HISTOGRAM. WHAT DO YOU SEE? EXPLAIN WITH YOUR WORDS.
+
+Now generate 10,000 groups of 25 uniform random variables to end up in a matrix of 10,000 rows and 25 columns:
+
+```{python}
+
+# Define the probability space as a vector of 25 uniform random numbers:
+P = Uniform(0,40) ** 25
+# Define XVECTOR as a vector of random variables with 25 random values 
+XVECTOR =RV(P)
+# Simulate 10,000 vectors to get a matrix  
+xmatrix=XVECTOR.sim(10000)
+
+```
+
+Now xmatrix will have 10,000 rows and 25 columns of uniform random numbers between 0 and 40:
+
+```{python}
+xmatrix
+
+```
+
+Now we get the mean of each row, so we end up with 10,000 sample means:
+
+```{python}
+# The 2nd parameter is the mathematical operation applied to each row of the random vector
+# Simulate 10,000 means of each random vector of 25 uniform distributed numbers: 
+xmean = RV(P,mean).sim(10000)
+xmean
+```
+
+Now do a histogram of these sample means that come from a UNIFORM distribution.
+
+```{python}
+plt.clf()
+xmean.plot()
+plt.show()
+
+```
+
+### CHALLENGE
+
+A)  CALCULATE THE MEAN AND STANDARD DEVIATION OF THE **xmean** VARIABLE. HOW SIMILAR OR DIFFERENT ARE THESE VALUES FROM THE MEAN AND STANDARD DEVIATION OF x?
+
+B)  WHAT DO YOU SEE IN THE ABOVE HISTOGRAM? DOES THE HISTOGRAM OF SAMPLE MEANS OF UNIFORM RANDOM VARIABLE LOOK LIKE A UNIFORM DISTRIBUTED VARIABLE? DO YOU SEE A LOGIC? BRIEFLY EXPLAIN WHAT YOU THINK.
+
+Now plot both variables in the same plot; the original x uniform variable and the xsample variable (the sample means of x).
+
+```{python}
+plt.clf()
+xmean.plot()
+x.plot()
+plt.show()
+```
+
+C)  WHAT DO YOU SEE? HOW THE HISTOGRAM OF X DIFFERS FROM THE HISTOGRAM OF THE SAMPLES OF X?
+
+### Simulating numbers with the NORMAL probability distribution
+
+Let's simulate a normal distributed variable Y with mean = 20 and standard devation = 10.
+
+```{python}
+# clear the plot space:
+plt.clf()
+# Define the probability type of function as uniform (probability space)
+P = Normal(mean=20, sd=10)
+# Define Y as a random variable of the type P (normal)
+Y =RV(P)
+# Simulate 10,000 values of Y and save the in the x array: 
+y=Y.sim(10000)
+y.plot()
+plt.show()
+
+```
+
+### CHALLENGE
+
+A)  CALCULATE THE MEAN AND STANDARD DEVIATION OF THIS RANDOM y VARIABLE. HOW SIMILAR OR DIFFERENT ARE THESE VALUES FROM THE MEAN AND STANDARD DEVIATION OF THE THEORETICAL MEAN (20) AND THE THEORETICAL STANDARD DEVIATION (10)?
+
+B)WHAT DO YOU SEE? INTERPRET THE HISTOGRAM WITH YOUR WORDS.
+
+Now generate 10,000 groups of 25 NORMAL random variables with mean=20 and SD=10. You will end up with a matrix of 10,000 rows and 25 columns:
+
+```{python}
+
+# Define the probability space P as a vector of 25 normal random numbers:
+P = Normal(mean=20, sd=10) ** 25
+# Define RANDOMVECTOR as a vector of 25 random variables in the Probability space P 
+RANDOMVECTOR = RV(P)
+# Simulate 10,000 random vectors with this distribution and save the in ymatrix: 
+ymatrix=RANDOMVECTOR.sim(10000)
+
+```
+
+Now ymatrix will have 10,000 rows and 25 columns of NORMAL random numbers with mean=20 and SD=10:
+
+```{python}
+ymatrix
+
+```
+
+Now we get the mean of each vector (row) to get 10,000 sample means:
+
+```{python}
+# The 2nd parameter is the mathematical operation applied to each row of the random vector
+# Simulate 10,000 means of each random vector of 25 uniform distributed numbers: 
+ymean = RV(P,mean).sim(10000)
+ymean
+```
+
+Now do a histogram of these sample means of Y.
+
+```{python}
+plt.clf()
+ymean.plot()
+plt.show()
+```
+
+### CHALLENGE
+
+A)  CALCULATE THE MEAN AND STANDARD DEVIATION OF THE **ymean** VARIABLE. HOW SIMILAR OR DIFFERENT ARE THESE VALUES FROM THE MEAN AND STANDARD DEVIATION OF **y**?
+
+B)  INTERPRET THE ABOVE HISTOGRAM OF THE SAMPLES OF **y**.
+
+Now plot both histograms, the histogram of *y* and the histogram of **ymean**:
+
+```{python}
+plt.clf()
+ymean.plot()
+y.plot()
+plt.show()
+```
+
+C)  WHAT DO YOU SEE? COMPARE BOTH HISTOGRAMS. BRIEFLY EXPLAIN WHAT YOU THINK THAT HAPPEND.
+
+# THE CLT DEFINITION
+
+After this experiment, we can write the central limit theorem as follows. For any random variable with any probability distribution, when you take random samples, the sample mean will have the following characteristics:
+
+*1) The distribution of the sample means will be close to normal distribution when you take many groups (the size of the groups should be each equal or bigger than 25). Actually, this happens not only with the sample mean , but also with other linear combinations such as the sum or weighted average of the variable.*
+
+*2) The standard deviation of the sample means will be much less than the standard deviation of the individuals. Being more specifically, the standard deviation of the sample mean will shrink with a factor of* $1/\sqrt{N}$.
+
+*Then, in conclusion, the CLT says that, no matter the original probability distribution of any random variable, if we take groups of this variable, a) the means of these groups will have a probability distribution close to the normal distribution, and b) the standard deviation of the mean will shrink according to the number of elements of each group.*
+
+An interesting question about why the standard deviation shrinks so much with a factor of $1/\sqrt{N}$? We can prove this with basic probability theory and intuition. Let's start with intuition.
+
+When you take groups and then take the mean of each group, then extreme values that you could have in each group will cancel out when you take the average of the group. Then, it is expected that the variance of the mean of the group will be much less than variance of the variable. But how much less?
+
+Now let's use simple math and probability theory to examine this relationship between these variances:
+
+Let's define a random variable X as a the weight of students X1, X2, ... XN. The mean will be:
+
+$$
+\bar{X}=\frac{1}{N}\left(X_{1}+X_{2}+...+X_{N}\right)
+$$ We can estimate the variance of this mean as follows:
+
+$$
+VAR\left(\bar{X}\right)=VAR\left(\frac{1}{N}\left(X_{1}+X_{2}+...+X_{N}\right)\right)
+$$
+
+Applying basic probability rules I can express the variance as:
+
+$$
+VAR\left(\bar{X}\right)=\left(\frac{1}{N}\right)^{2}VAR\left(X_{1}+X_{2}+...+X_{N}\right)
+$$
+
+$$
+VAR\left(\bar{X}\right)=\left(\frac{1}{N}\right)^{2}\left[VAR\left(X_{1}\right)+VAR\left(X_{2}\right)+...+VAR\left(X_{N}\right)\right]
+$$ Since the variance of $X_1$ is the same as the variance of $X_2$ and it is also the same for any $X_N$, then:
+
+$$
+VAR\left(\bar{X}\right)=\left(\frac{1}{N}\right)^{2}N\left[VAR\left(X\right)\right]
+$$
+
+Then we can express the variance of the mean as:
+
+$$
+VAR\left(\bar{X}\right)=\left(\frac{1}{N}\right)\left[VAR\left(X\right)\right]
+$$
+
+We can say that the expected variance of the sample mean is equal to the variance of the individuals divided by N, that is the sample size.
+
+Finally we can get the sample standard deviation by taking the square root of the variance:
+
+$$
+SD(\bar{X})=\sqrt{\frac{1}{N}}\left[SD(X)\right]
+$$
+
+$$
+SD(\bar{X})=\frac{SD(X)}{\sqrt{N}}
+$$
+
+*Then the expected standard deviation of the sample mean of a random variable is equal to the individual standard deviation of the variable divided by the squared root of N.*
+
+Thanks to this discovery we can make inferences of about the sample mean of any random variable. We usually analyze means of variable when we wan to learn something about the real world. When scientists test hypotheses they look at means of random variables, not the individual values. This is the reason why this discovery has had a profound effect in all sciences.
+
+After the CLT, the concept of hypothesis testing was further developed. With the CLT we have a theory to make inferences about population means and standard deviation of any random variable using samples. The method to make these type of inferences is **Hypothesis Testing.**
+
+# HYPOTHESIS TESTING
+
+The idea of hypothesis testing is to provide **strong evidence** - using facts - about a specific **belief** that is usually supported by a theory or common sense. This belief is usually the belief of the person conducting the hypothesis testing. This belief is called the **Alternative Hypothesis.**
+
+The person who wants to show evidence about his/her belief is supposed to be very **humble** so the only way to be convincing is by using data and a rigorous statistical method.
+
+Let's imagine 2 individuals, Juanito and Diablito. Juanito wants to convince Diablito about a belief. Diablito is very, very skeptical and intolerant. Diablito is also an expert in Statistics! Then, Juanito needs a very strong statistical method to convince Diablito. Juanito also needs be very humble so Diablito does not get angry.
+
+Then, Juanito decides to start assuming that his belief is NOT TRUE, so Diablito will be receptive to continue listening Juanito. Juanito decides to collect real data about his belief and decide to define 2 hypotheses:
+
+-   H0: The Null Hypothesis. This hypothesis is the opposite of Juanito and he starts accepting that this hypothesis is TRUE. This is also called the HYPOTHETICAL mean.
+
+-   Ha: The Alternative Hypothesis. This is what Juanito beliefs, but he starts accepting that this is NOT TRUE.
+
+Diablito is an expert in Statistics, so he knows the Central Limit Theorem very well! However, Juanito is humble, but he also knows the CLT very well.
+
+Then Juanito does the following to try to convince Diablito:
+
+-   Juanito collects a random sample related to his belief. His belief is about the mean of a variable X; he believes that the mean of X is greater than zero.
+
+-   He calculates the mean and standard deviation of the sample.
+
+Since he collected a random sample, then he and Diablito know that, thanks to the CLT:
+
+1)  The mean of this sample will behave VERY SIMILAR to a normal distribution,
+
+2)  The standard deviation of this sample is much less than the standard deviation of the individuals of the sample and this can be calculated by dividing the individual standard deviation by the square root of sample size.
+
+3)  With a probability of about 95%, the sample mean will have a value between 2 standard deviations less than its TRUE mean (in this case =0, the mean of the H0) and 2 standard deviations higher than its mean
+
+Then, if Juanito shows that the calculated sample mean of X is higher than zero (the hypothetical mean H0) plus 2 standard deviations, then Juanito will have a very powerful statistical evidence to show Diablito that the probability that the true mean of X is bigger than zero will be above 95%!
+
+Juanito is very smart (as Diablito). Then, we calculates an easy measure to quickly know how far its sample mean is away from the hypothetical mean (zero), but measured in \# of standard deviations of the mean. This new standardized distance is usually called z or t. If z is 2 or more, he can say that the sample mean is 2 standard deviations above the supposed true mean (zero), so he could convince Diablito about his belief that the actual TRUE mean is greater than zero.
+
+Although the CLT says that the mean of a sample behaves as normal, it has been found that the CLT is more consistent with the t-Student probability distribution. Actually, the t-Student distribution is very, very similar (almost the same) to the normal distribution when the sample size is bigger than 30. But for small samples, the t-Student does a much better job in representing what happens with the CLT for small samples compared with the z normal distribution.
+
+Then, for hypothesis testing we will use the t-Student distribution instead of the z normal distribution.
+
+The hypothesis testing to compare the mean of a variable with a value or with another mean is called t-test.
+
+## CHALLENGE
+
+Collect real data for Microsoft (MSFT) stock and do a hypothesis testing to see whether the mean of monthly cc returns of Microsoft is greater than zero.
+
+You have to do the following:
+
+Run a t-test to compare whether the mean return of MSFT is greater than zero.
+
+To do a hypothesis test, we usually do the following steps:
+
+(a) DEFINE THE VARIABLE OF STUDY. In this case it will be the mean of MSFT cc returns
+
+(b) WRITE THE NULL AND THE ALTERNATIVE HYPOTHESIS.
+
+(c) CALCULATE THE STANDARD ERROR, WHICH IS THE STANDARD DEVIATION OF THE VARIABLE OF STUDY.
+
+(d) CALCULATE THE t-statistic (t-value). EXPLAIN/INTERPRET THE t-statistic.
+
+(e) CALCULATE THE 95% CONFIDENCE INTERVAL OF THE SAMPLE MEAN
+
+(f) WRITE YOUR CONCLUSION OF THE t-TEST
+
+# References
