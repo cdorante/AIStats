@@ -52,6 +52,8 @@ For this exercise we will generate random numbers that follow the uniform and th
 
 Before we do this exercise, I will review the uniform probability distribution.
 
+Let's start
+
 ## The Uniform Probability Distribution
 
 The probability density function (PDF)for a uniform variable is the following:
