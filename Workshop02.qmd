@@ -4,6 +4,7 @@ bibliography: references.bib
 author:  
  - Alberto Dorantes D., Ph.D.
  - Monterrey Tech, Queretaro Campus
+ - Aug 15, 2023
 
 abstract: In this workshop we learn about a) The Central Limit Theore and b) Hypothesis Testing.   
 
