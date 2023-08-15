@@ -37,7 +37,7 @@ You must submit your workshop before we start with the next workshop. What you h
 
 -   DO ALL **CHALLENGES** stated in sections. These challenges can be Python code or just responding **QUESTIONS** with your own words and in **CAPITAL LETTERS**. You have to **WRITE CLEARLY** so that I can see your **LINE OF THINKING!**
 
-The submissions of your workshops is a **REQUISITE** for grading your 2 final deliverable documents of the Statistics Module.
+The submissions of your workshops is a **REQUISITE** for grading your final deliverable document of the Statistics Module.
 
 I strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
 
@@ -45,7 +45,7 @@ I strongly recommended you to write your OWN NOTES about the topics as if it wer
 
 The Central Limit Theorem (CLT) is one of the most important discoveries in the history of mathematics and statistics. Actually, thanks to this discovery, the field of Statistics was further developed at the the end of the 19th and beginning of the 20th century.
 
-Instead of explaining the CLT in mathematical, formal terms, I designed a fun exercise with random numbers in order to understand what the CLT is about. Creating random numbers that follow specific probability distributions is usually called Monte Carlos simulation.
+Instead of explaining the CLT in mathematical, formal terms, I designed a fun exercise with random generated numbers to understand what the CLT is about. Creating random numbers that follow specific probability distributions is usually called Monte Carlos simulation.
 
 For this exercise we will generate random numbers that follow the uniform and the normal probability distributions.
 
