@@ -4,6 +4,7 @@ bibliography: references.bib
 author:  
  - Alberto Dorantes D., Ph.D.
  - Monterrey Tech, Queretaro Campus
+ - Aug 15, 2023
 
 abstract: In this workshop we learn about a) The Central Limit Theore and b) Hypothesis Testing.   
 
@@ -45,7 +46,7 @@ I strongly recommended you to write your OWN NOTES about the topics as if it wer
 
 The Central Limit Theorem (CLT) is one of the most important discoveries in the history of mathematics and statistics. Actually, thanks to this discovery, the field of Statistics was further developed at the the end of the 19th and beginning of the 20th century.
 
-Instead of explaining the CLT in mathematical, formal terms, I designed a fun exercise with random numbers in order to understand what the CLT is about. Creating random numbers that follow specific probability distributions is usually called Monte Carlos simulation.
+Instead of explaining the CLT in mathematical, formal terms, I designed a fun exercise with random generated numbers to understand what the CLT is about. Creating random numbers that follow specific probability distributions is usually called Monte Carlos simulation.
 
 For this exercise we will generate random numbers that follow the uniform and the normal probability distributions.
 
