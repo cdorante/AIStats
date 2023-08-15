@@ -48,7 +48,7 @@ The Central Limit Theorem (CLT) is one of the most important discoveries in the 
 
 Instead of explaining the CLT in mathematical, formal terms, I designed a fun exercise with random generated numbers to understand what the CLT is about. Creating random numbers that follow specific probability distributions is usually called Monte Carlos simulation.
 
-For this exercise we will generate random numbers that follow the uniform and the normal probability distributions.
+Then we will do Monte Carlo simulations to illustrate the CLT.
 
 Before we do this exercise, I will review the uniform probability distribution.
 
