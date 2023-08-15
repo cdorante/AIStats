@@ -37,15 +37,21 @@ You must submit your workshop before we start with the next workshop. What you h
 
 -   DO ALL **CHALLENGES** stated in sections. These challenges can be Python code or just responding **QUESTIONS** with your own words and in **CAPITAL LETTERS**. You have to **WRITE CLEARLY** so that I can see your **LINE OF THINKING!**
 
-The submissions of your workshops is a **REQUISITE** for grading your 2 final deliverable documents of the Statistics Module.
+The submissions of your workshops is a **REQUISITE** for grading your final deliverable document of the Statistics Module.
 
-i strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
+I strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
 
 # Descriptive Statistics
 
-Descriptive statistics are used to summarize information from raw data related to any phenomenon. Descriptive statistics usually gave us a first general idea of the phenomenon. In Finance, for example, we are interested in knowing the average past return on an investment or how much on average portfolio returns move up and down over time.
+Descriptive statistics is a set of summaries of raw data related to one or several variables of a phenomenon. Descriptive statistics usually gives us a first general idea of a phenomenon by looking at summaries such as averages and variability of variables that represent different aspects of a phenomenon.
 
-The most important descriptive statistics are a) measures of central tendency and b) measures of dispersion.
+In Economics, for example, we might be interested in knowing what has been the economic development of a country over the past 10 years. Then, we can calculate an **annual average** percentage growth of the gross domestic product. In Finance we might be interested in knowing the **annual average** return of an investment for the last 5 years and also the **variability** of annual returns over time.
+
+Then, the more important measures of descriptive statistics are:
+
+-   Measures of central tendency, and
+
+-   Measures of dispersion
 
 ## Central tendency measures
 
@@ -59,21 +65,25 @@ The main central tendency measures are:
 
 ### Arithmetic mean
 
-An arithmetic mean of a variable X is a simple measure that tells us the average value of all valid values of X, assuming that each value has the same importance (or weight). The variable X can be representing any attribute of a subject. A subject can be an individual, a group, a team, a business unit, a company, a financial portfolio, an industry, a region, a country, etc. An example of a variable X can be the monthly sales amount of a company for the last 3 years. In this case, the variable X will have 36 observations (36 monthly sales). The subject here is a company and the variable or attribute is the company sales over time. Another example can be a variable that represents the daily returns of a financial portfolio over the last 2 years. In this case, the variable might have about 500 observations considering 250 business days each year. The subject in this example is a financial portfolio, that might be composed of more than one stock and/or bond.
+An **arithmetic mean** of a variable X is a simple measure that tells us the **average value** of all valid values of X, assuming that each value has the same importance (or weight). The **variable** X can be representing any **attribute** of a subject. A **subject** can be an individual, a group, a team, a business unit, a company, a financial portfolio, an industry, a region, a country, etc.
 
-To calculate the arithmetic mean if a variable X we simply sum all the non-missing values of the variable and then divide them by the number of non-missing values. Then, the calculation is as follows:
+An example of a variable X can be the monthly sales amount of a company for the last 3 years. In this case, the variable X will have 36 observations (36 monthly sales). The subject here is a company and the variable or attribute is the company sales over time. Another example can be a variable that represents the daily returns of a financial portfolio over the last 2 years. In this case, the variable might have about 500 observations considering 250 business days each year. The subject in this example is a financial portfolio, that might be composed of more than one stock and/or bond.
+
+To calculate the arithmetic mean of a variable X we simply sum all the non-missing values of the variable and then divide them by the number of non-missing values. Then, the calculation is as follows:
 
 $$
 \bar{X}=\frac{{\displaystyle {\displaystyle \sum_{i=1}^{N}X_{i}}}}{N}
 $$
 
-Where N is the number of non-missing values (observations) of X. A missing value of a variable happens when the variable X for a specific observation has no value. It is important to note that a missing value is not zero value. When we work with real world datasets, it is very common to find non-missing values in many variables.
+Where N is the number of non-missing values (observations) of X. A missing value of a variable happens when the variable X for a specific observation has no value. It is important to note that a missing value is not a zero value. When we work with real world datasets, it is very common to find non-missing values in many variables.
+
+One of the disadvantage of the arithmetic mean is that it is very sensible to extreme values. If a variable has few extreme values, the arithmetic mean might not be a good representation of an average or mid point. In the prescence of few very **extreme values** in a variable, the **best measure of central tendency is the median**, not the arithmetic mean.
 
 ### The Median
 
-Another measure of central tendency is the median. The median of a variable is its 50 percentile, which is the mid point of its values. We need to sort the values of the variable in descending order, and then find the value that is exactly in the middle.
+Another measure of central tendency is the median. The median of a variable is its **50 percentile**, which is the mid point of its values when the values are **sorted in ascending order**. When we have an even number of observations, there will be 2 mid points, so the median will be equal to the arithmetic mean of these 2 mid points. When we have an odd number of observations there will be only 1 value in the middle, which is the median.
 
-For example, if I want to know what is the typical size of company that trades shares in the stock market I can calculate the median of firm size. These firms are called public firms. Good measures for firm size are total assets (book value) and market value. In this example I will use total assets at the end of 2018 for all public Mexican firms. At the end of 2018 there were 146 Mexican public firms in the market exchange ("Bolsa Mexicana de Valores"). I will show how to calcuate the median total assets of these 146 firms.
+For example, if we want to know what is the typical size of all companies that trade shares in the Mexican stock market we can calculate the median of firm size. These firms are called public firms. Firm size can be measured with different variables. We can use the total value of its assets (total assets), the market value, or the number of employees. In this example we will use total assets at the end of 2018 for all public Mexican firms. At the end of 2018 there were 146 Mexican public firms in the market exchange ("Bolsa Mexicana de Valores"). I will show how to calculate the median total assets of these 146 firms.
 
 The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (sorted alphabetically)
 
@@ -87,7 +97,7 @@ The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (
 
 : Mexican firms in the BMV
 
-Now I sort this list from the lowest to the highest value of 2018 total assets:
+We sort the list from the lowest to the highest value of 2018 total assets:
 
 | Firm          | row \# | Industry           | Size Rank | 2018 Total Assets (in thousand pesos) |
 |---------------|--------|--------------------|-----------|---------------------------------------|
@@ -100,37 +110,37 @@ Now I sort this list from the lowest to the highest value of 2018 total assets:
 | AMERICA MOVIL | 8      | Telecommunications | 145       | \$1,429,223,392.00                    |
 | GFBANORTE     | 69     | Financial Services | 146       | \$1,620,470,400.00                    |
 
-The median total assets is the mid point of the list. However, in this case, I have 146 firms, so it is not possible to find an exact mid point. Then, I need to calculate the arithmetic average assets of the 2 firms that are in the middle (firms in positions 73 and 74). Then the median will be equal to \$27,983,619.00 thousand pesos (about 27 billion pesos), which is the average value between FHIPO14 and TVAZTECA assets. The arithmetic mean for total assets considering the 146 firms is \$97,860,896.23 thousand pesos (about 97.8 billion pesos), which is much bigger than the median. Then, which might be the best measure that better represents a typical size of Mexican firms?
+The median total assets is the mid point of the list. However, in this case, I have 146 firms, so it is not possible to find an exact mid point. Then, I need to calculate the arithmetic average assets of the 2 firms that are in the middle (firms in positions 73 and 74). Then the median will be equal to \$27,983,619.00 thousand pesos (about 27 billion pesos), which is the average value between FHIPO14 and TVAZTECA assets. The arithmetic mean for total assets considering the 146 firms is \$97,860,896.23 thousand pesos (about 97.8 billion pesos), which is much bigger than the median. Then, which might be the best measure that better represents the typical size of Mexican firms? In this case, the best measure is the median, so we can say that **the typical size of a Mexican public firm is about \$27.9 thousand million pesos.**
 
-Then, what is the difference between the mean and the median? When the variable does not follow a probability distribution close to a normal distribution, then the best measure for central tendecy is the median, not the mean.
+Then, what is the difference between the mean and the median? When the **distribution of the values** of a variable is very close to a **normal distribution**, the mean and the median will be very similar, so we can use the mean or median to represent the typical value of the variable. When the variable has few very extreme values, then the distribution of values will not be similar to a normal distribution; it will have fat tails due to the presence of extreme values. In this case the best measure of central tendency is the median, not the mean.
 
-What is a normal distribution? It is a very common probability distribution of random variables. I will further explain probability distribution later. For now, just consider that many variables in business and nature follow a close-to-normal distribution.
+What is a normal distribution? It is a very common probability distribution of random variables. We will further explain probability distributions later. For now, just consider that many variables of all disciplines and nature follow a close-to-normal distribution.
 
 The median gives of a better representation of the "average" value of a variable compared with the arithmetic mean when the distribution of the values does NOT follow a normal distribution. In the case of 2018 total assets we can explore its distribution using a histogram:
 
-![](hist1.png){fig-align="center"}
+![](images/hist1.png){fig-align="center"}
 
 I will later explain in more detail what a histogram is.
 
-This histogram does not look like a normal distributed variable. This histogram is said to be "skewed" to the right since there are very few firms with very high values of total assets. Normal distributed variable look like a bell shape curve where most of the values are around the arithmetic mean. In this case, we can see that most of the firms (close to 100 firms) have a range of total assets between 0 and 25 thousand million pesos. Then, only 46 firms have assets bigger than 25 thousand million (or 25 billion pesos). Actually I can see that there are very few firms with assets greater than 1,000 thousand million pesos (or greater than 1 trillion pesos), and one above 1,500 trillion pesos. Looking at the previous table we can see that AMERICA MOVIL and GFBANORTE have assets greater than 1,400 trillion pesos.
+I a histogram we see how often different ranges of values of a variable appear. This histogram does not look like a normal distributed variable. This histogram is said to be "skewed" to the right since there are very few firms with very high values of total assets. Normal distributed variable look like a bell shape curve where most of the values are around the arithmetic mean. In this case, we can see that most of the firms (about 100 firms) have a range of total assets between 0 and \$25 thousand million pesos. Since the total of firms is 146 then, only about 46 firms have assets higher than \$25 thousand million (or 25 billion pesos). Actually I can see that there are very few firms with assets greater than \$1,000 thousand million (or greater than \$1 trillion pesos), and one above \$1,500 trillion. Looking at the previous table we can see that AMERICA MOVIL and GFBANORTE have assets greater than \$1,400 trillion pesos.
 
-With the histogram we can see that most of the firms (about 67%, 100 out of 146) have assets less than 25 billion pesos. The arithmetic mean of total assets is more than 97 billion, and the median total assets (or 50 percentile) is about 27 billion. The arithmetic mean is very sensible to extreme values, while the median is not. If we use the mean as a measure of a typical size of a Mexican firm we would be very far from the most common values of total assets. Then, the best measure of a typical size will be the median, which is about 27 billion pesos.
+With the histogram we can see that most of the firms (about 67%, 100 out of 146) have assets less than 25 billion pesos. The arithmetic mean of total assets is more than \$97 billion, and the median total assets (or 50 percentile) is about \$27 billion. The arithmetic mean is very sensible to extreme values, while the median is not. If we use the mean as a measure of a typical size of a Mexican firm we would be very far from the most common values of total assets. Then, the best measure of a typical size will be the median, which is about \$27 billion pesos.
 
-In sum, for skewed distribution the median will also be a better measure for central tendency. Actually, in the case of normal distributed variables, the median will be very close to the mean, so the median can be always be a good measure of central tendency.
+In sum, for **skewed** distributions the **median** will always be the **best** measure for central tendency, while the arithmetic mean will be a **biased** measure that will not represent the central or typical value. Actually, in the case of normal distributed variables, the median will be very close to the mean, so the median is always a good measure of central tendency.
 
-Examples of business variables that with a skewed distribution similar to total assets are employee salaries, income of families in a country, any variable from the income statement such as firm sales, firm profits.
+Examples of business variables with a skewed distribution similar to total assets are employee salaries, income of families in a region or country, any variable from the income statement such as firm sales, firm profits.
 
 ### Mode
 
-Mode is the value that most appear in the variable. Mode can be calculated only for discrete variables, not for continuous variables. repeats the most. In Finance the mode is rarely used
+Mode is the value that most appear in the variable. Mode can be calculated only for discrete variables, not for continuous variables. Mode is rarely used as a central tendency measure.
 
 ## Dispersion measures
 
 ### Variance and standard deviation
 
-Both variance and standard deviation are used to measure how much on average the individual values of a variable change from the mean.
+**Standard deviation** is used to measure **how much on average** the individual **values** of a variable **change from the mean**.
 
-The variance of a variable X is the average of squared deviations from each individual value $X_i$ from its mean:
+The **variance** of a variable X is the **average** of **squared deviations** from each individual value $X_i$ from its mean:
 
 $$
 Var(X)=\frac{1}{N}\sum_{i=1}^{N}\left(X_{i}-\bar{X}\right)^{2}=\sigma_{X}^{2}
@@ -142,7 +152,7 @@ $X_i$ = Value i of the variable X
 
 $\overline{X}=\frac{1}{n}\sum_{i=1}^{n}X_{i}$ = Arithmetic average of X
 
-Why the variance is the average of squared deviations? The reason is because if we do not square the deviations, then they will cancel out each other since some deviations are positive and other negative! Then, the squaring is just a *trick* to avoid canceling the positive with the negative deviations.
+Why the variance is the average of squared deviations? The reason is because if we do not square the deviations, then they will cancel out each other since some deviations are positive and other negative. Then, the squaring is just a *trick* to avoid canceling the positive with the negative deviations.
 
 The result of the variance will be a number that our brain cannot easily interpret. To have a more reasonable measure of linear deviation, then we just take the square root of the variance, and then, we will be able to interpret that number as the average deviations of all points from their mean. This measure is called **standard devation**:
 
@@ -184,7 +194,7 @@ $$
 
 Most Statistics books and Statistics software use (N-1) instead of N as the denominator of the variance formula to get a more conservative value of the variance. This measure is called ***sample*** **variance**. When we divide by N in the variance formula, we are calculating the ***population*** **variance**. Both formulas provide very similar results, but the sample variance will be a bit bigger than the population variance, so it is a more conservative value.
 
-In Statistics, the sample variance is an unbiased measure of the underlying (real) variance.
+In Statistics, the **sample variance** is an **unbiased measure** of the underlying (real) variance.
 
 Then, we can re-write the formula for **sample variance** of X as:
 
@@ -217,9 +227,9 @@ import yfinance as yf
 
 ```
 
-You might have to install the pandas_datareader first. The pandas_datareader library has functions to download online data from Yahoo Finance where you can find financial real historical data for stocks, ETFs, cryptocurrencies, etc from most of the financial markets around the world.
+You might have to install the yfinance library. The yfinance library has functions to download online data from Yahoo Finance where you can find financial real historical data for stocks, ETFs, cryptocurrencies, etc from most of the financial markets around the world.
 
-Download daily prices for Bitcoin from 2017:
+Download monthly prices for Bitcoin from 2017:
 
 ```{python}
 BTC=yf.download(tickers="BTC-USD", start="2017-01-01",interval="1mo")
@@ -233,17 +243,15 @@ Show the content of the data:
 BTC
 ```
 
-Python automatically shows you only the first and last rows of the dataset. Now show the last quotations:
+Python automatically shows you only the first and last rows of the dataset. We can show the last values:
 
 ```{python}
 BTC.tail()
 ```
 
-For each period, Yahoo Finance keeps track of the open, high, low, close and adjusted prices. Also, it keeps track of volume that was traded in every period. The adjusted prices are used for stocks, not for currencies. Adjusted prices considered dividend payments and also stock splits.
+For each period, Yahoo Finance keeps track of the open, high, low, close and adjusted prices. Also, it keeps track of volume that was traded in every period. The adjusted price is the closing price that is used to calculate returns. Adjusted prices consider dividend payments and also stock splits, while close prices do not.
 
-Then, for the Bitcoin series we can use close price to calculate daily returns.
-
-Import the matplotlib and do a plot for the Bitcoin closing prices:
+Import the matplotlib and do a plot for the Bitcoin adjusted prices:
 
 ```{python}
 import matplotlib
@@ -262,11 +270,11 @@ BTC.info()
 
 We will calculate a) the natural logarithm of prices and b) returns.
 
-The logarithm of prices are very useful for statistical analyis. The return of a price or an investment is the % change of the price from one period to the next.
+The logarithm of a variable is a very useful mathematical transformation for statistical analysis. The return of a price or an investment is the percentage change of the price from one period to the next.
 
 #### Return calculation
 
-A financial simple return for a stock ($R_{t}$) is calculated as a percentage change of price from the previous period (t-1) to the present period (t):
+A financial simple return for a stock ($R_{t}$) is calculated as the simple percentage change of price from the previous period (t-1) to the present period (t):
 
 $$
 R_{t}=\frac{\left(price_{t}-price_{t-1}\right)}{price_{t-1}}=\frac{price_{t}}{price_{t-1}}-1
@@ -292,61 +300,81 @@ $$ The way to get the value of x that satisfies this equality is actually gettin
 
 $$
 x = log_e(p)
-$$ Then, we have to remember that **the natural logarithm is actually an exponent that you need to raise the number e** to get a specific number.
+$$ Then, we have to remember that **the natural logarithm is actually an exponent that you need to raise the number e** to get a result or a specific number.
 
 The natural log is the logarithm of base $e$ (=2.71...). The number $e$ is an irrational number (it cannot be expressed as a division of 2 natural numbers), and it is also called the *Euler constant*. Leonard Euler (1707-1783) took the idea of the logarithm from the great mathematician Jacob Bernoulli, and discovered very astonishing features of the $e$ number. Euler is considered the most productive mathematician of all times. Some historians believe that Jacob Bernoulli discovered the number $e$ around 1690 when he was playing with calculations to know how an amount of money grows over time with an interest rate.
 
-How $e$ is related to the grow of financial amounts over time?
+How $e$ is related to the grow of financial amounts over time? It is mainly related with the concept of compounding
+
+#### The effect of compounding in calculating returns
 
 Here is a simple example:
 
-If I invest \$100.00 with an annual interest rate of 50%, then the end balance of my investment at the end of the first year (at the beginning of year 2) will be:
+If I invest \$100.00 today (t=0) with an annual interest rate of 50%, then the end balance of my investment at the end of the first year will be:
 
 $$
-I_2=100*(1+0.50)^1=150
+I_1=100*(1+0.50)=150
 $$
 
 If the interest rate is 100%, then I would get:
 
 $$
-I_2=100*(1+1)^1=200
+I_1=100*(1+1)=200
 $$ Then, the general formula to get the final amount of my investment at the beginning of year 2, for any interest rate R can be:
 
 $$
-I_2=I_1*(1+R)^1
+I_1=I_0*(1+R)
 $$ The (1+R) is the growth factor of my investment.
 
 In Finance, the investment amount is called *principal*. If the interests are calculated (compounded) each month instead of each year, then I would end up with a higher amount at the end of the year.
 
-Monthly compounding means that a monthly interest rate is applied to the amount to get the interest of the month, and then the interest of the month is added to the investment (principal). Then, for month 2 the principal will be higher than the initial investment. At the end of month 2 the interest will be calculated using the updated principal amount. Putting in simple math terms, the final balance of an investment at the beginning of year 2 when doing monthly compounding will be:
+Monthly compounding means that a monthly interest rate is applied to the amount to get the interest of the month, and then the interest of the month is added to the investment (principal). Then, at the beginning of month 2 the principal will be higher than the initial investment. At the end of month 2 the interest will be calculated using the updated principal amount. Putting in simple math terms, the final balance of an investment at the end of month 1 when doing monthly compounding will be:
 
 $$
-I_2=I_1*\left(1+\frac{R}{N}\right)^{1*N}
+I_1=I_0*\left(1+\frac{R}{12}\right)
 $$
 
-For monthly compounding, N=12, so the monthly interest rate is equal to the annual interest rate R divided by N (R/N). Then, with an annual rate of 100% and monthly compounding (N=12):
+We can do the same for month 2:
 
 $$
-I_2=100*\left(1+\frac{1}{12}\right)^{1*12}=100*(2.613..)
+I_2=I_1*\left(1+\frac{R}{12}\right)^{1}
+$$
+
+We can plug the calculation for $I_1$ in this formula to express $I_2$ in terms of the initial investment:
+
+$$ 
+I_2=I_0*\left(1+\frac{R}{12}\right)\left(1+\frac{R}{12}\right) 
+$$
+
+We group the growth factor using an exponent:
+
+$$  
+I_2=I_0*\left(1+\frac{R}{12}\right)^{2}  
+$$
+
+We can see the pattern to calculate the end balance of the investment in month 12 when comounding monthly. The monthly interest rate is equal to the annual interest rate R divided by 12 (R/N). Then, with an annual rate of 100% and monthly compounding (N=12), the end value of the investment will be:
+
+$$
+I_{12}=100*\left(1+\frac{1}{12}\right)^{1*12}=100*(2.613..)
 $$
 
 In this case, the growth factor is $(1+1/12)^{12}$, which is equal to 2.613.
 
-Instead of compounding each month, if the compounding is every *moment*, then we are doing a **continuously compounded** rate.
+Instead of compounding each month, if the compounding is every *moment*, then we are calculating a **continuously compounded** rate.
 
 If we do a continuously compounding for the previous example, then the *growth factor* for one year becomes the astonishing Euler constant e:
 
-Let's do an example for a compounding of each second (1 year has 31,536,000 seconds). The investment at the end of the year 1 (or at the beginning of year 2) will be:
+Let's do an example for a compounding of each second (1 year has 31,536,000 seconds). The investment at the end of the year 1 (or month 12) will be:
 
 $$
-I_2=100*\left(1+\frac{1}{31536000}\right)^{1*31536000}=100*(2.718282..)\cong100*e^1
+I_{12}=100*\left(1+\frac{1}{31536000}\right)^{1*31536000}=100*(2.718282..)\cong100*e^1
 $$
 
 Now we see that $e^1$ is the GROWTH FACTOR after 1 year if we do the compounding of the interests every moment!
 
-We can generalize to any other annual interest rate R, so that $e^R$ is the growth factor for an annual nominal rate R when the interests are compounded every moment.
+We can generalize to any other annual interest rate R, so that $e^R$ is the growth factor for an annual **nominal rate** R when the interest is compounded every moment.
 
-When compounding every instant, we use small r instead of R for the interest rate. Then, the growth factor will be: $e^r$
+When compounding every instant, we use **small r** instead of **R** for the interest rate. Then, the growth factor will be: $e^r$
 
 Then we can do a relationship between this growth rate and an effective equivalent rate:
 
@@ -403,10 +431,18 @@ BTC["R"] = (BTC["Adj Close"] / BTC["Adj Close"].shift(1)) - 1
 print(BTC["R"])
 ```
 
-Now we calculate cc returns in a new column using the shift function:
+Now we calculate cc returns in a new column using the shift function, or the diff function:
 
 ```{python}
+
 BTC["r"] = np.log(BTC['Adj Close']) - np.log(BTC['Adj Close'].shift(1))
+# Another way to do the same as above is appying the diff method to the log:  
+BTC["r2"] = np.log(BTC['Adj Close']).diff(1)
+
+# We can see that r and r2 are the same: 
+print(BTC.tail())
+
+# I keep a new object with only returns:
 BTCR = BTC[['R','r']].copy()
 
 
@@ -424,10 +460,17 @@ We can use the describe function applied to the r column as follows:
 
 ```{python}
 sumret = BTC["R"].describe()
-sumret
+print(sumret) 
 ```
 
-We see that the mean of daily Bitcoin returns is very close to 0 (0.2%), while standard deviation is above 4.1%! The worse day of Bitcoin was about -37.1%! and the best day was 25.2% of return.
+```{python}
+#| echo: false
+sumret = sumret * 100
+from IPython.display import display, Markdown
+display(Markdown("""
+We see that the mean of monthly Bitcoin returns is {meanret}%, while standard deviation is around {sdret}%! The worse month of Bitcoin had a return of  {minret}%! and the best month had a return of {maxret}%.
+""".format(meanret=sumret['mean'], sdret = sumret['std'], minret=sumret['min'], maxret=sumret['max'])))
+```
 
 To know which days were the worse, we can do a selection based on a condition. Let's see which days had a daily return less than 15%:
 
@@ -436,22 +479,22 @@ BTCR[BTCR["R"]<-0.15]
 
 ```
 
-The worst day for the Bitcoin was March 12, 2020, which is the beginning of the COVID crisis.
+The worst month for the Bitcoin was June 2022.
 
-To know the best days for Bitcoin:
+To know the best months for Bitcoin:
 
 ```{python}
 BTCR[BTCR["R"]>0.15].sort_values(by=['R'], ascending=False)
 
 ```
 
-We can also get the main descriptive statistics using specific functions like:
+We can also get the main descriptive statistics using methods of panda dataframes. In this case, we get the descriptive statistics of continuously compounded returns:
 
 ```{python}
-print("The daily average return of Bitcoin is ", BTCR["r"].mean())
-print("The daily variance of Bitcoin is ", BTCR["r"].var())
-print("The daily standard deviation (volatility) of Bitcoin return is ", BTCR["r"].std())
-print("The daily median return of Bitcoin is ",BTCR["r"].median())
+print("The monthly average cc return of Bitcoin is ", BTCR["r"].mean())
+print("The monthly variance of Bitcoin cc return is ", BTCR["r"].var())
+print("The monthly standard deviation (volatility) of Bitcoin cc return is ", BTCR["r"].std())
+print("The monthly median cc return of Bitcoin is ",BTCR["r"].median())
 
 ```
 
@@ -461,13 +504,13 @@ The histogram was invented to illustrate how the values of a random variable are
 
 With the histogram of a random variable we can appreciate which are the most common values, the least common values, the possible mean and standard deviation of the variable.
 
-In my opinion, the most important foundations/pilars of both, Statistics and the theory of Probability are:
+In my opinion, the most important foundations/pillars of both, Statistics and the theory of Probability are:
 
 -   The invention of the **Histogram**
 
 -   The discovery of the **Central Limit Theorem**
 
-Although the idea of a histogram sounds a very simple idea, it took many centuries to be developed, but it has profound impact in the development of Probability theory and Statistics, which both are the pilars of all sciences.
+Although the idea of a histogram sounds a very simple idea, it took many centuries to be developed, but it has profound impact in the development of Probability theory and Statistics, which both are the pillars of all sciences.
 
 I enjoy learning about the origins of the great ideas of humanity. The idea of the histogram was invented to decipher encrypted messages.
 
@@ -481,11 +524,11 @@ The Arabs in the years 800-900 AD were among the first to decipher encrypted mes
 
 Below is an example of a frequency plot by Arabic philosopher Al-Kindi in the 850 AD compared with a recent frequency plot by Al-Kadi:
 
-![Figure taken from @1992_AlKaditIbrahimA](literature/Al-Khindi%20Histogram1.JPG)
+![Figure taken from @1992_AlKaditIbrahimA](images/Al-Khindi%20Histogram1.JPG)
 
 The encrypted messages at that time were written with the Caesar shift method. Then, to decipher an encrypted message, the Arabs used to count all characters to create a frequency plot, and then try to match the encrypted characters with the Arab characters. Finally, the replaced the corresponding Arabic matched characters in the original message to decipher it.
 
-Interestingly, the idea of the frequency waited about 1,000 years to be used by French mathematiticans to develop the foundations of the Statistics discipline. In the1700s and early 1,800s, the french mathematicians Abraham De Moivre and Pierre-Simon Laplace used this idea to develop the **Central Limt Theory** (CLT).
+Interestingly, the idea of the frequency waited about 1,000 years to be used by French mathematicians to develop the foundations of the Statistics discipline. In the1700s and early 1,800s, the french mathematicians Abraham De Moivre and Pierre-Simon Laplace used this idea to develop the **Central Limit Theory** (CLT).
 
 I believe the CLT is one of the most important and fascinating mathematical discoveries of all time.
 
@@ -495,15 +538,27 @@ Why the **histogram** is so important in Statistics? I hope we will find this ou
 
 ## CHALLENGES: Histogram
 
--   Do a histogram for daily Bitcoin cc returns. Hints: use the plot.hist function for pandas dataframes, and the BTC dataframe.
+-   Do a histogram for **daily** Bitcoin cc returns. Hints: use the plot.hist function for pandas dataframes, and the BTC dataframe.
 
 -   Interpret the histogram with your own words and in CAPITAL LETTERS
+
+To get daily data instead of monthly, I change the interval parameter to "1d":
+
+```{python}
+
+BTC=yf.download(tickers="BTC-USD", start="2017-01-01",interval="1d")
+# I calculate simple and cc return columns:
+BTC["R"] = (BTC["Adj Close"] / BTC["Adj Close"].shift(1)) - 1
+BTC["r"] = np.log(BTC['Adj Close']).diff(1)
+# I keep a new object with only returns:
+BTCR = BTC[['R','r']].copy()
+
+```
 
 ```{python}
 #| code-fold: true
 R_bitcoin = pd.DataFrame(BTCR[["R"]])
 hist=R_bitcoin.plot.hist(bins=12,alpha=0.5,title="Histogram of daily Bitcoin Returns")
-
 ```
 
 We use the histogram to visualize random variables with historical values. For expected values of random variables we can use the concept of probability density function, which is analogous to the concept of the histogram, but applied to the expectation of possible values of a random variable.
@@ -553,7 +608,7 @@ We have covered the PDF and the CDF for a six-sided dice which results are very 
 
 We can see this PDF as follows:
 
-![](PDF_Two_dices.PNG)
+![](images/PDF_Two_dices.PNG)
 
 The shape of this PDF for the combination outcome of two dices looks like the famous "bell-shaped" of the *normal distribution*. However there is an elemental difference between this PDF and the normal distribution; the normal distribution is the probabilistic distribution of a **continuous random variable**, but not a discrete random variable such as the outcome from two dices.
 
@@ -614,13 +669,13 @@ Other interesting property of the normal distribution is the probabilities accor
 
 • For the range ($\mu-3\sigma)<=x<=(\mu+3\sigma$), the area under the curve is approximately 99.7%.
 
-![](Normal.PNG)
+![](images/Normal.PNG)
 
 If our variable of interest is simple returns (R) and these returns follow a normal distribution $r\sim N(\mu,\sigma^{2})$, the expected value of the future cc returns will be the mean of the distribution, while the standard deviation can be seen as a measure of risk.
 
 ## Interesting facts about the History of the Normal Distribution
 
-The Normal Distribution function is one of the most interesting finding in Statistics. The normal distribution can explain many phenomena in our real world; from financial returns to human behaviour, to human characteristics such as height, etc.
+The Normal Distribution function is one of the most interesting finding in Statistics. The normal distribution can explain many phenomena in our real world; from financial returns to human behavior, to human characteristics such as height, etc.
 
 Many people believe that Carl Friedrich Gauss was the person who discover it, but it is not quite true. The French mathematician Abraham de Moivre was the first to discover the normal distribution when he found the distribution of the sum of binomial independent random variables.
 
@@ -628,7 +683,7 @@ Very interesting Story... it's pending ... check later for an update!
 
 ## CHALLENGE: Simulating the normal distribution
 
-Use the mean and standard deviation of the historical cc returns of Bitcoin and simulate the same \# of returns as the days we dowloaded in the BTCR dataframe.
+Use the mean and standard deviation of the historical cc returns of Bitcoin and simulate the same \# of returns as the days we downloaded in the BTCR dataframe.
 
 In one plot show both, the real distribution of historical cc returns and the simulated normal distribution.
 
