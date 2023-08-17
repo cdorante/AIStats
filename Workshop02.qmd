@@ -56,7 +56,9 @@ Let's start
 
 ## The Uniform Probability Distribution
 
-The probability density function (PDF)for a uniform variable is the following:
+The traditional lottery is an example of the discrete uniform probability distribution. For example, if the lottery has 100,000 numbers, from 1 to 100,000, then each number has the same probability of being the winner. This probability is 1 / 100,000 =0.00001.
+
+We can think in the continuous version of a uniform probability distribution where any real number can appear between the minimum and a maximum possible values. If we define a as the minimum possible value and b as the maximum possible value, then the probability density function (PDF) for a uniform variable is the following:
 
 $$
 f(x)=\left\{ \begin{array}{c}
