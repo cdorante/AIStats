@@ -1,0 +1,49 @@
+---
+title: "W2"
+author: "Alberto"
+format: html
+jupyter: python3
+---
+
+## Central Limit Theorem
+
+```{python}
+from symbulate import *
+#'exec(%matplotlib inline)' 
+import matplotlib
+
+import matplotlib.pyplot as plt
+```
+
+```{python}
+# clear the plot space:
+plt.clf()
+# Define the probability type of function as uniform (probability space)
+P = Uniform(0,40)
+# Define X as a random variable of the type P (uniform)
+X =RV(P)
+# Simulate the values of X and save the in the x array: 
+x=X.sim(10000)
+x.plot()
+plt.show()
+```
+
+I generate a matrix of 25 columns with 10,000 rows with random \# following the same uniform distribution:
+
+```{python}
+# Define the probability space as a vector of 25 uniform random numbers:
+P = Uniform(0,40) ** 25
+# Define XVECTOR as a vector of random variables with 25 random values 
+XVECTOR =RV(P)
+# Simulate 10,000 vectors to get a matrix  
+xmatrix=XVECTOR.sim(10000)
+```
+
+Now I get the mean of the 10,000 means; 1 for each variable:
+
+```{python}
+# The 2nd parameter is the mathematical operation applied to each row of the random vector
+# Simulate 10,000 means of each random vector of 25 uniform distributed numbers: 
+xmean = RV(P,mean).sim(10000)
+xmean
+```
