@@ -409,7 +409,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Getting price data and selecting adjusted price columns:
-sprices=yf.download(tickers="ALFAA.MX ^MXX", start="2018-01-01",interval="1mo")
+sprices=yf.download(tickers="ALFAA.MX,^MXX", start="2018-01-01",interval="1mo")
 
 sprices = sprices['Adj Close']
 
@@ -424,7 +424,7 @@ sr.columns=['ALFAAret','MXXret']
 
 ```{python}
 #| code-fold: true
-#| plt.clf()
+plt.clf()
 sr.plot.scatter(x='MXXret', y='ALFAAret',c='DarkBlue')
 plt.show()
 ```
