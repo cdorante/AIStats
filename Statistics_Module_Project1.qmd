@@ -1,0 +1,177 @@
+---
+title: "Business case: Understanding profitability in the US financial market"
+author: "Alberto Dorantes D."
+date: "August, 2023"
+
+abstract: This is business case prepared for the Statistics Module (Bloque 1) of the Advanced AI concentration
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-location: left
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Case Description
+
+You were hired as a data scientist in an important mutual fund firm (investment company) in the department of financial analysis. The firm has been doing financial analysis and financial forecast for several years. You were hired to come up with alternative approaches to do descriptive analytics in order to find better future alternatives for forecasting methods.
+
+You have to analyze historical quarterly financial statements of all US public firms listed in the New York Exchange and NASDAQ. You will receive two datasetsin .csv format. The first dataset (dataus2023q2) contains the historical financial data of the firms, while the second dataset (firmsus2023) is a catalog of all firms along with the corresponding industry type and status (active or cancelled).
+
+The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
+
+| Variable           | Description                                                                                                                                         |
+|---------------|---------------------------------------------------------|
+| firm               | Unique code of the company (also called ticker)                                                                                                     |
+| q                  | Quarter date                                                                                                                                        |
+| fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                |
+| revenue            | Total sales of the firm from the first fiscal quarter to the current quarter                                                                        |
+| cogs               | Cost of good sold - variable costs of the products sold - from the first fiscal quarter to the current quarter                                      |
+| sgae               | Sales and general administrative expenses - from the first fiscal quarter to the current quarter                                                    |
+| otherincome        | Other operational income/expenses that are not directly from the core operations of the firm - from the first fiscal quarter to the current quarter |
+| extraordinaryitems | Extra income/expenses not related to regular operations - from the first fiscal quarter to the current quarter                                      |
+| finexp             | Financial expenses - interest expenses paid (generated from loans) - from the first fiscal quarter to the current quarter                           |
+| incometax          | Income tax from the first fiscal quarter to the current quarter                                                                                     |
+| totalassets        | Total assets of the firm at the end of the quarter                                                                                                  |
+| currentassets      | Current assets of the firm at the end of the quarter                                                                                                |
+| totalliabilities   | Total liabilities of the firm at the end of the quarter                                                                                             |
+| currentliabilities | Current liabilities of the firm at the end of the quarter                                                                                           |
+| longdebt           | Balance of long-term financial debt (loans to pay longer than 1 year)                                                                               |
+| adjprice           | Stock adjusted price at the end of the quarter; adjusted for stock splits and dividend payments; used to calculate stock returns                    |
+| originalprice      | Historical stock price (not adjusted); used to calculate historical market value                                                                    |
+| sharesoutstanding  | Historical number of shares available in the market                                                                                                 |
+| fixedassets        | Fixed assets value at the end of the quarter                                                                                                        |
+|                    |                                                                                                                                                     |
+
+: Data dictionary of historical quarterly financial data.
+
+For each firm there are many raws that represent historical quarterly financial data. All firms have quarters from Q1 2000 to Q2 2023. Not all firms have existed since 2000, so if the first quarters are empty that means that the firm did not exist in the US financial market in those quarters. Then, it is possible to know when each firm went public to issue shares in the financial market: the first quarter with some non-empty data.
+
+Each firm has defined the month of the year used to close a fiscal year. For example, Apple closes the fiscal year at the end of Quarter 3 (end of September) of any year. Then, for Apple, in the Q3 of 2022, there will be a 12 for the fiscalmonth variable. In this case, Apple starts its fiscal year in the Q4 of each year and ends in the Q3 of the following year. Most of the firms (about 80%) close fiscal year in December, so these firms will have a 12 in the Q4 of each year.
+
+The variables related to sales and expenses are cumulative for each fiscal year. For example, Apple sold about \$117 billion in the last calendar quarter (Q4) of 2022, but this is the first fiscal quarter for Apple. For Q1 (calendar) 2023 (which is the 2nd fiscal quarter), Apple has about \$212 billion in the revenue variable, meaning that considering fiscal quarter 1 and 2, Apple has sold \$212 billion. For Q2 2023 Apple has about \$293 billion, meaning that the cumulative revenue of fiscal Q1, Q2 and Q3 is about \$293 billion. Then, if you select rows with fiscalmonth=12, then you will be selecting those quarters with annual financial information for each firm!
+
+The firmsus2023.csv is a catalog of all active and cancelled US firms:
+
+| Variable          | Description                                           |
+|-----------------|-------------------------------------------------------|
+| firm              | Unique code of the company (also called ticker)       |
+| name              | Name of the firm                                      |
+| status            | Status of the firm: active or cancelled               |
+| partind           | Percent participation in the S&P500 market index      |
+| naics1            | North American Industry Classification Code - Level 1 |
+| naics2            | North American Industry Classification Code - Level 2 |
+| SectorEconomatica | Economatica Industry classification                   |
+
+The main objectives of your analysis are a) To learn about the firm composition of whole US financial market (using all firms), and b) Select firms from 1 industry and then learn which financial factors/variables are related to stock return.
+
+In the following sections you will find specific directions to calculate new variables/ratios, provide descriptive statistics and do a statistical analysis to aim the objective.
+
+## Firm Composition of the US financial market
+
+Considering the **most recent** financial quarter of the dataset:
+
+-   Show how many active firms by industry there are in the sample
+
+-   For each industry (and for all industries), what can you say about the typical firm size in terms of market value and book value? How much these variables change within each industry? How firm size (in market value) is distributed? You have to do the right descriptive statistics
+
+-   Which are the biggest 10 US firms in terms of market value and how far they are from the typical size of a US firm?
+
+-   Which are the biggest 10 US firms in terms of book value and how far they are from the typical size of a US firm?
+
+## Evolution of the US financial market
+
+Considering the whole history of financial data for all firms, and only annual fiscal information (selecting fiscalmonth=12) :
+
+-   How the total market value of the US market has changed over the years? Do a table and/or graph and explain
+
+-   How total revenue and total net income of all US firms has changed over the years? Do a table and/or graph and explain
+
+## **Learing about one industry** 
+
+The following analysis must be done after selecting a set of firms that belong to one industry.
+
+-   You have to select a group of firms according to the NAICS level 1 industry classification:
+
+    -   Manufacturing industries
+
+    -   Commercial industries (retail and wholesale)
+
+    -   Service industries
+
+    -   Financial services
+
+### Calculation of profitability measures 
+
+Using the **subsample of your industry with all quarters**, create new columns for the following variables as measures of firm performance and profitability:
+
+-   Calculate log quarterly returns (rq) and log annual returns (ry).
+
+-   Calculate operating profit (also called earnings before interest and taxes) : ebit = revenue - cogs - sgae
+
+-   Calculate operating profit margin: opm = ebit / revenue
+
+-   Calculate net income as: netincome = ebit + otherincome + extraordinaryitems - financial expenses - incometax
+
+-   Calculate profit margin (ratio) as: pm = ni / revenue
+
+-   Calculate asset turn over ratio: ato = revenue / totalassets
+
+-   Calculate acid ratio: acidratio = currentassets / currentliabilities
+
+-   Calculate financial leverage ratio as: finlev=longdebt / totalassets
+
+### Descriptive statistics for your industry
+
+Using annual fiscal data (selecting rows with fiscalmonth=12), and the year 2022:
+
+-   Show descriptive statistics for quarterly return, annual return, total assets, revenue, netincome and all financial ratios calculated above. Provide a clear interpretation of the descriptive statistics of revenue and 1 financial ratio
+
+Using annual fiscal data (selecting rows with fiscalmonth=12), and all years:
+
+-   Show a correlation matrix with the same variables you used for descriptive statistics above, but in the case of totalassets, revenue and netincome, use the logarithmic transformation of the values. Which variables have strongest and significant linear relationship with stock returns (annual and quarterly)? Explain
+
+Select 3 variables/ratios with the strongest correlation with quarterly returns and do the following:
+
+-   Do histograms for each factor/variables and interpret them
+
+-   Do plots to visualize the possible relationship each factor might have with quarterly returns (the dependent variable).
+
+-   Design and run a first version of a multiple regression model to examine whether your selected factors can explain/predict quarerly stock returns.
+
+-   For each independent variable you have to check for outliers (extreme values) and if it is necessary do the corresponding adjustments with winsorization to avoid unreliable results in your regression model
+
+-   You must check for possible multicollinearity problems. Briefly explain what is multicollinearity, run and interpret the corresponding test
+
+-   Once you corrected your variables for outliers and address possible multicollienarity problems, run a final multiple regression model
+
+-   Interpret your model
+
+    -   Interpret the results of each coefficient (beta and their statistical significance)
+
+    -   Interpret the R-squared of the model
+
+-   
+
+Deliverables
+
+This case must be done by each student and the work must be original. Please avoid possible interpretations of plagiarism.
+
+You have to submit a Jupyter Notebook (.ipynb and .html files) document
+
+# Evaluation criteria
+
+The evaluation criteria will be:
+
+| Section                                    | Weight | Notes                                                                                                                                                                                                                                                                                     |
+|------------|------------|------------------------------------------------|
+| Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did for data management, descriptive statistics, and also you have to clearly respond to each of the business questions                                                                                                                  |
+| Statistical modeling                       | 40%    | Document your work. Explain what you do in terms of variable calculation, correlation matrix and regression analysis. Make sure you provide a very clear interpretation of your model. Remember that you must interpret each coefficient and their corresponding statistical significance |
+| Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                                                                                                                   |
+|                                            |        |                                                                                                                                                                                                                                                                                           |

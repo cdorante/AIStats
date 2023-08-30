@@ -1,0 +1,1083 @@
+---
+title: "Business case, Advanced AI - Statistics Module"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: This is a solution of the final project for  Advanced Statistics for AI.
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+      collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Part 1 - Regression diagnosis
+
+The first part we use the same panel dataset of US firms, and the last regression model we did in Project1.
+
+Here are the directions given to students:
+
+----------
+Entregable: Preprocesamiento y análisis de datos multivariados.                                                                                 |
+Tienes que utilizar el dataset que usaste en el Bloque 1.                                                  Tienes que utilizar las variables explicativas y dependientes de tu ÚLTIMO modelo que hiciste en el entregable del Bloque 1. Recuerda que las variables independientes deben ser razones financieras así como las variables dummy (0/1) de la variable de tamaño ("size").                                               
+Realiza un análisis exploratorio de las variables:                                                                                                                                                                    Calcula matriz de varianza y covarianza, así como matriz de correlación de las variables independientes y la dependiente. Explicar qué es la varianza, covarianza y correlación. Interpreta la matriz de correlación. Tiene que utilizar álgebra matricial y corroborar resultados con funciones de Python.                                                                                                                                 Corre pruebas estadísticas para detectar outliers y leverage points. Tiene que utilizar álgebra matricial para las pruebas y explicar claramente cómo funcionan las pruebas. Puede utilizar funciones de Python para corroborar resultados.                                                                                                                                                                                                Hace un análisis de multicolinealidad explicando la prueba e implicaciones en el modelo. Propone e implementa soluciones a los problemas de los puntos anteriores para que el modelo sea el más adecuado. Estima e interpreta un modelo de regresión múltiple después de atender los problemas anteriores. Tiene que utilizar álgebra matricial para estimar coeficientes y errores estándar del modelo de regresión, y utilizar funciones de Python para corroborar resultados.
+-------------
+
+Then, I start replicating the data management and running the same regression model for the Manufacturing industry
+
+## Data management
+
+### Data collection
+
+I load the dataset:
+
+```{python}
+import pandas as pd
+import requests
+import numpy as np
+import io
+
+# You can download the datasets from the web using the commented code
+
+# This web page needs to receive a header to download data files:
+#headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
+#url="https://www.apradie.com/datos/us2022q2a.csv"
+#s = requests.get(url,headers=headers).content
+
+#usdata = pd.read_csv(io.StringIO(s.decode('utf-8')))
+usdata = pd.read_csv("datasetfw/us2022q2a.csv")
+
+# I see the number of rows and columns of the dataset:
+usdata.shape
+
+#url="https://www.apradie.com/datos/usfirms2022.csv"
+#s = requests.get(url,headers=headers).content
+#usfirms = pd.read_csv(io.StringIO(s.decode('utf-8')))
+usfirms = pd.read_csv("datasetfw/usfirms2022.csv")
+```
+
+### Data selection and merging
+
+These datasets have real quarterly financial data of public US firms (from the NYSE and NASDAQ) for many years.
+
+The usdata is a panel dataset, which is a combination of cross sectional and time-series dataset.
+
+The usfirms2022 dataset is a catalog of US public and active firms, and the us2022q2a.csv has historical quarterly financial data for these US firms.
+
+Using the usdata, I pull the industry, so I will be able to create a subset for a specific industry:
+
+```{python}
+# I see the column names:
+usfirms.columns
+# I select only the columns I will attach to the historical panel data:
+usfirms1 = usfirms[["Ticker","Name","Sector NAICS\nlevel 1","Sector\nEconomatica"]]
+#usfirms1 = usfirms.loc[:,['Ticker','Name','Sector NAICS\nlevel 1','Sector\nEconomatica']]
+
+# I rename the columns to have the same name for the firm identifier:
+usfirms1.columns=['firm','Name','Industry','Sector']
+#I merge the usdata with firms1 and using firm as the common column to do the match:
+usdata = pd.merge(usdata, usfirms1[["firm","Industry"]], on="firm", how='left')
+
+```
+
+### Creating a Multi-index for the panel dataset
+
+We need to create a multi-index since the dataset has a panel-data structure. The first index will be the ticker of the firm and the second will be the quarter
+
+```{python}
+# Create the qdate column:
+usdata['qdate'] = pd.PeriodIndex(usdata.q, freq="Q")
+usdata.set_index(['firm','qdate'], inplace=True)
+
+```
+
+Now with this multi-index we can calculate annual stock returns for all firms all quarters:
+
+```{python}
+usdata['r']= np.log(usdata['adjprice']) - np.log(usdata.groupby(['firm'])['adjprice'].shift(4))
+#usdata.loc['ADT':'ADTN',['adjprice','r']].iloc[85:96,]
+
+```
+
+### Calculating financial ratios
+
+I calculate the following financial ratios to be used as explanatory variables in my model:
+
+-   Earnings per share deflated by price (epsp)
+-   Revenue annual growth (revgrowth)
+-   Operating earnings annual growth (egrowth)
+-   Book-to-market ratio (bmr)
+
+Here are the formulas:
+
+For Earnings per share deflated by price = epsp:
+
+$$
+epsp = \frac{eps}{stockprice}
+$$ $$
+eps = \frac{netincome}{totalshares}
+$$
+
+eps = Earnings per share = Net Income / \# Shares epsp = Earnings per share deflated by price = eps / (Stock Price)
+
+netincome= Net Income = Revenue - cogs - sgae - otheropexp - finexp - incometax + extraincome
+
+cogs = Cost of good sold sgae = Sales and general administrative expenses otheropexp = other operating expenses finexp = financial expenses incometax = income taxes extraincome = extraordinary income (non-opearational)
+
+Revenue annual growth:
+
+$$
+revgrowth = \frac{revenue_t}{revenue_{t-4}}-1
+$$ Operating earnings growth:
+
+Operating earnings = ebit = Earnings before interest and taxes ebit = Revenue - cogs - sgae - otheropexp
+
+$$
+egrowth = \frac{ebit_t}{ebit_{t-4}}-1
+$$
+
+Book-to-market ratio:
+
+$$
+bmr = \frac{bookvalue}{marketvalue}
+$$ bookvalue = Shareholders' value = (total assets - total liabilities) marketvalue = (StockPrice)\*(TotalShares)
+
+## Multiple Regression model
+
+I will focus on the Manufacturing industry for this section.
+
+I will examine whether the 4 financial ratios and firm size are related to the stock annual returns one quarter in the future in the Manufacturing industry.
+
+I will use a multiple regression model where the dependent variable is the stock return one quarter in the future and the independent variables are the 4 ratios and firm size. Then:
+
+Dependent variable = Future stock annual return (1 quarter in the future) Independent variables: - Firm size = logarithm of market capitalization - epsp = earnings per share divided by price - revgrowth = revenue annual growth - egrowth = operating earnings growth - bmr = book-to-market ratio
+
+I create a dataset with firms from the Manufacturing industry.
+
+### Selecting manufacturing firms
+
+I create a dataset with Manufacturing firms:
+
+```{python}
+datam = usdata[usdata['Industry']=="Manufacturing"].copy()
+```
+
+If the .copy() is not used, Python creates a "slice" or virtual view of the other dataset. This is good in terms of memory management, but sometimes it cause problems in data management.
+
+### Calculate independent variables
+
+I calculate the variables I need to calculate the financial ratios and firm size:
+
+```{python}
+# EBIT as a measure of operating earnings:
+datam['ebit'] = datam['revenue'] - datam['cogs'] - datam['sgae'] - datam['otheropexp']
+datam['netincome'] = datam['ebit'] - datam['finexp'] - datam['incometax'] + datam['extraincome']
+
+# earnings per share
+datam['eps'] = np.where(datam['sharesoutstanding']==0,np.NaN,datam['netincome'] / datam['sharesoutstanding'])
+# I need to validate whether the denominator is 0
+datam['epsp'] = np.where(datam['originalprice']==0,np.NaN,datam['eps'] / datam['originalprice'])
+# For market value I use originalprice that is the historical stock price without considering
+#    stocks splits. I do this since sharesoutstanding is the # of historical shares
+datam['marketvalue'] = datam['originalprice'] * datam['sharesoutstanding']
+datam['bmr'] = np.where(datam['marketvalue']==0,np.NaN,(datam['totalassets'] - datam['totalliabilities']) / datam['marketvalue'])
+# Revenue annual growth:
+datam['revgrowth'] = np.where(datam['revenue'].shift(4)==0,np.NaN, 
+                     datam['revenue'] / datam['revenue'].shift(4) - 1)
+# Operating earnings growth:
+datam['egrowth'] = np.where(datam['ebit'].shift(4)==0,np.NaN, 
+                     datam['ebit'] / datam['ebit'].shift(4) - 1)
+```
+
+### Check and treat extreme values of independent variables
+
+I check descriptive statistics for each ratio to identify extreme values:
+
+```{python}
+ratiossummary= datam.agg(
+  {
+    "epsp": ["min","max","median"],
+    "bmr": ["min","max","median"],
+    "revgrowth": ["min","max","median"],
+    "egrowth": ["min","max","median"]
+  }
+)
+ratiossummary
+
+
+```
+
+All ratios have very extreme values.
+
+Very extreme values can cause a serious problem in a regression model when including the variables as independent variables; the regression coefficients become unreliable.
+
+A common practice to avoid very extreme values is to apply the winsorization process to the variables. The winsorization process flats the very extreme values and replace them with a non-so extreme value from the same variable. Winsorization uses percentiles in both sides, for big and small values (negative).
+
+```{python}
+from scipy.stats.mstats import winsorize
+datam['epsp'].describe()
+
+#datam['epspw']=winsorize(datam['epsp'],(0.01,0.99), nan_policy='omit')
+# It seems that winsorize has problems with NaN values; it did not work
+
+#I will use the clip method of pandas to do the winsorization:
+
+datam['epspw']=datam['epsp'].clip(lower=datam['epsp'].quantile(0.003,
+                                         interpolation="lower"),
+                                  upper=datam['epsp'].quantile(0.999,
+                                         interpolation="higher"))
+datam['epspw'].describe()
+```
+
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt
+plt.clf()
+sns.histplot(data=datam,x='epspw')
+plt.show()
+```
+
+I do the winsorization for the rest of the ratios:
+
+```{python}
+datam['bmr'].describe()
+datam['bmrw']=datam['bmr'].clip(lower=datam['bmr'].quantile(0.002,
+                                         interpolation="lower"),
+                                  upper=datam['bmr'].quantile(0.995,
+                                         interpolation="higher"))
+datam['bmrw'].describe()
+
+plt.clf()
+sns.histplot(data=datam,x='bmrw')
+plt.show()
+```
+
+```{python}
+
+datam['revgrowth'].describe()
+datam['revgrowthw']=datam['revgrowth'].clip(lower=datam['revgrowth'].quantile(0.002,interpolation="lower"),
+                                  upper=datam['revgrowth'].quantile(0.985,
+                                         interpolation="higher"))
+datam['revgrowthw'].describe()
+
+plt.clf()
+sns.histplot(data=datam,x='revgrowthw')
+plt.show()
+```
+
+```{python}
+datam['egrowth'].describe()
+datam['egrowthw']=datam['egrowth'].clip(lower=datam['egrowth'].quantile(0.01,interpolation="lower"),
+                                  upper=datam['egrowth'].quantile(0.985,
+                                         interpolation="higher"))
+datam['egrowthw'].describe()
+
+plt.clf()
+sns.histplot(data=datam,x='egrowthw')
+plt.show()
+```
+
+Now I generate the size variable as the natural log of market capitalization:
+
+```{python}
+datam['size']=np.log(datam['marketvalue'])
+plt.clf()
+sns.histplot(data=datam,x='size')
+plt.show()
+```
+
+I will also include firm size category as independent variable: small, medium-size, and large. I will calculate a categorical variable according to percentiles for each quarter, since each quarter firms can change firm size. I will use market capitalization as a measure of firm size to get the percentiles and the categories:
+
+```{python}
+datam['sizegroup'] = datam.groupby(datam['q'])['marketvalue'].transform(lambda x: pd.qcut(x,3,labels=["small","medium","large"]))
+# I check how many firms where classified in each group:
+
+datam.groupby('sizegroup')['sizegroup'].count()
+```
+
+I can see how many firms are in each size group by quarter:
+
+```{python}
+pd.crosstab(index=datam['q'],columns='count')
+pd.crosstab(index=datam['q'],columns=datam['sizegroup'])
+```
+
+I see that for each quarter, firms are equally distributed among the size groups.
+
+To include a categorical variable as independent variable in a multiple regression model, it is needed to codify the categorical variable in N-1 dummy variables, where N is the number of unique categories of the categorical variable. In this case, sizegroup has 3 categories, so I need to endup in 2 dummy variables.
+
+I generate the 2 dummy variables using the sizegroup categorical value:
+
+```{python}
+# I replicate the sizegroup variable since the get_dummies function drops the original categorical variable
+datam['sizeg'] = datam['sizegroup']
+# I create the dummies of sizeg.  
+datam = pd.get_dummies(datam,columns=['sizeg'],drop_first=True, dummy_na=True)
+# The new datam_dummies dataset has all the columns of datam plus the 3 dummies: 2 for size group and one to identify NA values
+# The get_dummies function assign 0 to the new dummies if the categorical value has NA value, so I will set as nan when the sizeg has NA: 
+datam.loc[datam.sizeg_nan == 1, ["sizeg_medium","sizeg_large"]] = np.nan
+```
+
+### Create the Dependent Variable
+
+I create the future of stock return one quarter later, which will be the dependent variable of the multiple regression model:
+
+```{python}
+datam['F1ret']=datam['r'].shift(-1)
+```
+
+### Descriptive statistics of variables
+
+I now do descriptive statistics for the dependent and the numeric independent variables:
+
+```{python}
+XY = datam[["F1ret","epspw","bmrw","revgrowthw","egrowthw","sizeg_medium","sizeg_large"]]
+XY[["F1ret","epspw","bmrw","revgrowthw","egrowthw"]].describe()
+
+```
+
+### Correlation matrix
+
+Before running the multiple regression model, I create a correlation matrix with the independent and dependent variable to start visualizing possible relationships:
+
+```{python}
+import seaborn as sn
+import matplotlib.pyplot as plt
+
+corr_matrix = datam[["F1ret","epspw","bmrw","revgrowthw","egrowthw","sizeg_medium","sizeg_large"]].corr()
+sn.heatmap(corr_matrix, annot=True)
+plt.show()
+
+```
+
+The diagonal of a correlation matrix must be equal to 1, since one variable correlates 100% with itself.
+
+We see that the correlation between F1ret and epspw = +0.39 is the highest correlation of all pairs. In terms of absolute value of correlations, bmrw has the second largest correlation with F1ret (=0.20).
+
+The pairs of correlations among the independent variables is very small, so I do not expect to have multicollienarity problems.
+
+Now I run the multiple regression to examine how much the financial ratios and firm size help to explain the future stock return one quarter in the future.
+
+I will create a new dataset with the independent variables (the X variables), and another for the dependent variable (the Y variable). I will use the winsorize version of the numeric independent variables:
+
+```{python}
+X = datam[["epspw","bmrw","revgrowthw","egrowthw","sizeg_medium","sizeg_large"]]
+Y = datam["F1ret"].to_frame()
+```
+
+### Checking for Multicollienarity
+
+I first check for multicollienarity in X variables:
+
+```{python}
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+# I import the library to run the regression model:
+import statsmodels.api as sm
+
+# I add a column of 1's to the X dataframe to include the constant (beta0) in the model
+X=sm.add_constant(X)
+
+# VIF dataframe
+vif_data = pd.DataFrame(dtype='float64')
+vif_data["variable"] = X.columns
+    
+# calculating VIF for each variable
+vif_data["VIF"] = [variance_inflation_factor(X.dropna().values, i)
+                          for i in range(len(X.columns))]
+  
+print(vif_data)
+```
+
+All of the variance inflation factors of the variables are less than 10, so I have no problem of multicollienarity.
+
+## Estimation of the multiple regression model using the panel data
+
+I estimate the regression model:
+
+```{python}
+import statsmodels.api as sm
+# I estimate the model
+model1 = sm.OLS(Y,X,missing='drop').fit()
+print(model1.summary())
+```
+
+### Interpretation of the regression model
+
+The independent variables explain model explains around 16.5% of the variability of the dependent variable (Future stock returns).
+
+Earnings per share divided by price (epspw), revenue growth (revgrowthw) and earnings growth (egrowthw) have a positive and significant relationship with the future stock annual returns. Book-to-market ratio (bmrw) has a negative and significant relationship with future stock annual returns.
+
+epspw is the variable with the highest explanatory power since its absolute t value is the highest, followed by bmrw.
+
+Considering the effect of all other explanatory variables, for each +1.0 unit increase of epspw, future annual stock returns is expected to increase in +1.86 (186%). In the real world epspw never changes in 1 unit since epspw is a %. We can reframe the interpretation using increases of 0.1 in the independent variables instead of +1.0 For each +0.1 increase of epspw, future annual stock return is expected to increase in 0.86 units (86 percentual points) assuming that the rest of the explanatory variables do not change.
+
+For each +0.1 increase of bmrw, future annual stock return is expected to decrease in 0.16 units (16 percentual points) assuming that the rest of the explanatory variables do not change.
+
+For each +0.1 increase of revenue annual growth, future annual stock return is expected to increase only 0.00086 (0.086 percentual points) assuming that the rest of the explanatory variables do not change.
+
+For each +0.1 increase of earnings annual growth, future annual stock return is expected to increase only 0.00086 (0.086 percentual points) assuming that the rest of the explanatory variables do not change.
+
+Regarding the effect of size, the base group of comparison is the small firms, so the coefficients of size_medium and size_large dummy variables refer to the small group. We can say the following.
+
+Compared to the small firms, medium-size firms usually have significant higher average annual stock returns; medium-size firms have an average future return of 8.6 percent points higher than the average future return of small firms.
+
+Compared to the small firms, large firms usually have significant higher average annual stock returns; large firms have an average future return of 9.43 percent points higher than the average future return of small firms.
+
+Medium and large firms seems to have similar average future annual stock return overall since the coefficients of both dummy variables are very similar.
+
+## Multiple regression using cross-sectional data
+
+I now use the data of the Q1 2022 for a cross-sectional regression model (instead of using all the history).
+
+The quarter variable (qdate) is not part of the columns of the X or Y datasets, but qdate is part of the multi-index. I have to reset the index, so I can see qdate as column:
+
+```{python}
+X.index
+X.reset_index(inplace=True)
+X.dtypes
+# I convert qdate from period[Q-DEC] to object (string)
+X.qdate =X.qdate.astype('str') 
+X
+```
+
+I select Q1 of 2022 since Q2 is the last quarter with data, and the dependent variable is the future of stock return:
+
+```{python}
+X1 = X[X['qdate']=="2022Q1"].copy()
+X1.set_index(['firm'], inplace=True)
+
+# I drop the qdate column:
+X1.drop(['qdate'],axis=1,inplace=True)
+X1
+```
+
+I do the same for the dependent variable.
+
+```{python}
+
+Y.reset_index(inplace=True)
+Y.qdate =Y.qdate.astype('str') 
+Y1 = Y[Y['qdate']=="2022Q1"].copy()
+Y1.set_index(['firm'], inplace=True)
+
+# I drop the firm and qdate columns:
+Y1.drop(['qdate'],axis=1,inplace=True)
+Y1
+
+```
+
+I estimate the regression model with this dataset:
+
+```{python}
+model2 = sm.OLS(Y1,X1,missing='drop').fit()
+print(model2.summary())
+```
+
+## Variance-Covariance matrix
+
+I start calculating the variance-covariance matrix using matrix algebra.
+
+The variance-covariance matrix has variances in its diagonal and covariances in its off-diagonal terms:
+
+$$
+COV=\begin{bmatrix}VAR(X_1) & COV(X_1,X_2)& ... &COV(X_1,X_n)\\
+COV(X_2,X_1) & VAR(X_2)& ... &COV(X_2,X_n)\\
+... & ... & ... & ...\\
+COV(X_n,X_1) & ...& ... &VAR(X_n^2)\\
+\end{bmatrix}
+$$
+
+The variance of one random variable is the expected value of the squared deviations from the mean:
+
+$$
+Var(X)=E[X-\bar{X}]^2 = E[X^2+\bar{X}^2-2X\bar{X}]
+$$
+
+Since $E[X]=\bar{X}$, and it is constant:
+
+$$
+Var(X)=E[X^2]+\bar{X}^2-2\bar{X}^2=E[X^2]-\bar{X}^2
+$$
+
+Variance can be expressed as the expected value of squared X minus its squared mean.
+
+Covariance between 2 random variables is the expected value of the product deviations from respective means:
+
+$$
+COV(X,Y)=E[(X-\bar{X})(Y-\bar{Y})]=E[XY]-E[X\bar{Y}]-E[\bar{X}Y]+\bar{X}\bar{Y}
+$$ Since $E[X\bar{Y}]=\bar{X}\bar{Y}$, and $E[\bar{X}Y]=\bar{X}\bar{Y}$:
+
+$$
+COV(X,Y)=E[XY]-2\bar{X}\bar{Y}+\bar{X}\bar{Y}=E[XY]-\bar{X}\bar{Y}
+$$
+
+The covariance can be expressed as the expected value of the product of both variables minus the product of both means.
+
+The expected value of X squared can be calculated in matrix operation as:
+
+$$
+E[X^2] = (1/(n-1))X'X
+$$
+
+$X'X$ results in a matrix where its diagonal is the sum of squares of each variable, and the off-diagonals are the sum of product of pairs of variables. When we divide each of these terms by (n-1) we get the variances and all pair covariances.
+
+If I define a vector of X means as $M_x$:
+
+$$
+M_{x}=\begin{bmatrix}\bar{X_{1}}\\
+\bar{X_{2}}\\
+...\\
+\bar{X_{n}}
+\end{bmatrix}
+$$ The product $M_xM_x'$ will have the means of each X squared in its diagonal, and the product of means in the off-diagonal:
+
+$$
+M_xM'_x=\begin{bmatrix}\bar{X_{1}^{2}} & \bar{X_1}\bar{X_2}& ... &\bar{X_1}\bar{X_n}\\
+\bar{X_2}\bar{X_1} & \bar{X_{2}^{2}}& ... &\bar{X_2}\bar{X_n}\\
+... & ... & ... & ...\\
+\bar{X_n}\bar{X_1} & ...& ... &\bar{X_{n}^{2}}\\
+\end{bmatrix}
+$$
+
+If I subtract this matrix from the previous matrix $E[X^2]$ I will get the variance-covariance matrix.
+
+Before doing calculations, I will drop all rows of the X1 and Y1 matrix (the independent and dependent variables) that have null values:
+
+I create a dataframe with the X variables and Y variable together to drop all rows that have at least 1 null value:
+
+```{python}
+XY = X1
+XY["F1ret"] = Y1["F1ret"]
+```
+
+Now I drop the nan values:
+
+```{python}
+XY=XY.dropna()
+XY.shape
+```
+
+I ended up with the same number of valid observations that was reported in the last regression. Now I will continue calculating the variance-covariance matrix.
+
+I now separate the X and Y datasets with this XY dataset. I will not use the cons column since that is used only for the regression:
+
+```{python}
+X1=XY[["epspw","bmrw","revgrowthw","egrowthw","sizeg_medium","sizeg_large"]]
+
+Y1=XY["F1ret"]
+```
+
+With the X1 matrix I calculate the matrix $E[X^2]$
+
+```{python}
+n = X1.shape[0]
+Ex2 = X1.transpose() @ X1 / (n-1)
+Ex2
+
+# I can also use np.matmul from numpy:
+#Ex = np.matmul(X1.transpose(),X1) / (n-1)
+#Ex
+```
+
+Now I calculate the series of X means (mean by columns):
+
+```{python}
+Mx = X1.mean()
+Mx
+Mx.shape
+
+```
+
+Now I calculate the variance-covariance matrix. 
+
+I first calculate the outer product of the vector Mx to get a matrix with the sum of squared means and product means:
+
+```{python}
+Mx2= np.outer(Mx,Mx.transpose())
+Mx2
+
+```
+
+I now subtract this matrix of mean products from the matrix Ex of expected values of the X squared:
+
+```{python}
+COV = Ex2 - n/(n-1) * Mx2
+COV
+```
+
+I multiplied times (n/(n-1)) to adjust for (n-1) degrees of freedom.
+
+I can test my calculation with the numpy.cov function:
+
+```{python}
+cov1=X1.cov()
+type(cov1)
+cov1
+```hhg
+
+I got the same result.
+
+## Correlation matrix
+
+I now calculate the correlation matrix using the covariance matrix.
+
+The correlation matrix has the following values:
+
+$$
+CORR=\begin{bmatrix}1 & CORR(X_1,X_2)& ... &CORR(X_1,X_n)\\
+CORR(X_2,X_1) & 1 & ... &CORR(X_2,X_n)\\
+... & ... & ... & ...\\
+CORR(X_n,X_1) & ...& ... &1\\
+\end{bmatrix}
+$$
+
+Covariance between 2 random variable is a measure of linear relationship between them, but its magnitude is not easy to interpret since it can have any negative, zero or positive number. Correlation is a standardized version of covariance that it is possible to provide a meaningful interpretation. 
+
+Correlation between 2 random variables is a measure of linear relationship between them, but measured in %. It has values from -1 to +1; if the correlation is +1 both variables are equal or they move exactly in the same proportion in the same direction; if correlation is -1 one variable moves exactly in opposite direction. If we have a positive correlation (<1), one variable moves in the same direction with a probability equal to this correlation. 
+
+For 2 variables we can express correlation as the standardized version of their covariance:
+
+$$
+CORR(x,y) = \frac{COV(x,y)}{SD(x)SD(y)}
+$$
+
+Now, if I have more than 2 variables where each is a column of a matrix, I can calculate a correlation matrix where the diagonal will be equal to 1, and the off-diagonals will be the pairs of correlations. 
+
+I can calculate this correlation matrix with the following matrix operation:
+
+$$
+CORR =D^{-1}COVD^{-1}
+$$
+Where D is the diagonal matrix of standard deviations of each variable; it has the standard deviations of all Xi variables in its diagional, and zero in its off-diagonals. 
+
+I can get the standard deviations from the variance-covariance matrix. I extract the diagonal to get the variances, and then calculate the squared root to get the standard deviations:
+
+
+```{python}
+SD = np.sqrt(np.diag(COV))
+SD
+# i can check whether the calculated standard deviations are correct:
+X1.std()
+```
+
+I create the D matrix:
+
+```{python}
+D =np.diag(SD)
+D
+```
+
+I calculate the correlation matrix:
+
+```{python}
+CORR = np.linalg.inv(D) @ COV @ np.linalg.inv(D)
+CORR
+
+```
+I can compare my calculation with the corr function from pandas:
+
+```{python}
+corr1 = X1.corr()
+corr1
+```
+
+I got the same result.
+
+I plot the correlation matrix:
+
+```{python}
+
+sn.heatmap(corr1, annot=True)
+plt.show()
+
+```
+The highest correlation in magnitude is between the size dummies (-0.57). This is expected due to the nature of the variables. Among the numeric variables, the highest correlation in magnitude is between earnings per share (epspw) and book-to-market ratio (bmrw) with a correlation of -0.15. The correlation between epspw and the size_large dummy is relevant (+0.31), indicating that the bigger the firm, the bigger its earnings per share deflated by price. 
+
+
+## Regression Diagnosis
+
+I will do diagnostic analysis with this multiple regression model.
+
+### Outliers vs leverage vs influential observations 
+
+Usually outliers are considered those extreme values of a variable. In the context of simple regression diagnosis, a point is considered outlier when the point is not following the general trend or relationship with the dependent variable.  In the context of multiple regression analysis, an outlier observation is an observation that is not following the general trend of the relationship between the dependent variable and the independent variables.
+
+For simple regression (1 independent variable), a leverage point is an extreme value of the independent variable without considering the general trend with the dependent variable. For a multiple regression with p independent variables, a specific observation i with p values where 1 or more can be extreme or the combination of the values is rare or extreme.
+
+In a multiple regression, an observation can be influential if it is an outlier and/or a leverage point that can significantly influence the value of the regression coefficients or their standard errors. 
+
+
+### Detection of leverage points
+
+Remember that a multiple regression model can be expressed in matrix algebra as:
+
+$$
+\hat{y} =Xb
+$$
+And the regression coefficients can be estimated as follows:
+
+$$
+b=(X'X)^{-1}X'y
+$$
+
+Then, the predicted values of y can be expressed in matrix algebra as:
+
+$$
+\hat{y}=X(X'X)^{-1}X'y
+$$
+We can define a matrix H with only X terms to reduce this expression:
+
+$$
+H=X(X'X)^{-1}X'
+$$
+
+Then, the predicted values can be expressed in terms of this H matrix:
+
+$$
+\hat{y}= Hy
+$$
+This H matrix is called the *Hat* matrix since it is the matrix that *puts* the *hat* to the observed y values to get the predicted values.
+
+Then, a specific predicted value $\hat{y_i{$ will be a linear combination of real $y_i$ values weighted with the specific $h_{ij}$ values:
+
+$$
+\hat{y_i} = h_{i1}y_1+h_{i2}y_2+h_{i3}y_3+...+h_{in}y_n
+$$
+Where $n$ is the # of observations of the dataset. 
+
+Then, a predicted $\hat{y_i}$ value depends on all real values of the variable $y$ and specific values of the row i of the H matrix. The H matrix dimension is $nxn$; n rows and n columns.
+
+A specific $h_{ij}$ is considered a **leverage** that quantifies the influence that the real value $y_i$ has on the predicted $y_i$ value. The $h_{ii}$ is a measure of **distance** between the values of the $i$ observation and their corresponding means. 
+
+The diagonal of the H matrix has all the $h_{ii}$ values. The sum of the H diagional terms is equal to the # of beta coefficients including the beta0 (constant) (=p+1). 
+
+An observation i can be considered a *leveraged and possible* influential observation if the $h_{ii}$ value is greater than 3*(p+1)/n:
+
+$$
+h_{ii}>3(\frac{p+1}{n})
+
+$$
+
+Let's calculate the H matrix with the X values:
+
+
+```{python}
+# Add the constant to X1:
+X1=sm.add_constant(X1)
+# Calculate the Hat matrix:
+# H = X (X'X)^(-1) X':
+H = np.dot(X1,np.dot(np.linalg.inv(np.dot(X1.transpose(),X1)),X1.transpose()))
+# I could use also np.matmul instead of np.dot or @
+#H2 = np.matmul(X1,np.matmul(np.linalg.inv(np.matmul(X1.transpose(),X1)),X1.transpose()))
+# H2 endup as a dataframe, and H ends up as an array of (nxn) dimension
+
+H.shape
+
+```
+I can test whether the H is correct by estimating the predicted y values:
+
+```{python}
+
+Yhat = np.dot(H,Y1)
+Yhat
+# The beta coefficients are estimated as: 
+b = np.dot(np.linalg.inv(np.dot(X1.transpose(),X1)),np.dot(X1.transpose(),Y1))
+b
+#I can calculate the predicted values using the b coefficient vector:
+Yhat2 = np.dot(X1,b)
+Yhat2
+# I calculate the predicted values with the predict function of the regression object:
+Yhat3 = model2.predict()
+Yhat3
+```
+The 3 methods of prediction for $\hat{y_i}$ ended up the same result, so H is correctly estimated. 
+
+I get the diagonal of the H matrix, the $h_{ii}$ values:
+
+```{python}
+h = np.diag(H)
+```
+
+I calculate the cutoff point to define a possible influential leverage point, which is equal to 3(p+1)/n:
+
+```{python}
+#p is the # of independent variables; X1 has the constant, so the # of X1 columns
+#   will be equal to p+1
+p = X1.shape[1] - 1
+cutoffh = 3*X1.shape[1] / X1.shape[0]
+
+```
+
+I create a dataframe with the h values and a binary column to identify possible influential leverage points:
+
+```{python}
+# I create the dataframe with the index equal to the stock tickers:
+hdf = pd.DataFrame(h,index=X1.index,columns=["h"])
+# I create the binary variable to identify possible influential points:
+hdf["leverage"]=np.where(hdf['h']>cutoffh,1,0)
+# I see  how many possible influential points there are:
+hdf.leverage.sum()
+hdf[hdf['leverage']==1]
+
+```
+
+There 63 possible influential leverage points. 
+
+I will continue identify possible outliers with standardized residuals and deleted standardized residuals before I define which observations are influential.
+
+### Detection of outliers
+
+With residuals of the regression we can identify possible outliers. A residual is the difference between a real $y_i$ value and its corresponding prediction $\hat{y_i}$ value:
+
+$$
+e_i=y_i-\hat{y_i}
+$$
+```{python}
+import statsmodels.tools.eval_measures as eval
+# I calculate the errors for each observation:
+errors = Y1 - Yhat3
+# I calculate the squared errors for each observation:
+errorssq = np.square(errors)
+# I calculate the sum of squared errors:
+SSE = errorssq.sum()
+# I calculate the mean squared errors:
+MSE = SSE / (n)
+MSE1 = SSE / (n-p+1)
+# i calculate MSE using a function from statsmodels:
+mse = eval.mse(Y1,Yhat)
+rmse = eval.rmse(Y1,Yhat)
+# Note that statsmodels calculates MSE using as denominator n instead of (n-p+1)!
+#    Which is correct? or more adequate?
+```
+
+The estimated standard deviation of each error is given by:
+
+$$
+s(e_i)=\sqrt{MSE(1-h_{ii})}
+$$
+
+Then, the standardized residual is equal to the residual divided by its standard deviation:
+
+$$
+stres_i=\frac{e_i}{s(e_i)}
+$$
+An observation with an aobsolute value of standardized residual greater than 3 is considered an outlier.  
+
+Let's calculate the standardized residuals for all observations. I use the same hdf dataframe:
+
+```{python}
+hdf['error'] = errors
+hdf["stres"]= hdf['error']/np.sqrt((MSE1*(1-hdf['h'])))
+hdf['stres2'] = hdf['error']/np.sqrt(MSE1*(n-1)/n)
+hdf
+```
+
+I identify which observations have an absolute value of stres>3:
+
+```{python}
+hdf[np.abs(hdf['stres'])>3].count()
+
+hdf[(hdf['leverage']==1) & (np.abs(hdf['stres'])>3)].count()
+
+
+```
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['stres'])>3)]
+```
+I identified 6 observations that can be considered as influential since they have very high leverage and their absolute standardized residual is higher than 3.
+
+The deleted residuals, also called the studentized residuals, are other more effective measure to identify outliers.
+
+The idea is to run a n regression models and for each regression model the observation i is deleted from the model and its deleted residual is calculated, and its corresponding standared error. 
+
+The specific residual using this idea is: 
+
+$$
+d_i=y_i-\hat{y_{(i)}}
+$$
+
+Where $\hat{y{(i)}}$ is the predicted value of y for observation i using a regression model that was estimated without that observation. 
+
+The studentized or deleted residual is a standardized version of this residual:
+
+$$
+delres_i = \frac{d_i}{s(d_i)}
+$$
+
+$$
+delres_i=\frac{d_i}{\sqrt{MSE_{(i)}(1-h_{ii})}}
+$$
+
+The calculation for each deleted residual using this idea is very heavy since I need to calculate n regressions. Fortunately, there is an alternative formula that arrive to the same estimation:
+
+$$
+delres_i=stres_i\sqrt{\frac{n-p-2}{n-p-1-stres_i}}
+$$
+
+If an observation has a $abs(delres)>3$, then the observation is considered outlier. Let's calculate this deleted residual for all observations:
+
+```{python}
+hdf['delres']= hdf['stres']* np.sqrt((n-p-2)/(n-p-1-np.square(hdf['stres'])))
+```
+
+I identify which observations have an absolute value of delres>3:
+
+```{python}
+hdf[np.abs(hdf['delres'])>3].count
+```
+
+There are 14 possible influential observations according to deleted residuals.
+
+I identify which observations have abs(delres)>3 with high leverage:
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['delres'])>3)]
+
+```
+
+These are the same 6 observations I had identified with the standardized residuals. 
+
+I can use the functions related to regression diagnosis from the statsmodels library:
+
+```{python}
+from statsmodels.stats.outliers_influence import OLSInfluence
+influence=OLSInfluence(model2)
+influence.resid_std
+influence.resid_studentized
+influence.hat_matrix_diag
+
+```
+
+```{python}
+hdf
+```
+
+Othere 2 measures to identify influential points are:
+
+- Difference in Fits (DFFITS)
+- Cook's Distances
+
+The DFFITS is calculated as follows:
+
+$$
+DFFITS = \frac{(\hat{y_i}-\hat{y_{(i)}})}{MSE_ih_{ii}}
+$$
+
+The $\hat{y_{(i)}}$ is the prediction of $y_i$ without considering the observation i. The $MSE_i$ is the MSE without considering the observation i. 
+
+I will use the functions from statsmodels to estimate DFFITS:
+
+```{python}
+influence.dffits
+```
+
+An observation is considered influential if its absolute value is greater than:
+
+$$
+2\sqrt{\frac{p+2}{n-p-2}}
+$$
+I create a column for DFFITS:
+
+```{python}
+hdf['dffits']=influence.dffits[0]
+hdf
+
+```
+I select observations that are considered outliers according to their DFFITS:
+
+```{python}
+cutoff_dffit =(2*np.sqrt((p+2)/(n-p-2)))
+hdf[np.abs(hdf['dffits'])> cutoff_dffit]
+```
+
+Observations with high leverage and high DFFITS:
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['dffits'])> cutoff_dffit)]
+```
+Cook Distance  $D_i$ measures how much ALL predicted values change when the observation i is deleted. The formula is:
+
+$$
+D_i = \frac{(y_i-\hat{_i})^2(h_{ii})}{(p+1)MSE(1-h_{ii})^2}
+$$
+
+Fortunately, statsmodels already calculated these D values:
+
+```{python}
+hdf['cookd']=influence.cooks_distance[0]
+hdf
+```
+
+If $D_i>1$, then the observation i is considered influential:
+
+```{python}
+hdf[hdf['cookd']>1]
+```
+
+According to the Cook distances, there is no influential observations. 
+
+Then, I need to make a decision of which observations I consider as influential, and then drop them and re-run a final model.
+
+I think that the deleted residuals are a good measure to use in this context. In this context I am interested in having a good regression model that provide information about the level of explanatory power for the independent variables. I am not focusing on the predicted values of future stock returns, so I do not use DFFITS. I will not restrict for the condition of the leverage of the observations since I leave with only 6 observations to be dropped. 
+
+Then the observations I consider influential are:
+
+```{python}
+tobedeleted = hdf[np.abs(hdf['delres'])>3]
+
+```
+
+I delete them from the dataset:
+
+```{python}
+tobedeleted.index
+```
+
+```{python}
+X1_1 = X1.merge(tobedeleted, how='left', left_index=True, right_index=True, indicator=True)
+
+X1_1=X1_1.query("_merge == 'left_only'")[['const', 'epspw', 'bmrw', 'revgrowthw', 'egrowthw', 'sizeg_medium','sizeg_large']]
+X1_1.columns
+X1.shape
+X1_1.shape
+X1_1
+
+Y1_1 = tobedeleted.merge(Y1, how='right', left_index=True, right_index=True, indicator=True)
+
+Y1_1=Y1_1.query("_merge == 'right_only'")['F1ret']
+Y1_1.shape
+Y1_1
+```
+Now I run the regression model:
+
+```{python}
+model3 = sm.OLS(Y1_1,X1_1,missing='drop').fit()
+print(model3.summary())
+
+```
+Comparing with original model:
+```{python}
+print(model2.summary())
+```
+Earnings per share and size dummy coefficients changed signficantly! 
+
+I would prefer using model 3 as my final model for analysis and conclusions.  
+
+
+
