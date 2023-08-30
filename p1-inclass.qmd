@@ -1,0 +1,134 @@
+---
+title: "Wfinal-alberto"
+format: html
+jupyter: python3
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+
+data = pd.read_csv("dataus2023.csv")
+data.shape
+
+firms = pd.read_csv("firmsus2023.csv")
+firms.shape
+```
+
+Ahora hacemos un merge para adicionar la industria y el status a data:
+
+```{python}
+data['qdate'] = pd.PeriodIndex(data.q, freq="Q")
+data.set_index(['firm','qdate'], inplace=True)
+
+data.head(10)
+data.index
+```
+
+Calculating quarterly and annual log returns:
+
+```{python}
+data['ry'] = np.log(data['adjprice']) - np.log(data.groupby(['firm'])['adjprice'].shift(4))
+data['rq'] = np.log(data['adjprice']) - np.log(data.groupby(['firm'])['adjprice'].shift(1))
+
+#data.reset_index(inplace=True)
+#d1 = data[['firm','q','adjprice','ry','rq']]
+
+```
+
+Merging the historical data with the catalog to have name, status and industry:
+
+```{python}
+firms.columns
+firms1 = firms[["empresa","Nombre","status","naics1"]]
+firms1.columns=['firm','Empresa','status','industria']
+
+data = pd.merge(data, firms1, on="firm", how='left')
+
+
+```
+
+Note that the multi-index was dropped! But for now I do not need the multi-index.
+
+Creating important financial variables and ratios for the analysis:
+
+```{python}
+data['ebit'] = data['revenue'] - data['cogs'] - data['sgae']
+data['opm'] = data['ebit'] / data['revenue']
+data['netincome'] = data['ebit'] + data['otherincome'] + data['extraordinaryitems'] - data['finexp'] - data['incometax']
+
+data['pm'] = data['netincome'] / data['revenue']
+data['ato']= data['revenue'] / data['totalassets']
+data['acidratio'] = data['currentassets'] / data['currentliabilities']
+data['finlev'] = data['longdebt'] / data['totalassets']
+data['bookvalue'] = data['totalassets'] - data['totalliabilities']
+data.head(10)
+
+data['mvalue'] = data['originalprice'] * data['sharesoutstanding']
+
+```
+
+# Firm composition
+
+Showing active firms by industry
+
+```{python}
+
+# formateo la forma de desplegar variables ya que la mayoría son cantidades muy grandes, y el default es notación científica
+
+pd.options.display.float_format = '{:,.2f}'.format
+
+# Vemos qué valores hay en status:
+data.status.unique()
+# hay 2 valores: activo ó cancelado
+
+active_2023q2 = data.loc[(data['status']=="activo") & (data['q']=="2023q2")]
+# Mostrando # empresas x industria:
+active_2023q2[['industria','firm']].groupby('industria').count()
+
+```
+
+To know not only the \# of firms but also other summaries of other variables by industry, I do the following:
+
+```{python}
+industrysummary = active_2023q2.groupby('industria').agg(
+  {
+    'firm': ['count'],
+    'mvalue': ['min','max','median','std'],
+    'bookvalue': ['min','max','median','std']
+  }
+)
+industrysummary
+```
+
+I show the biggest 10 firms in terms of market value:
+
+```{python}
+active_2023q2[['firm','mvalue','Empresa','industria']].sort_values(by='mvalue',ascending=False).head(10)
+```
+
+Evolution of the US financial market
+
+How total market value has evolved over the years?
+
+```{python}
+
+datay = data.loc[data['fiscalmonth']==12]
+fmarket = datay[['year','mvalue','revenue','netincome']].groupby('year').sum()
+fmarket
+```
+
+```{python}
+import matplotlib
+from matplotlib.pyplot import*
+fmarket = fmarket.loc[fmarket.index<2023].copy()
+
+plot(fmarket['mvalue'])
+show()
+
+plot(fmarket['revenue'])
+show()
+
+plot(fmarket['netincome'])
+
+```
