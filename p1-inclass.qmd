@@ -13,6 +13,10 @@ data.shape
 
 firms = pd.read_csv("firmsus2023.csv")
 firms.shape
+
+#data['q'] = pd.to_datetime(data['q'])
+#data['y'] = data['q'].dt.year
+
 ```
 
 Ahora hacemos un merge para adicionar la industria y el status a data:
@@ -114,13 +118,14 @@ How total market value has evolved over the years?
 ```{python}
 
 datay = data.loc[data['fiscalmonth']==12]
+datay2 =data[data['fiscalmonth']==12]
 fmarket = datay[['year','mvalue','revenue','netincome']].groupby('year').sum()
 fmarket
 ```
 
 ```{python}
 import matplotlib
-from matplotlib.pyplot import*
+from matplotlib.pyplot import *
 fmarket = fmarket.loc[fmarket.index<2023].copy()
 
 plot(fmarket['mvalue'])
@@ -130,5 +135,18 @@ plot(fmarket['revenue'])
 show()
 
 plot(fmarket['netincome'])
+show()
+```
+
+Now I get an index for each to compare the growth rate of the 3 variables. I will set \$1 in the first year for each variable:
+
+```{python}
+clf()
+fmarket['imvalue'] = fmarket['mvalue'] / fmarket['mvalue'][2000]
+fmarket['irevenue'] = fmarket['revenue'] / fmarket['revenue'][2000]
+fmarket['inetincome'] = fmarket['netincome'] / fmarket['netincome'][2000]
+
+fmarket.plot(y=['imvalue','irevenue','inetincome'])
+show()
 
 ```
