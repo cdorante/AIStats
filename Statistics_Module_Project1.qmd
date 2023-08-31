@@ -27,7 +27,7 @@ You have to analyze historical quarterly financial statements of all US public f
 The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
 
 | Variable           | Description                                                                                                                                         |
-|---------------|---------------------------------------------------------|
+|-----------------|-------------------------------------------------------|
 | firm               | Unique code of the company (also called ticker)                                                                                                     |
 | q                  | Quarter date                                                                                                                                        |
 | fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                |
@@ -60,7 +60,7 @@ The variables related to sales and expenses are cumulative for each fiscal year.
 The firmsus2023.csv is a catalog of all active and cancelled US firms:
 
 | Variable          | Description                                           |
-|-----------------|-------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | firm              | Unique code of the company (also called ticker)       |
 | name              | Name of the firm                                      |
 | status            | Status of the firm: active or cancelled               |
@@ -69,9 +69,33 @@ The firmsus2023.csv is a catalog of all active and cancelled US firms:
 | naics2            | North American Industry Classification Code - Level 2 |
 | SectorEconomatica | Economatica Industry classification                   |
 
-The main objectives of your analysis are a) To learn about the firm composition of whole US financial market (using all firms), and b) Select firms from 1 industry and then learn which financial factors/variables are related to stock return.
+The **main objectives** of your analysis are a) **To learn about the firm composition** of whole US financial market (using all firms), and b) Select firms from 1 industry and then **learn which financial factors/variables are related to stock return.**
 
 In the following sections you will find specific directions to calculate new variables/ratios, provide descriptive statistics and do a statistical analysis to aim the objective.
+
+## Calculation of financial variables and ratios
+
+You have to create new variables (columns) in the dataset related to important financial variables and ratios:
+
+-   Calculate log quarterly returns (rq) and log annual returns (ry).
+
+-   Calculate operating profit (also called earnings before interest and taxes) : ebit = revenue - cogs - sgae
+
+-   Calculate operating profit margin: opm = ebit / revenue
+
+-   Calculate net income as: netincome = ebit + otherincome + extraordinaryitems - financial expenses - incometax
+
+-   Calculate profit margin (ratio) as: pm = ni / revenue
+
+-   Calculate asset turn over ratio: ato = revenue / totalassets
+
+-   Calculate acid ratio: acidratio = currentassets / currentliabilities
+
+-   Calculate financial leverage ratio as: finlev=longdebt / totalassets
+
+-   Calculate market value as: mvalue = originalprice \* sharesoutstanding
+
+-   Calculate book value as: bookvalue = totalassets - totalliabilities
 
 ## Firm Composition of the US financial market
 
@@ -93,7 +117,7 @@ Considering the whole history of financial data for all firms, and only annual f
 
 -   How total revenue and total net income of all US firms has changed over the years? Do a table and/or graph and explain
 
-## **Learing about one industry** 
+## **Learing about one industry**
 
 The following analysis must be done after selecting a set of firms that belong to one industry.
 
@@ -107,29 +131,9 @@ The following analysis must be done after selecting a set of firms that belong t
 
     -   Financial services
 
-### Calculation of profitability measures 
-
-Using the **subsample of your industry with all quarters**, create new columns for the following variables as measures of firm performance and profitability:
-
--   Calculate log quarterly returns (rq) and log annual returns (ry).
-
--   Calculate operating profit (also called earnings before interest and taxes) : ebit = revenue - cogs - sgae
-
--   Calculate operating profit margin: opm = ebit / revenue
-
--   Calculate net income as: netincome = ebit + otherincome + extraordinaryitems - financial expenses - incometax
-
--   Calculate profit margin (ratio) as: pm = ni / revenue
-
--   Calculate asset turn over ratio: ato = revenue / totalassets
-
--   Calculate acid ratio: acidratio = currentassets / currentliabilities
-
--   Calculate financial leverage ratio as: finlev=longdebt / totalassets
-
 ### Descriptive statistics for your industry
 
-Using annual fiscal data (selecting rows with fiscalmonth=12), and the year 2022:
+Using the **subsample of your industry and using annual fiscal information (selecting rows with fiscalmonth=12), and the most recent complete year (2022),** do the following:
 
 -   Show descriptive statistics for quarterly return, annual return, total assets, revenue, netincome and all financial ratios calculated above. Provide a clear interpretation of the descriptive statistics of revenue and 1 financial ratio
 
@@ -143,21 +147,21 @@ Select 3 variables/ratios with the strongest correlation with quarterly returns 
 
 -   Do plots to visualize the possible relationship each factor might have with quarterly returns (the dependent variable).
 
--   Design and run a first version of a multiple regression model to examine whether your selected factors can explain/predict quarerly stock returns.
-
--   For each independent variable you have to check for outliers (extreme values) and if it is necessary do the corresponding adjustments with winsorization to avoid unreliable results in your regression model
+-   Design and run a first version of a multiple regression model to examine whether your selected factors can explain/predict quarterly stock returns.
 
 -   You must check for possible multicollinearity problems. Briefly explain what is multicollinearity, run and interpret the corresponding test
 
--   Once you corrected your variables for outliers and address possible multicollienarity problems, run a final multiple regression model
+-   (optional) For each independent variable you have to check for outliers (extreme values) and if it is necessary do the corresponding adjustments with winsorization to avoid unreliable results in your regression model
+
+-   Once you corrected your variables for outliers (in case you did it) and addressed possible multicollienarity problems, run a final multiple regression model
 
 -   Interpret your model
 
-    -   Interpret the results of each coefficient (beta and their statistical significance)
+    -   **Interpret with your own words** the results of each coefficient (beta and their statistical significance)
 
     -   Interpret the R-squared of the model
 
--   
+    -   Write a conclusion of your results
 
 Deliverables
 
@@ -170,7 +174,7 @@ You have to submit a Jupyter Notebook (.ipynb and .html files) document
 The evaluation criteria will be:
 
 | Section                                    | Weight | Notes                                                                                                                                                                                                                                                                                     |
-|------------|------------|------------------------------------------------|
+|---------------|---------------|-------------------------------------------|
 | Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did for data management, descriptive statistics, and also you have to clearly respond to each of the business questions                                                                                                                  |
 | Statistical modeling                       | 40%    | Document your work. Explain what you do in terms of variable calculation, correlation matrix and regression analysis. Make sure you provide a very clear interpretation of your model. Remember that you must interpret each coefficient and their corresponding statistical significance |
 | Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                                                                                                                   |
