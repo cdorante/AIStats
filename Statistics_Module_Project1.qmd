@@ -26,28 +26,29 @@ You have to analyze historical quarterly financial statements of all US public f
 
 The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
 
-| Variable           | Description                                                                                                                                         |
-|-----------------|-------------------------------------------------------|
-| firm               | Unique code of the company (also called ticker)                                                                                                     |
-| q                  | Quarter date                                                                                                                                        |
-| fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                |
-| revenue            | Total sales of the firm from the first fiscal quarter to the current quarter                                                                        |
-| cogs               | Cost of good sold - variable costs of the products sold - from the first fiscal quarter to the current quarter                                      |
-| sgae               | Sales and general administrative expenses - from the first fiscal quarter to the current quarter                                                    |
-| otherincome        | Other operational income/expenses that are not directly from the core operations of the firm - from the first fiscal quarter to the current quarter |
-| extraordinaryitems | Extra income/expenses not related to regular operations - from the first fiscal quarter to the current quarter                                      |
-| finexp             | Financial expenses - interest expenses paid (generated from loans) - from the first fiscal quarter to the current quarter                           |
-| incometax          | Income tax from the first fiscal quarter to the current quarter                                                                                     |
-| totalassets        | Total assets of the firm at the end of the quarter                                                                                                  |
-| currentassets      | Current assets of the firm at the end of the quarter                                                                                                |
-| totalliabilities   | Total liabilities of the firm at the end of the quarter                                                                                             |
-| currentliabilities | Current liabilities of the firm at the end of the quarter                                                                                           |
-| longdebt           | Balance of long-term financial debt (loans to pay longer than 1 year)                                                                               |
-| adjprice           | Stock adjusted price at the end of the quarter; adjusted for stock splits and dividend payments; used to calculate stock returns                    |
-| originalprice      | Historical stock price (not adjusted); used to calculate historical market value                                                                    |
-| sharesoutstanding  | Historical number of shares available in the market                                                                                                 |
-| fixedassets        | Fixed assets value at the end of the quarter                                                                                                        |
-|                    |                                                                                                                                                     |
+| Variable           | Description                                                                                                                                                                                    |
+|-------------------|-----------------------------------------------------|
+| firm               | Unique code of the company (also called ticker)                                                                                                                                                |
+| q                  | Quarter date                                                                                                                                                                                   |
+| fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                                                           |
+| revenue            | Total sales of the firm from the first fiscal quarter to the current quarter                                                                                                                   |
+| cogs               | Cost of good sold - variable costs of the products sold - from the first fiscal quarter to the current quarter                                                                                 |
+| sgae               | Sales and general administrative expenses - from the first fiscal quarter to the current quarter                                                                                               |
+| otherincome        | Other operational income/expenses that are not directly from the core operations of the firm - from the first fiscal quarter to the current quarter                                            |
+| extraordinaryitems | Extra income/expenses not related to regular operations - from the first fiscal quarter to the current quarter                                                                                 |
+| finexp             | Financial expenses - interest expenses paid (generated from loans) - from the first fiscal quarter to the current quarter                                                                      |
+| incometax          | Income tax from the first fiscal quarter to the current quarter                                                                                                                                |
+| totalassets        | Total assets of the firm at the end of the quarter                                                                                                                                             |
+| currentassets      | Current assets of the firm at the end of the quarter                                                                                                                                           |
+| totalliabilities   | Total liabilities of the firm at the end of the quarter                                                                                                                                        |
+| currentliabilities | Current liabilities of the firm at the end of the quarter                                                                                                                                      |
+| longdebt           | Balance of long-term financial debt (loans to pay longer than 1 year)                                                                                                                          |
+| adjprice           | Stock adjusted price at the end of the quarter; adjusted for stock splits and dividend payments; used to calculate stock returns                                                               |
+| originalprice      | Historical stock price (not adjusted); used to calculate historical market value                                                                                                               |
+| sharesoutstanding  | Historical number of shares available in the market                                                                                                                                            |
+| fixedassets        | Fixed assets value at the end of the quarter                                                                                                                                                   |
+| year               | Calendar year                                                                                                                                                                                  |
+| yearf              | Fiscal year - this depends on when the firm ends its fiscal year; if fiscalmonth=12 in the quarter 3, then the fiscal year will start in Q4 of a year and ends in the Q3 of the following year |
 
 : Data dictionary of historical quarterly financial data.
 
@@ -60,7 +61,7 @@ The variables related to sales and expenses are cumulative for each fiscal year.
 The firmsus2023.csv is a catalog of all active and cancelled US firms:
 
 | Variable          | Description                                           |
-|------------------|------------------------------------------------------|
+|--------------------|----------------------------------------------------|
 | firm              | Unique code of the company (also called ticker)       |
 | name              | Name of the firm                                      |
 | status            | Status of the firm: active or cancelled               |
@@ -78,6 +79,8 @@ In the following sections you will find specific directions to calculate new var
 You have to create new variables (columns) in the dataset related to important financial variables and ratios:
 
 -   Calculate log quarterly returns (rq) and log annual returns (ry).
+
+-   Calculate 1-quarter future log quarterly returns (f1rq)
 
 -   Calculate operating profit (also called earnings before interest and taxes) : ebit = revenue - cogs - sgae
 
@@ -135,13 +138,13 @@ The following analysis must be done after selecting a set of firms that belong t
 
 Using the **subsample of your industry and using annual fiscal information (selecting rows with fiscalmonth=12), and the most recent complete year (2022),** do the following:
 
--   Show descriptive statistics for quarterly return, annual return, total assets, revenue, netincome and all financial ratios calculated above. Provide a clear interpretation of the descriptive statistics of revenue and 1 financial ratio
+-   Show descriptive statistics for future quarterly log return, annual return, total assets, revenue, netincome and all financial ratios calculated above. Provide a clear interpretation of the descriptive statistics of revenue and 1 financial ratio
 
 Using annual fiscal data (selecting rows with fiscalmonth=12), and all years:
 
--   Show a correlation matrix with the same variables you used for descriptive statistics above, but in the case of totalassets, revenue and netincome, use the logarithmic transformation of the values. Which variables have strongest and significant linear relationship with stock returns (annual and quarterly)? Explain
+-   Show a correlation matrix with the same variables you used for descriptive statistics above, but in the case of totalassets, revenue and netincome, use the logarithmic transformation of their values. Which variables have strongest and significant linear relationship with stock returns (annual and quarterly)? Explain
 
-Select 3 variables/ratios with the strongest correlation with quarterly returns and do the following:
+Select 2-3 variables and 2-3 ratios with the strongest correlation with future log quarterly returns and do the following:
 
 -   Do histograms for each factor/variables and interpret them
 
@@ -151,9 +154,9 @@ Select 3 variables/ratios with the strongest correlation with quarterly returns 
 
 -   You must check for possible multicollinearity problems. Briefly explain what is multicollinearity, run and interpret the corresponding test
 
--   (optional) For each independent variable you have to check for outliers (extreme values) and if it is necessary do the corresponding adjustments with winsorization to avoid unreliable results in your regression model
+-   (optional) For each independent variable (variable/ratio) check if winsorization is needed according to very extreme values. You can check this with the histograms of each variable/ratio. If it is necessary do the corresponding adjustments with winsorization to avoid unreliable results in your regression model
 
--   Once you corrected your variables for outliers (in case you did it) and addressed possible multicollienarity problems, run a final multiple regression model
+-   Once you corrected your variables/ratios with winsorization (in case you did it) and addressed possible multicollienarity problems, run a final multiple regression model
 
 -   Interpret your model
 
@@ -174,7 +177,7 @@ You have to submit a Jupyter Notebook (.ipynb and .html files) document
 The evaluation criteria will be:
 
 | Section                                    | Weight | Notes                                                                                                                                                                                                                                                                                     |
-|---------------|---------------|-------------------------------------------|
+|-----------------|-----------------|--------------------------------------|
 | Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did for data management, descriptive statistics, and also you have to clearly respond to each of the business questions                                                                                                                  |
 | Statistical modeling                       | 40%    | Document your work. Explain what you do in terms of variable calculation, correlation matrix and regression analysis. Make sure you provide a very clear interpretation of your model. Remember that you must interpret each coefficient and their corresponding statistical significance |
 | Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                                                                                                                   |
