@@ -27,7 +27,7 @@ You have to analyze historical quarterly financial statements of all US public f
 The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
 
 | Variable           | Description                                                                                                                                                                                    |
-|-------------------|-----------------------------------------------------|
+|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | firm               | Unique code of the company (also called ticker)                                                                                                                                                |
 | q                  | Quarter date                                                                                                                                                                                   |
 | fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                                                           |
@@ -61,7 +61,7 @@ The variables related to sales and expenses are cumulative for each fiscal year.
 The firmsus2023.csv is a catalog of all active and cancelled US firms:
 
 | Variable          | Description                                           |
-|--------------------|----------------------------------------------------|
+|-------------------|-------------------------------------------------------|
 | firm              | Unique code of the company (also called ticker)       |
 | name              | Name of the firm                                      |
 | status            | Status of the firm: active or cancelled               |
@@ -140,9 +140,13 @@ Using the **subsample of your industry and using annual fiscal information (sele
 
 -   Show descriptive statistics for future quarterly log return, annual return, total assets, revenue, netincome and all financial ratios calculated above. Provide a clear interpretation of the descriptive statistics of revenue and 1 financial ratio
 
+### Correlation matrix
+
 Using annual fiscal data (selecting rows with fiscalmonth=12), and all years:
 
 -   Show a correlation matrix with the same variables you used for descriptive statistics above, but in the case of totalassets, revenue and netincome, use the logarithmic transformation of their values. Which variables have strongest and significant linear relationship with stock returns (annual and quarterly)? Explain
+
+### Regression Model
 
 Select 2-3 variables and 2-3 ratios with the strongest correlation with future log quarterly returns and do the following:
 
@@ -166,7 +170,7 @@ Select 2-3 variables and 2-3 ratios with the strongest correlation with future l
 
     -   Write a conclusion of your results
 
-Deliverables
+# Deliverables
 
 This case must be done by each student and the work must be original. Please avoid possible interpretations of plagiarism.
 
@@ -177,7 +181,7 @@ You have to submit a Jupyter Notebook (.ipynb and .html files) document
 The evaluation criteria will be:
 
 | Section                                    | Weight | Notes                                                                                                                                                                                                                                                                                     |
-|-----------------|-----------------|--------------------------------------|
+|--------------------------------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did for data management, descriptive statistics, and also you have to clearly respond to each of the business questions                                                                                                                  |
 | Statistical modeling                       | 40%    | Document your work. Explain what you do in terms of variable calculation, correlation matrix and regression analysis. Make sure you provide a very clear interpretation of your model. Remember that you must interpret each coefficient and their corresponding statistical significance |
 | Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                                                                                                                   |
