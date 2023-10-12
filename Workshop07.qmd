@@ -1,11 +1,9 @@
 ---
 title: "Workshop 7, Advanced AI - Statistics Module"
 bibliography: references.bib
-author:  
- - Alberto Dorantes D., Ph.D.
- - Monterrey Tech, Queretaro Campus
+author:  Alberto Dorantes D., Ph.D.
 
-abstract: In this workshop we learn the basics of time series regression models. 
+abstract: "In this workshop we learn the basics of time series regression models." 
 
 editor: visual
 jupyter: python3
@@ -67,17 +65,14 @@ I download the S&P500 index from Yahoo Finance!
 
 ```{python}
 import pandas as pd
-import pandas_datareader as pdr
+import yfinance as yf
 from datetime import date
 import numpy as np
 import statistics as st
 
-#gspc = pdr.get_data_yahoo('^GSPC', start=date(2010, 1, 1), interval='d')
-#sp500 = pdr.get_data_yahoo('^GSPC', start="01/01/2009", interval='d')
-sp500 = pdr.get_data_yahoo('^GSPC', start=date(2009,1,1), end=date(2022,9,30), interval='d')
-
+sp500=yf.download(tickers="^GSPC", start="2009-01-01",interval="1d")
 # I keep the adj close column:
-sp500 = pd.Series(sp500['Adj Close'])
+sp500=sp500['Adj Close']
 sp500
 
 ```
@@ -122,23 +117,43 @@ You have to estimate $\phi_{0}$ using the last and the first real values of the 
 
 $$
     Y_{0} = Initial value
-$$ $$  
+$$ 
+
+$$  
     Y_{1} = \phi_{0} + Y_{0} + \varepsilon_{1}
-$$ $$  
+$$ 
+
+$$  
     Y_{2} = \phi_{0} + Y_{1} + \varepsilon_{2}
-$$ Substituting $Y_{1}$ with its corresponding equation: $$
+$$ 
+
+Substituting $Y_{1}$ with its corresponding equation: 
+
+$$
     Y_{2} = \phi_{0} + \phi_{0} + Y_{0} + \varepsilon_{1} + \varepsilon_{2}
-$$ Re-arranging the terms: $$
+$$ 
+Re-arranging the terms: 
+
+$$
     Y_{2} = 2*\phi_{0} + Y_{0} + \varepsilon_{1} + \varepsilon_{2}
-$$ If you continue doing the same until the last N value, you can get: $$
+$$ 
+
+If you continue doing the same until the last N value, you can get: 
+
+$$
     Y_{N} = N*\phi_{0} + Y_{0} + \sum_{t=1}^{N}\varepsilon_{t}
 $$
 
 This mathematical result is kind of intuitive. The value of a random walk at time N will be equal to its initial value plus N times phi0 plus the sum of ALL random shocks from 1 to N.
 
-Since the mean of the shocks is assumed to be zero, then the expected value of the sum of the shocks will also be zero. Then: $$
+Since the mean of the shocks is assumed to be zero, then the expected value of the sum of the shocks will also be zero. Then:
+
+$$
     E[Y_{N}] = N*\phi_{0} + Y_{0}
-$$ From this equation we see that $phi_{0}$ can be estimated as: $$
+$$ 
+From this equation we see that $phi_{0}$ can be estimated as: 
+
+$$
     \phi_{0} = \frac{(Y_{N} - Y_{0})}{N} 
 $$
 
@@ -163,11 +178,15 @@ Then, let's consider the equation of the random walk series for the last value (
 
 $$
     Y_{N} = N*\phi_{0} + Y_{0} + \sum_{t=1}^{N}\varepsilon_{t}
-$$ Using this equation, we calculate the variance of $Y_N$ :
+$$ 
+
+Using this equation, we calculate the variance of $Y_N$ :
 
 $$
     Var(Y_{N}) = Var(N*\phi_{0}) + Var(Y_{0}) + \sum_{t=1}^{N}Var(\varepsilon_{t})
-$$ The variance of a constant is zero, so the first two terms are equal to zero.
+$$ 
+
+The variance of a constant is zero, so the first two terms are equal to zero.
 
 Now analize the variance of the shock:
 
@@ -175,21 +194,28 @@ Since it is supposed that the volatility (standard deviation) of the shocks is a
 
 $$
     Var(\varepsilon_{1}) = Var(\varepsilon_{2}) = Var(\varepsilon_{N}) = \sigma_{\varepsilon}^2
-$$ Then the sum of the variances of all shocks is actually the variance of the shock times N. Then the variance of all the shocks is actually the variance of $Y_N$.
+$$ 
+
+Then the sum of the variances of all shocks is actually the variance of the shock times N. Then the variance of all the shocks is actually the variance of $Y_N$.
 
 Then we can write the variance of $Y_N$ as:
 
 $$
     Var(Y_{N}) = N * Var(\varepsilon)= N*\sigma_{\varepsilon}^2
-$$ To get the standard deviation of $Y_N$ we take the square root of the variance of $Y_N$:
+$$ 
+
+To get the standard deviation of $Y_N$ we take the square root of the variance of $Y_N$:
 
 $$  
     SD(Y_{N}) = \sqrt{N}*SD(\varepsilon)
-$$ We use sigma character for standard deviations:
+$$ 
+
+We use sigma character for standard deviations:
 
 $$  
     \sigma_{Y} = \sqrt{N}*\sigma_{\varepsilon}
 $$\
+
 Finally we express the volatility of the shock ($\sigma_{\varepsilon}$) in terms of the volatility of $Y_N$ ($\sigma_{Y}$):
 
 $$
@@ -209,7 +235,9 @@ The volatility for lnsp500 series is `python np.std(lnsp500)`.
 
 ### Simulating the random walk with drift
 
-Now you are ready to start the simulation of random walk using rw1: $$
+Now you are ready to start the simulation of random walk using rw1: 
+
+$$
     rw1_{t} = \phi_{0} + rw1_{t-1} + \varepsilon_{t}
 $$
 
@@ -242,7 +270,7 @@ We start the random walk with the first value of the log of the S&P500. Then, fr
 
 ```{python}
 for k in range(1,N):
- rw1[k] = rw1[k-1] + phi0 + shock[k]
+  rw1[k] = rw1[k-1] + phi0 + shock[k]
 
 # Another way to do the same using the np.cumsum function instead of a for loop: 
 i = np.arange(0,N,1)
