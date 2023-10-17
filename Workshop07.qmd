@@ -117,28 +117,27 @@ You have to estimate $\phi_{0}$ using the last and the first real values of the 
 
 $$
     Y_{0} = Initial value
-$$ 
+$$
 
 $$  
     Y_{1} = \phi_{0} + Y_{0} + \varepsilon_{1}
-$$ 
+$$
 
 $$  
     Y_{2} = \phi_{0} + Y_{1} + \varepsilon_{2}
-$$ 
+$$
 
-Substituting $Y_{1}$ with its corresponding equation: 
+Substituting $Y_{1}$ with its corresponding equation:
 
 $$
     Y_{2} = \phi_{0} + \phi_{0} + Y_{0} + \varepsilon_{1} + \varepsilon_{2}
-$$ 
-Re-arranging the terms: 
+$$ Re-arranging the terms:
 
 $$
     Y_{2} = 2*\phi_{0} + Y_{0} + \varepsilon_{1} + \varepsilon_{2}
-$$ 
+$$
 
-If you continue doing the same until the last N value, you can get: 
+If you continue doing the same until the last N value, you can get:
 
 $$
     Y_{N} = N*\phi_{0} + Y_{0} + \sum_{t=1}^{N}\varepsilon_{t}
@@ -150,8 +149,7 @@ Since the mean of the shocks is assumed to be zero, then the expected value of t
 
 $$
     E[Y_{N}] = N*\phi_{0} + Y_{0}
-$$ 
-From this equation we see that $phi_{0}$ can be estimated as: 
+$$ From this equation we see that $phi_{0}$ can be estimated as:
 
 $$
     \phi_{0} = \frac{(Y_{N} - Y_{0})}{N} 
@@ -178,13 +176,13 @@ Then, let's consider the equation of the random walk series for the last value (
 
 $$
     Y_{N} = N*\phi_{0} + Y_{0} + \sum_{t=1}^{N}\varepsilon_{t}
-$$ 
+$$
 
 Using this equation, we calculate the variance of $Y_N$ :
 
 $$
     Var(Y_{N}) = Var(N*\phi_{0}) + Var(Y_{0}) + \sum_{t=1}^{N}Var(\varepsilon_{t})
-$$ 
+$$
 
 The variance of a constant is zero, so the first two terms are equal to zero.
 
@@ -194,7 +192,7 @@ Since it is supposed that the volatility (standard deviation) of the shocks is a
 
 $$
     Var(\varepsilon_{1}) = Var(\varepsilon_{2}) = Var(\varepsilon_{N}) = \sigma_{\varepsilon}^2
-$$ 
+$$
 
 Then the sum of the variances of all shocks is actually the variance of the shock times N. Then the variance of all the shocks is actually the variance of $Y_N$.
 
@@ -202,13 +200,13 @@ Then we can write the variance of $Y_N$ as:
 
 $$
     Var(Y_{N}) = N * Var(\varepsilon)= N*\sigma_{\varepsilon}^2
-$$ 
+$$
 
 To get the standard deviation of $Y_N$ we take the square root of the variance of $Y_N$:
 
 $$  
     SD(Y_{N}) = \sqrt{N}*SD(\varepsilon)
-$$ 
+$$
 
 We use sigma character for standard deviations:
 
@@ -235,7 +233,7 @@ The volatility for lnsp500 series is `python np.std(lnsp500)`.
 
 ### Simulating the random walk with drift
 
-Now you are ready to start the simulation of random walk using rw1: 
+Now you are ready to start the simulation of random walk using rw1:
 
 $$
     rw1_{t} = \phi_{0} + rw1_{t-1} + \varepsilon_{t}

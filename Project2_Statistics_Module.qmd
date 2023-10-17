@@ -1,10 +1,9 @@
 ---
-title: "Project Block 2: Advanced Statistics: Issues in multiple regression and Time-series Regression Models"
+title: "Project Block 2: Advanced Statistics"
 author: "Alberto Dorantes D."
 date: "Sep 18, 2023"
 
-abstract: This project is composed of 2 parts: 1) Advanced topics of multiple regression models, and 2) Basics of Time-series regression models
-
+abstract: "This project is composed of 2 parts: 1) Advanced topics of multiple regression models, and 2) Basics of Time-series regression models"
 editor: visual
 jupyter: python3
 format:
@@ -24,27 +23,29 @@ In this part, you have to improve the multiple regression model you ended up in 
 
 The topics we will learn and apply in this part are the following:
 
-Descriptive statistics for ratios
+-   Descriptive statistics for ratios
 
-Treatment of extreme values for independent variables - winsorization
+-   Multiple regression with categorical variables
 
-Estimation of correlation matrix using matrix algebra
+-   Multiple regression with interaction effects
 
-Estimation of beta coefficients and standard errors in multiple regression using matrix algebra
+-   Treatment of extreme values for independent variables - winsorization
 
-The Hat Matrix
+-   Estimation of beta coefficients and standard errors in multiple regression using matrix algebra
 
-Identification of leverage observations
+-   The Hat Matrix
 
-Identification of possible outliers
+-   Identification of leverage observations
 
-Identification and treatment of possible influential observations
+-   Identification of possible outliers
 
-How to treat and interpret categorical independent variables in a multiple regression model
+-   Identification and treatment of possible influential observations
 
 You have to do the following:
 
 Make sure that all the variable calculations and descriptive statistics is correct and complete (attend the feedback you received for this part). Do any correction or complete what you missed in the
+
+## Descriptive Statistics
 
 For the Descriptive Statistics of your industry using only the most recent fiscal year observations (fiscalmonth=12, year=2022), do the following modifications:
 
@@ -52,59 +53,79 @@ For the ratios, instead of calculating the arithmetic mean of the ratios, calcul
 
 Compare this weighted average with the arithmetic mean and the median. Which is the best measure for central tendency of the ratios? Interpret the weighted average of profit margin and asset turn over of your industry.
 
+## Multiple Regression - advanced topics
+
+### Calculation of Variables
+
 For the complete historical dataset of annual fiscal years (fiscalmonth=12 for all quarter-years), you have to calculate the following new independent variables:
 
-Firm size as a categorical variable. For each quarter, you have to label firms in 3 equal groups: small, medium, big according to the market value of the firms.
+-   Firm size as a categorical variable. For each quarter, you have to label firms in 3 equal groups: small, medium, big according to the market value of the firms.
 
-Calculate the corresponding dummy (binary) variables for the firm size following the dummy encoding method.
+-   Calculate the corresponding dummy (binary) variables for the firm size following the dummy encoding method.
 
-Calculate operating earnings per share deflated by stock price: oepsp = (ebit / sharesoutstanding) / originalprice
+-   Calculate operating earnings per share deflated by stock price: oepsp = (ebit / sharesoutstanding) / originalprice
 
-Calculate earnings per share deflated by stock price: epsp = (netincome / sharesoutstanding) / originalprice
+-   Calculate earnings per share deflated by stock price: epsp = (netincome / sharesoutstanding) / originalprice
 
-Calculate book-to-market ratio: bmr = bookvalue / marketvalue
+-   Calculate book-to-market ratio: bmr = bookvalue / marketvalue
 
 In this model, the variable you have to use as dependent variable will be annual stock returns (instead of quarterly returns) one quarter in the future (f1.ry).
 
-Winsorization of ratios
+### Winsorization of variables
+
+Winzorization is a common technique to treat very extreme values of variables. Although winsorization has the risk of losing important information for regression analysis, it is also useful to avoid non reliable estimates of regression coefficients and standard error.
+
+Winsorization is usually performed to ratios and percentages. For variables that measure any other feature of the subjects, the normal procedure for avoiding very extreme values is the logarithmic transformation.
 
 You have to check for very extreme values for the following ratios: profit margin, asset turn over, oepsp, bmr. Apply winsorization in case of very extreme values (keep at lest 98% of original values for each winsorization). Use the histogram to decide the level of winsorization.
 
-Multicollienarity
+### Multicollienarity
 
 Do the multicollienarity test considering all numeric independent variables:
 
-profit margin, asset turn over, oepsp, bmr
+profit margin, asset turn over, epsp, oepsp, bmr
 
 Interpret the test. If there is a multicollienarity problem, propose how to solve it.
+
+### Multiple regression model
 
 -   Run a first multiple regression model to examine whether the financial ratios and firm size explain/predict future annual stock returns (one quarter later). For the ratios, use the winsorized version (if the ratio has extreme values)
 
 -   Interpret your model
 
-    -   Interpret the results of each coefficient (beta and their statistical significance)
+    -   Interpret the results of each coefficient (beta and their statistical significance). Remember that the coefficients of categorical dummies have a special interpretation.
+
+    -   Add interaction terms between firm size and earnings per share deflated by price (epsp or oepsp, in case you eliminated one due to multicollienarity). Re-run the regression and INTERPRET the interaction between these two variables. Also, state the regression equation for each size group.
 
     -   Interpret the R-squared of the model
 
--   Run a multiple regression but now using only the last complete year of data (year=2022)
+-   Run a multiple regression but now using only the last complete year of data (yearf=2022)
 
     -   What differences do you see compared with the previous model? Explain
+
+### Regression Diagnosis
+
+Do a diagnosis for possible outliers and influential observations, but using only annual data for 2022. You will end up with a cross-sectional sample with the most recent financial information.
+
+Learn about regression diagnosis [HERE](https://online.stat.psu.edu/stat462/node/87/) before you work on this section.
 
 -   Using this cross-sectional dataset with only annual data for 2022, you have to do the following:
 
     -   Using matrix algebra calculate the beta coefficients of the same regression model
 
-    -   Using matrix algebra calculate the standard errors of the beta coefficients
+    -   Using matrix algebra calculate the standard errors of the beta coefficients (optional)
+
+    -   Using matrix algebra calculate the R-squared and the adjusted R-squared of the model (optional)
 
     -   Using matrix algebra calculate the Hat Matrix
 
-    -   With the hat matrix identify possible leverage observations
+    -   With the hat matrix identify possible leverage observations. EXPLAIN why these observations can be leverage points.
 
-    -   Identify possible outliers using studentized residuals
+    -   Identify possible outliers using studentized residuals. EXPLAIN your criteria to identify these outliers, and how studentized residuals work.
 
-    -   Identify possible outliers using Cook's distance
+    -   Identify possible outliers using Cook's distance. EXPLAIN your criteria to identify outliers with Cook's distance and how they work.
 
-    -   Using studentized residuals and Cook's distance identify possible influential observations
+    -   Using studentized residuals and Cook's distance identify possible influential observations. EXPLAIN your criteria.
 
     -   List the influential observations and decide whether to drop them or keep some of them
 
@@ -112,19 +133,41 @@ Interpret the test. If there is a multicollienarity problem, propose how to solv
 
         -   Compare the model with the previous one. Which model was better? Explain the differences
 
--   Deliverables
+# Part 2 - Forecasting Queretaro industrial activity
 
-This case must be done by each student and the work must be original. Please avoid possible interpretations of plagiarism.
+You have to design an ARIMA-SARIMA model to forecast the Querétaro "Indice de Actividad Industrial". INEGI publishes a monthly index of the industrial activity for each state and at the national level. You can download this index Googling it ("inegi bie índice de actividad industrial Querétaro")
 
-For each deliverable you have to submit a Jupyter Notebook (.ipynb and .html files). document
+Download the csv file and import it in Python.
+
+You have to do the following:
+
+-   Calibrate an ARIMA-SARIMA model for this index. Follow the calibration steps explain in class ([HERE](https://rpubs.com/cdorante/ec2004_w4)is a document with the calibration process).
+
+-   You have to document your data management steps and the calibration process
+
+-   You have to CLEARLY INTERPRET the final calibrated model with YOUR WORDS
+
+-   You have to forecast the industrial index for Querétaro up to 2030. What is the expected average annual growth for 6-7 years?
 
 # Evaluation criteria
 
+This is an individual assighment. Each student must do an original work. Please avoid possible interpretations of plagiarism.
+
+For each deliverable you have to submit a Jupyter Notebook (.ipynb and .html files). document
+
 The evaluation criteria will be:
 
+| Part                           | Weight |
+|--------------------------------|--------|
+| Multiple regression topics     | 60%    |
+| Time series forecasting models | 40%    |
+|                                |        |
+
+Each part will be graded as follows:
+
 | Section                                    | Weight | Notes                                                                                                                                                                                    |
-|---------------|---------------|-------------------------------------------|
-| Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
-| Statistical modeling                       | 40%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
+|--------------------------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Data management and Descriptive statistics | 40%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
+| Statistical modeling                       | 50%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
 | Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                  |
 |                                            |        |                                                                                                                                                                                          |

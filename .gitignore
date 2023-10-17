@@ -5,8 +5,14 @@
 $ markdown files
 Workshop01_files/
 Workshop02_files/
+Workshop03_files/
 Workshop04_files/
 Workshop05_files/
 Workshop06_files/
+Workshop07_files/
+p1-inclass_files/
 
-/.quarto/
+Statistics_Module_Project1_files/
+Project2_Statistics_Modules_files/
+# ignorar archivos de datos:
+*.csv

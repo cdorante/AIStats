@@ -69,15 +69,27 @@ $$
 
 Then the function is equal to zero for values outside the range between a and b.
 
-The area under the line $(1 / (b-a))$ is 1 (100%) since it a PDF. You can check that this is true with any example.
+$(1 / (b-a))$ is the probability for any value between a and b to show up. Then, any value between $a$ and $b$ has the same probability to show up. 
 
-For example, if a=0 and b=40, then for the range from 0 to 40 the function is $f(x)=1/40$. If we imagine the plot of this function, this will be a rectangle with base = 40 and hight = 1/40, so the area will be equal to 1.
+The area under the function (the rectangle created with this function) is $(b-a)(1 / (b-a))$, which is 1 (100%) since it is a PDF. 
+
+For example, if a=0 and b=40, then for the range from 0 to 40 the function is $f(x)=1/40$. If we imagine the plot of this function, this will be a rectangle with base = 40 and height = 1/40, so the area will be equal to 1.
 
 The expected value of this x random variable is given by:
 
 $$
 E(x)=\frac{a+b}{2}
-$$ This is actually the mid point of the range from a to b.
+$$ 
+Why this is true?
+
+Let's apply the expected value to the PDF:
+
+$$
+E\left[x\right]=\int_{_{-\infty}}^{+\infty}Xf\left(x\right)dx
+$$
+
+
+This is actually the mid point of the range from a to b.
 
 If a=0 and b=40, then the expected value of x will be: $$
 E(x)= 40/2 = 20
