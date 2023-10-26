@@ -1,0 +1,1632 @@
+---
+title: "Solution for the Project 1 (Block 2, Statistics for AI)"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: This is a solution of Part 1 of the final project for Advanced Statistics for AI, Block 2.
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+      collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Case Description
+
+You were hired as a data scientist in an important mutual fund firm (investment company) in the department of financial analysis. The firm has been doing financial analysis and financial forecast for several years. You were hired to come up with alternative approaches to do descriptive analytics in order to find better future alternatives for forecasting methods.
+
+You have to analyze historical quarterly financial statements of all US public firms listed in the New York Exchange and NASDAQ. You will receive two datasetsin .csv format. The first dataset (dataus2023q2) contains the historical financial data of the firms, while the second dataset (firmsus2023) is a catalog of all firms along with the corresponding industry type and status (active or cancelled).
+
+# Business Questions
+
+All your data and statistical analysis has to be tailored to respond the following questions:
+
+## General questions:
+
+What is the composition of US public firms in terms of firm size, sales performance and profitability? How is this composition when looking at each industry group?
+
+Why some firms systematically offer stock returns higher than than others? Which factors/variables from financial statements are related to stock returns? These questions has to be responded focusing in only 1 industry.
+
+## Description of the available data
+
+The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
+
+| Variable           | Description                                                                                                                                                                                    |
+|-------------------|-----------------------------------------------------|
+| firm               | Unique code of the company (also called ticker)                                                                                                                                                |
+| q                  | Quarter date                                                                                                                                                                                   |
+| fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                                                           |
+| revenue            | Total sales of the firm from the first fiscal quarter to the current quarter                                                                                                                   |
+| cogs               | Cost of good sold - variable costs of the products sold - from the first fiscal quarter to the current quarter                                                                                 |
+| sgae               | Sales and general administrative expenses - from the first fiscal quarter to the current quarter                                                                                               |
+| otherincome        | Other operational income/expenses that are not directly from the core operations of the firm - from the first fiscal quarter to the current quarter                                            |
+| extraordinaryitems | Extra income/expenses not related to regular operations - from the first fiscal quarter to the current quarter                                                                                 |
+| finexp             | Financial expenses - interest expenses paid (generated from loans) - from the first fiscal quarter to the current quarter                                                                      |
+| incometax          | Income tax from the first fiscal quarter to the current quarter                                                                                                                                |
+| totalassets        | Total assets of the firm at the end of the quarter                                                                                                                                             |
+| currentassets      | Current assets of the firm at the end of the quarter                                                                                                                                           |
+| totalliabilities   | Total liabilities of the firm at the end of the quarter                                                                                                                                        |
+| currentliabilities | Current liabilities of the firm at the end of the quarter                                                                                                                                      |
+| longdebt           | Balance of long-term financial debt (loans to pay longer than 1 year)                                                                                                                          |
+| adjprice           | Stock adjusted price at the end of the quarter; adjusted for stock splits and dividend payments; used to calculate stock returns                                                               |
+| originalprice      | Historical stock price (not adjusted); used to calculate historical market value                                                                                                               |
+| sharesoutstanding  | Historical number of shares available in the market                                                                                                                                            |
+| fixedassets        | Fixed assets value at the end of the quarter                                                                                                                                                   |
+| year               | Calendar year                                                                                                                                                                                  |
+| yearf              | Fiscal year - this depends on when the firm ends its fiscal year; if fiscalmonth=12 in the quarter 3, then the fiscal year will start in Q4 of a year and ends in the Q3 of the following year |
+
+: Data dictionary of historical quarterly financial data.
+
+For each firm there are many raws that represent historical quarterly financial data. All firms have quarters from Q1 2000 to Q2 2023. Not all firms have existed since 2000, so if the first quarters are empty that means that the firm did not exist in the US financial market in those quarters. Then, it is possible to know when each firm went public to issue shares in the financial market: the first quarter with some non-empty data.
+
+Each firm has defined the month of the year used to close a fiscal year. For example, Apple closes the fiscal year at the end of Quarter 3 (end of September) of any year. Then, for Apple, in the Q3 of 2022, there will be a 12 for the fiscalmonth variable. In this case, Apple starts its fiscal year in the Q4 of each year and ends in the Q3 of the following year. Most of the firms (about 80%) close fiscal year in December, so these firms will have a 12 in the Q4 of each year.
+
+The variables related to sales and expenses are cumulative for each fiscal year. For example, Apple sold about \$117 billion in the last calendar quarter (Q4) of 2022, but this is the first fiscal quarter for Apple. For Q1 (calendar) 2023 (which is the 2nd fiscal quarter), Apple has about \$212 billion in the revenue variable, meaning that considering fiscal quarter 1 and 2, Apple has sold \$212 billion. For Q2 2023 Apple has about \$293 billion, meaning that the cumulative revenue of fiscal Q1, Q2 and Q3 is about \$293 billion. Then, if you select rows with fiscalmonth=12, then you will be selecting those quarters with annual financial information for each firm!
+
+The firmsus2023.csv is a catalog of all active and cancelled US firms:
+
+| Variable          | Description                                           |
+|----------------------|--------------------------------------------------|
+| firm              | Unique code of the company (also called ticker)       |
+| name              | Name of the firm                                      |
+| status            | Status of the firm: active or cancelled               |
+| partind           | Percent participation in the S&P500 market index      |
+| naics1            | North American Industry Classification Code - Level 1 |
+| naics2            | North American Industry Classification Code - Level 2 |
+| SectorEconomatica | Economatica Industry classification                   |
+
+In the following sections you will find specific directions to calculate new variables/ratios, provide descriptive statistics and do a statistical analysis to aim the objective.
+
+## Calculation of financial variables and ratios
+
+You have to create new variables (columns) in the dataset related to important financial variables and ratios:
+
+-   Calculate log quarterly returns (rq) and log annual returns (ry).
+
+-   Calculate 1-quarter future log annual returns (f1yq)
+
+-   Calculate operating profit (also called earnings before interest and taxes) : ebit = revenue - cogs - sgae
+
+-   Calculate operating profit margin: opm = ebit / revenue
+
+-   Calculate net income as: netincome = ebit + otherincome + extraordinaryitems - financial expenses - incometax
+
+-   Calculate profit margin (ratio) as: pm = ni / revenue
+
+-   Calculate asset turn over ratio: ato = revenue / totalassets
+
+-   Calculate acid ratio: acidratio = currentassets / currentliabilities
+
+-   Calculate financial leverage ratio as: finlev=longdebt / totalassets
+
+-   Calculate market value as: mvalue = originalprice \* sharesoutstanding
+
+-   Calculate book value as: bookvalue = totalassets - totalliabilities
+
+# Topics to be learned in the project
+
+The topics we will learn and apply in this part are the following:
+
+-   Descriptive statistics for ratios
+
+-   Treatment of extreme values for independent variables - winsorization
+
+-   Estimation of correlation matrix using matrix algebra
+
+-   Estimation of beta coefficients and standard errors in multiple regression using matrix algebra
+
+-   The Hat Matrix
+
+-   Identification of leverage observations
+
+-   Identification of possible outliers
+
+-   Identification and treatment of possible influential observations
+
+-   How to treat and interpret categorical independent variables in a multiple regression model
+
+# Directions
+
+You have to do the following:
+
+Descriptive Statistics of your industry using only the most recent fiscal year observations (fiscalmonth=12, year=2022). Show the relevent descriptive statistics for the variables. For the variables that are ratios, do the following:
+
+For the ratios, instead of calculating the arithmetic mean of the ratios, calculate the weighted average of the ratios. To calculate the weighted average of a ratio, you have to divide the sum of the numerator variable by the sum of the denominator variable. For example, to calculate the weighted average of profit margin you first sum all the net income of all firms and then divide it by the sum of revenue of all firms.
+
+Compare this weighted average with the arithmetic mean and the median. Which is the best measure for central tendency of the ratios? Interpret the weighted average of profit margin and asset turn over of your industry.
+
+For the complete historical dataset of annual fiscal years (fiscalmonth=12 for all quarter-years), you have to calculate the following new independent variables:
+
+Firm size as a categorical variable. For each quarter, you have to label firms in 3 equal groups: small, medium, big according to the market value of the firms.
+
+Calculate the corresponding dummy (binary) variables for the firm size following the dummy encoding method.
+
+Calculate operating earnings per share deflated by stock price: oepsp = (ebit / sharesoutstanding) / originalprice
+
+Calculate earnings per share deflated by stock price: epsp = (netincome / sharesoutstanding) / originalprice
+
+Calculate book-to-market ratio: bmr = bookvalue / marketvalue
+
+In this model, the variable you have to use as dependent variable will be annual stock returns (instead of quarterly returns) one quarter in the future (f1.ry).
+
+Winsorization of ratios
+
+You have to check for very extreme values for the following ratios: profit margin, asset turn over, oepsp, bmr. Apply winsorization in case of very extreme values (keep at lest 98% of original values for each winsorization). Use the histogram to decide the level of winsorization.
+
+Multicollienarity
+
+Do the multicollienarity test considering all numeric independent variables:
+
+profit margin, asset turn over, oepsp, bmr
+
+Interpret the test. If there is a multicollienarity problem, propose how to solve it.
+
+-   Run a first multiple regression model to examine whether the financial ratios and firm size explain/predict future annual stock returns (one quarter later). For the ratios, use the winsorized version (if the ratio has extreme values)
+
+-   Interpret your model
+
+    -   Interpret the results of each coefficient (beta and their statistical significance)
+
+    -   Interpret the R-squared of the model
+
+-   Run a multiple regression but now using only the last complete year of data (year=2022)
+
+    -   What differences do you see compared with the previous model? Explain
+
+-   Using this cross-sectional dataset with only annual data for 2022, you have to do the following:
+
+    -   Using matrix algebra calculate the beta coefficients of the same regression model
+
+    -   Using matrix algebra calculate the standard errors of the beta coefficients
+
+    -   Using matrix algebra calculate the Hat Matrix
+
+    -   With the hat matrix identify possible leverage observations
+
+    -   Identify possible outliers using studentized residuals
+
+    -   Identify possible outliers using Cook's distance
+
+    -   Using studentized residuals and Cook's distance identify possible influential observations
+
+    -   List the influential observations and decide whether to drop them or keep some of them
+
+    -   Re-run the multiple regression model without the influential observation
+
+        -   Compare the model with the previous one. Which model was better? Explain the differences
+
+-   Deliverables
+
+This case must be done by each student and the work must be original. Please avoid possible interpretations of plagiarism.
+
+For each deliverable you have to submit a Jupyter Notebook (.ipynb and .html files). document
+
+# Evaluation criteria
+
+The evaluation criteria will be:
+
+| Section                                    | Weight | Notes                                                                                                                                                                                    |
+|------------------|------------------|------------------------------------|
+| Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
+| Statistical modeling                       | 40%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
+| Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                  |
+|                                            |        |                                                                                                                                                                                          |
+
+# Solution
+
+# Data management
+
+I import the csv datasets:
+
+```{python}
+import pandas as pd
+import numpy as np
+data = pd.read_csv("dataus2023.csv")
+data.shape
+
+firms = pd.read_csv("firmsus2023.csv")
+firms.shape
+
+```
+
+## Merging the datasets
+
+I do a left join to merge the panel dataset with the catalog of firms:
+
+```{python}
+firms.columns
+# I keep only the columns I need: company code, company name, status and industry:
+firms1 = firms[["empresa","Nombre","status","naics1"]]
+firms1.columns=['firm','Empresa','status','industria']
+# I do a left join using the panel data as the left dataset:
+data = pd.merge(data, firms1, on="firm", how='left')
+```
+
+This dataset has panel structure, also called long-format. Each row has financial information of a firm in one quarter, and each firm has many quarters (from 2000Q1 to 2023Q2). I set a multi-index composed of firm and quarter, so I make sure that the dataset is sorted correctly for further calculations such as quarterly and annual returns:
+
+```{python}
+data['qdate'] = pd.PeriodIndex(data.q, freq="Q")
+data.set_index(['firm','qdate'], inplace=True)
+data.head()
+data.index
+```
+
+## Variable Calculations
+
+Now I create new variables for the analysis. In the code I indicate which variable/column is being created.
+
+### Returns
+
+I calculate log quarterly and annual returns, as well as future quarterly returns:
+
+```{python}
+# Annual log returns:
+data['ry'] = np.log(data['adjprice']) - np.log(data.groupby(['firm'])['adjprice'].shift(4))
+# Quarterly log returns:
+data['rq'] = np.log(data['adjprice']) - np.log(data.groupby(['firm'])['adjprice'].shift(1))
+# Note that I use groupby function to ensure that the returns of the first quarters of a firm are not calculated since the previous row belongs to other firm!
+
+# Future quarterly and annual returns (1 quarter in the future):
+data['f1rq'] = data.groupby(['firm'])['rq'].shift(-1)
+data['f4rq'] = data.groupby(['firm'])['rq'].shift(-4)
+
+data['f1ry'] = data.groupby(['firm'])['ry'].shift(-1)
+data['f4ry'] = data.groupby(['firm'])['ry'].shift(-4)
+
+
+# I will use the future returns as dependent variable, so I will be able to understand which current variables might be statistically related to future returns
+
+# I check whether the return calculations are correct. I select rows where I can see 2 different firms and check whether returns and future returns where calculated correctly:
+data[["fiscalmonth","adjprice","rq","ry","f1ry","f4ry"]].iloc[182:210]
+```
+
+The return variables looks ok. When the firm changes, quarterly returns and annual returns are NaN, and for the last quarter(s) of the first firm, the future returns have NaN as expected.
+
+Now I calculate important profit variables and ratios:
+
+### Profit variables and financial ratios
+
+Now I create variables that measure different aspect of profitability, and with these variables I calculate important financial ratios. In case that the denominator of a financial ratio is zero I assign a NaN value.
+
+```{python}
+# ebit = operating profit = earnings before interest and taxes
+data['ebit'] = data['revenue'] - data['cogs'] - data['sgae']
+# Operating profit margin
+data['opm'] = np.where(data['revenue']==0,np.NaN,data['ebit'] / data['revenue'])
+data['netincome'] = data['ebit'] + data['otherincome'] + data['extraordinaryitems'] - data['finexp'] - data['incometax']
+# Profit margin
+data['pm'] = np.where(data['revenue']==0,np.NaN,data['netincome'] / data['revenue'])
+# ato = asset turn over = qué tanto la empresa vendió con respecto a su total de activos
+data['ato']= np.where(data['totalassets']==0,np.NaN,data['revenue'] / data['totalassets'])
+#
+data['currentratio'] = np.where(data['currentliabilities']==0,np.NaN,data['currentassets'] / data['currentliabilities'])
+# financial leverage = apalancamiento ; qué tanto la empresa debe $ con respecto a lo que tiene en activos
+data['finlev'] = np.where(data['totalassets']==0,np.NaN,data['longdebt'] / data['totalassets'])
+data['bookvalue'] = data['totalassets'] - data['totalliabilities']
+
+data['mvalue'] = data['originalprice'] * data['sharesoutstanding']
+data.head()
+```
+
+### Checking calculations
+
+To make sure that the variables where calculated correctly, I check the 2023 fiscal Quarter 3 (2023 Calendar Quarter 2) for Apple, Inc. These results are posted in the Apple page at: https://www.apple.com/newsroom/pdfs/fy2023-q3/FY23_Q3_Consolidated_Financial_Statements.pdf
+
+Here it is an extract of this report:\
+
+![](applefs.JPG)
+
+Now I do a query to see Apple total revenue (net sales) and net income from the dataset:
+
+```{python}
+#data[['q','fiscalmonth','revenue','cogs','sgae']].loc['AAPL']
+#data.loc[ [('AAPL')], ['revenue','cogs','sgae','ebit','netincome']]
+data.loc[ [('AAPL','2023Q2'), ('AAPL','2022Q2')], ['fiscalmonth','revenue','cogs','sgae','ebit','netincome']]
+
+#Another way to do a similar query:
+#appledata = data.loc['AAPL']
+#appledata[['Empresa','q','fiscalmonth','revenue','cogs','sgae','ebit','otherincome','incometax','finexp','netincome','extraordinaryitems']].loc[appledata['q']>'2021q1']
+
+```
+
+In the Apple report, we have to look at the columns "Nine months ended" since the data in this dataset is at fiscal YTD (Year-to-date). The information in the Apple site is in millions, while the information in the dataset is in thousands. Then, we have to divide our values by 1,000 to get the same value as in the Apple page. Here is a translation for the variable names according to the official report:
+
+-   Total net sales = revenue
+
+-   Total cost of sales = cogs
+
+-   Total operating expenses = sgae
+
+-   Operating income = ebit
+
+-   Net income = netincome
+
+We can see that what we have in the dataset is exactly what is published by Apple. Then, we can feel safe that our calculations for ebit and netincome are correct.
+
+Q2 of each year is the 3rd fiscal quarter for Apple, so the 9-month total revenue from Q4-2022 to Q2-2023 was USD \$293,787 million vs \$304,182 million total revenue for the same period 1 year before.
+
+## Descriptive Statistics
+
+I select the most recent annual fiscal data for all firms. I select those rows with fiscalmonth=12 and year=2022, that is the last year with complete annual information:
+
+```{python}
+# I select one industry
+
+numind = 1
+#numind = 2
+#numind = 3
+#numind = 4
+print(numind)
+datay = data.loc[(data['fiscalmonth']==12)].copy()
+if numind==1:
+  dataind = datay.loc[(datay['industria']=="Industrias manufactureras")].copy()
+elif numind==2:
+  dataind = datay.loc[(datay['industria']=="Comercio al por menor") |
+      ((datay['industria']=="Comercio al por mayor"))].copy()
+elif numind==3:
+  dataind = datay.loc[((data['industria']=="Servicios de alojamiento temporal y de preparación de alimentos y bebidas")) |
+      ((datay['industria']=="Servicios de apoyo a los negocios y manejo de residuos y desechos, y servicios de remediación")) |
+      ((datay['industria']=="Servicios de esparcimiento culturales y deportivos, y otros servicios recreativos")) |
+     ((datay['industria']=="Servicios de salud y de asistencia social")) |
+     ((datay['industria']=="Servicios educativos")) |
+     ((datay['industria']=="Servicios inmobiliarios y de alquiler de bienes muebles e intangibles")) |
+     ((datay['industria']=="Servicios profesionales, científicos y técnicos")) |
+     ((datay['industria']=="Transportes, correos y almacenamiento"))].copy()
+else:
+  dataind = datay.loc[((datay['industria']=="Servicios financieros y de seguros"))].copy()
+
+data2022ind = dataind.loc[(data['yearf']==2022)].copy()
+# I reset the index since this dataset is not a panel data (it's a cross-sectional)
+
+data2022ind=data2022ind.reset_index()
+# I drop the qdate column:
+data2022ind.drop(axis=1,columns=['qdate'],inplace=True)
+data2022ind.head(4)
+```
+
+I start with descriptive statistics of important financial variables that are not ratios:
+
+```{python}
+pd.options.display.float_format = '{:,.2f}'.format
+
+descstats1=data2022ind[['totalassets','mvalue','revenue','ebit','netincome']].describe()
+descstats1
+```
+
+I see that there is a total of 1,554 firms in this industry. The typical size in terms of total assets is about \$469 million (the median or 50 percentile). The typical size in terms of market value is \$607.7 million (the mvalue median). The biggest firm in market value has USD 2.2 trillion.
+
+In 2022 the typical firm sold about \$230.7 million. The median of ebit was -\$6.3 million, while the median of net income was -\$8.4 million. It looks that 2022 was not a good year for these firms in terms of earnings.
+
+For the financial ratios, I calculate weighted averages instead of arithmetic averages. The weighted average of ratio is the best measure of central tendency for a ratio or a percentage.
+
+To calculate a weighted average of a ratio, we can get the sum of the numerator divided by the sum of the denominator:
+
+```{python}
+sums = data2022ind[['ebit','revenue','netincome','totalassets','currentassets','currentliabilities','longdebt']].agg(['sum'])
+
+wavgratios = pd.DataFrame(dtype='float64')
+wavgratios['avgopm']= sums['ebit'] / sums['revenue']
+wavgratios['avgpm']= sums['netincome'] / sums['revenue']
+wavgratios['avgato'] = sums['revenue'] / sums['totalassets']
+wavgratios['avgcurrentratio'] = sums['currentassets'] / sums['currentliabilities']
+wavgratios['avgfinlev'] = sums['longdebt'] / sums['totalassets']
+
+print(wavgratios)
+
+```
+
+Now I calculate the arithmetic average and the median of these ratios:
+
+```{python}
+avgratios = data2022ind[['opm','pm','ato','currentratio','finlev']].agg(['mean'])
+print(avgratios)
+```
+
+The arithmetic mean of the ratios are totally different than the weighted average, and some of them look very weird. The arithmetic means are not representative since each firm has different size.
+
+Let's see the median of the ratios:
+
+```{python}
+medianratios = data2022ind[['opm','pm','ato','currentratio','finlev']].agg(['median'])
+print(medianratios)
+
+```
+
+The median of the ratios are still different, but they do not look weird. The median of the ratios can be representative, but the weighted average is much more accurate and representative than the median of the ratios.
+
+In sum, looking at the weighted average of the ratios, we can say that in 2022 the firms of this industry on average generated:
+
+Out of total revenue, firms generated 14% of ebit (wavg_opm=0.14)
+
+Out of total revenue, firms generated 10% of netincome (wavg_pm=0.10)
+
+Out of total assets, firms sold 74% in revenue (wavg_ato = 0.74)
+
+Currentassets are 1.45 times currentliabilites (wavg_currentratio = 1.45)
+
+Out of total assets, firms have 26% in long-term debt (wavg_finlev = 0.26)
+
+# Multiple regression - advanced topics
+
+## Calculation of variables
+
+For the complete historical dataset of annual fiscal years (fiscalmonth=12 for all quarter-years), you have to calculate the following new independent variables:
+
+-   Firm size as a categorical variable. For each quarter, you have to label firms in 3 equal groups: small, medium, big according to the market value of the firms.
+
+-   Calculate the corresponding dummy (binary) variables for the firm size following the dummy encoding method.
+
+-   Calculate operating earnings per share deflated by stock price: oepsp = (ebit / sharesoutstanding) / originalprice
+
+-   Calculate earnings per share deflated by stock price: epsp = (netincome / sharesoutstanding) / originalprice
+
+-   Calculate book-to-market ratio: bmr = bookvalue / marketvalue
+
+In this model, the variable you have to use as dependent variable will be annual stock returns (instead of quarterly returns) one quarter in the future (f1.ry).
+
+The first part we use the same panel dataset of US firms, and the last regression model we did in Project1.
+
+I calculate the following financial ratios to be used as explanatory variables in my model:
+
+-   Earnings per share deflated by price (epsp)
+-   Revenue annual growth (revgrowth)
+-   Operating earnings annual growth (egrowth)
+-   Book-to-market ratio (bmr)
+
+Here are the formulas:
+
+For Earnings per share deflated by price = epsp:
+
+$$
+epsp = \frac{eps}{stockprice}
+$$ 
+$$
+eps = \frac{netincome}{totalshares}
+$$
+
+eps = Earnings per share = Net Income / \# Shares epsp = Earnings per share deflated by price = eps / (Stock Price)
+
+netincome= Net Income = Revenue - cogs - sgae - otheropexp - finexp - incometax + extraincome
+
+cogs = Cost of good sold sgae = Sales and general administrative expenses otheropexp = other operating expenses finexp = financial expenses incometax = income taxes extraincome = extraordinary income (non-opearational)
+
+Revenue annual growth:
+
+$$
+revgrowth = \frac{revenue_t}{revenue_{t-4}}-1
+$$
+
+Operating earnings growth:
+
+Operating earnings = ebit = Earnings before interest and taxes
+
+ebit = Revenue - cogs - sgae
+
+$$
+egrowth = \frac{ebit_t}{ebit_{t-4}}-1
+$$
+
+Book-to-market ratio:
+
+$$
+bmr = \frac{bookvalue}{marketvalue}
+$$ 
+bookvalue = Shareholders' value = (total assets - total liabilities)
+
+marketvalue = (StockPrice)\*(TotalShares)
+
+## Multiple Regression model
+
+I will focus on the Manufacturing industry for this section.
+
+I will examine whether the 4 financial ratios and firm size are related to the stock annual returns one quarter in the future in the Manufacturing industry.
+
+I will use a multiple regression model where the dependent variable is the stock return one quarter in the future and the independent variables are the 4 ratios and firm size. Then:
+
+Dependent variable = Future stock annual return (1 quarter in the future)
+
+Independent variables:
+
+Firm size = logarithm of market capitalization
+
+epsp = earnings per share divided by price
+
+revgrowth = revenue annual growth
+
+egrowth = operating earnings growth
+
+bmr = book-to-market ratio
+
+I use the dataset with firms from the Manufacturing industry.
+
+### Selecting manufacturing firms
+
+I use the dataset with only Manufacturing firms.
+
+### Calculate independent variables
+
+I calculate the variables I need to calculate the financial ratios and firm size:
+
+```{python}
+
+# earnings per share
+dataind['eps'] = np.where(dataind['sharesoutstanding']==0,np.NaN,dataind['netincome'] / dataind['sharesoutstanding'])
+# I need to validate whether the denominator is 0
+dataind['epsp'] = np.where(dataind['originalprice']==0,np.NaN,dataind['eps'] / dataind['originalprice'])
+# For market value I use originalprice that is the historical stock price without considering
+#    stocks splits. I do this since sharesoutstanding is the # of historical shares
+
+# operating earnings per share
+dataind['oeps'] = np.where(dataind['sharesoutstanding']==0,np.NaN,dataind['ebit'] / dataind['sharesoutstanding'])
+# I need to validate whether the denominator is 0
+dataind['oepsp'] = np.where(dataind['originalprice']==0,np.NaN,dataind['oeps'] / dataind['originalprice'])
+
+dataind['bmr'] = np.where(dataind['mvalue']==0,np.NaN,(dataind['totalassets'] - dataind['totalliabilities']) / dataind['mvalue'])
+# Revenue annual growth:
+dataind['revgrowth'] = np.where(dataind.groupby(['firm'])['revenue'].shift(4)==0,np.NaN, 
+                     dataind['revenue'] / dataind.groupby(['firm'])['revenue'].shift(4) - 1)
+# Operating earnings growth:
+dataind['egrowth'] = np.where(dataind.groupby(['firm'])['ebit'].shift(4)==0,np.NaN, 
+                     dataind['ebit'] / dataind.groupby(['firm'])['ebit'].shift(4) - 1)
+```
+
+### Check and treat extreme values of independent variables
+
+I check descriptive statistics for each ratio to identify extreme values:
+
+```{python}
+ratiossummary= dataind.agg(
+  {
+    "epsp": ["min","max","median"],
+    "oepsp": ["min","max","median"],
+    "bmr": ["min","max","median"],
+    "revgrowth": ["min","max","median"],
+    "egrowth": ["min","max","median"]
+  }
+)
+ratiossummary
+
+
+```
+
+All ratios have very extreme values.
+
+Very extreme values can cause a serious problem in a regression model when including the variables as independent variables; the regression coefficients become unreliable.
+
+A common practice to avoid very extreme values is to apply the winsorization process to the variables. The winsorization process flats the very extreme values and replace them with a non-so extreme value from the same variable. Winsorization uses percentiles in both sides, for big and small values (negative).
+
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt
+#from scipy.stats.mstats import winsorize
+dataind['epsp'].describe()
+
+#dataind['epspw']=winsorize(dataind['epsp'],(0.01,0.99), nan_policy='omit')
+# It seems that winsorize has problems with NaN values; it did not work
+
+#I will use the clip method of pandas to do the winsorization:
+
+dataind['epspw']=dataind['epsp'].clip(lower=dataind['epsp'].quantile(0.008,
+                                         interpolation="lower"),
+                                  upper=dataind['epsp'].quantile(0.999,
+                                         interpolation="higher"))
+dataind['epspw'].describe()
+plt.clf()
+sns.histplot(data=dataind,x='epspw')
+plt.show()
+
+```
+
+```{python}
+dataind['oepsp'].describe()
+
+#dataind['epspw']=winsorize(dataind['epsp'],(0.01,0.99), nan_policy='omit')
+# It seems that winsorize has problems with NaN values; it did not work
+
+#I will use the clip method of pandas to do the winsorization:
+
+dataind['oepspw']=dataind['oepsp'].clip(lower=dataind['oepsp'].quantile(0.008,
+                                         interpolation="lower"),
+                                  upper=dataind['oepsp'].quantile(0.999,
+                                         interpolation="higher"))
+dataind['oepspw'].describe()
+plt.clf()
+sns.histplot(data=dataind,x='oepspw')
+plt.show()
+
+```
+
+I do the winsorization for the rest of the ratios:
+
+```{python}
+dataind['bmr'].describe()
+dataind['bmrw']=dataind['bmr'].clip(lower=dataind['bmr'].quantile(0.002,
+                                         interpolation="lower"),
+                                  upper=dataind['bmr'].quantile(0.995,
+                                         interpolation="higher"))
+dataind['bmrw'].describe()
+
+plt.clf()
+sns.histplot(data=dataind,x='bmrw')
+plt.show()
+```
+
+```{python}
+
+dataind['revgrowth'].describe()
+dataind['revgrowthw']=dataind['revgrowth'].clip(lower=dataind['revgrowth'].quantile(0.0005,interpolation="lower"),
+                                  upper=dataind['revgrowth'].quantile(0.985,
+                                         interpolation="higher"))
+dataind['revgrowthw'].describe()
+
+plt.clf()
+sns.histplot(data=dataind,x='revgrowthw')
+plt.show()
+```
+
+```{python}
+dataind['egrowth'].describe()
+dataind['egrowthw']=dataind['egrowth'].clip(lower=dataind['egrowth'].quantile(0.01,interpolation="lower"),
+                                  upper=dataind['egrowth'].quantile(0.985,
+                                         interpolation="higher"))
+dataind['egrowthw'].describe()
+
+plt.clf()
+sns.histplot(data=dataind,x='egrowthw')
+plt.show()
+```
+
+```{python}
+dataind['pm'].describe()
+dataind['pmw']=dataind['pm'].clip(lower=dataind['pm'].quantile(0.02,interpolation="lower"),
+                                  upper=dataind['pm'].quantile(0.999,
+                                         interpolation="higher"))
+dataind['pmw'].describe()
+
+plt.clf()
+sns.histplot(data=dataind,x='pmw')
+plt.show()
+```
+
+```{python}
+dataind['ato'].describe()
+dataind['atow']=dataind['ato'].clip(lower=dataind['ato'].quantile(0.001,interpolation="lower"),
+                                  upper=dataind['ato'].quantile(0.999,
+                                         interpolation="higher"))
+dataind['atow'].describe()
+
+plt.clf()
+sns.histplot(data=dataind,x='atow')
+plt.show()
+```
+
+Now I generate the size variable as the natural log of market capitalization:
+
+```{python}
+dataind['size']=np.where(dataind['mvalue']==0,np.NaN,np.log(dataind['mvalue']))
+plt.clf()
+sns.histplot(data=dataind,x='size')
+plt.show()
+dataind['size'].describe()
+```
+
+I will also include firm size category as independent variable: small, medium-size, and large. I will calculate a categorical variable according to percentiles for each fiscal year, since each year firms can change firm size. I will use market capitalization as a measure of firm size to get the percentiles and the categories:
+
+```{python}
+dataind['sizegroup'] = dataind.groupby(dataind['yearf'])['mvalue'].transform(lambda x: pd.qcut(x,3,labels=["small","medium","large"]))
+# I check how many firms where classified in each group:
+#dataind.groupby('sizegroup')['sizegroup'].count()
+```
+
+I can see how many firms are in each size group by quarter:
+
+```{python}
+#pd.crosstab(index=dataind['yearf'],columns='count')
+pd.crosstab(index=dataind['yearf'],columns=dataind['sizegroup'])
+```
+
+I see that for each quarter, firms are equally distributed among the size groups.
+
+To include a categorical variable as independent variable in a multiple regression model, it is needed to codify the categorical variable in N-1 dummy variables, where N is the number of unique categories of the categorical variable. In this case, sizegroup has 3 categories, so I need to endup in 2 dummy variables.
+
+I generate the 2 dummy variables using the sizegroup categorical value:
+
+```{python}
+# I replicate the sizegroup variable since the get_dummies function drops the original categorical variable
+dataind['sizeg'] = dataind['sizegroup']
+# I create the dummies of sizeg.  
+dataind = pd.get_dummies(dataind,columns=['sizeg'],drop_first=True, dummy_na=True)
+# The new dataind_dummies dataset has all the columns of dataind plus the 3 dummies: 2 for size group and one to identify NA values
+# The get_dummies function assign 0 to the new dummies if the categorical value has NA value, so I will set as nan when the sizeg has NA: 
+dataind.loc[dataind.sizeg_nan == 1, ["sizeg_medium","sizeg_large","mvalue","size"]].head(5)
+dataind.loc[dataind.sizeg_nan == 1, ["sizeg_medium","sizeg_large"]] = np.nan
+```
+
+I now create a dataset with the dependent and the independent variables:
+
+```{python}
+XY = dataind[["f1ry","epspw","oepspw","bmrw","revgrowthw","egrowthw","pmw","atow","sizeg_medium","sizeg_large"]].copy()
+
+```
+
+### Correlation matrix
+
+Before running the multiple regression model, I create a correlation matrix with the independent and dependent variable to start visualizing possible relationships:
+
+```{python}
+import seaborn as sn
+import matplotlib.pyplot as plt
+
+corr_matrix = XY[["f1ry","epspw","oepspw","bmrw","revgrowthw","egrowthw","pmw","atow","sizeg_medium","sizeg_large"]].corr()
+sn.heatmap(corr_matrix, annot=True)
+plt.show()
+
+```
+
+The diagonal of a correlation matrix must be equal to 1, since one variable correlates 100% with itself.
+
+We see that the correlation between f1yr and epspw = +0.48 is the highest correlation of all pairs. In terms of absolute value of correlations, bmrw has the second largest correlation with f1yr (=-0.19).
+
+The correlation between epsw and oepsw is very high (0.94), so it could be a problem of multicollienarity. The rest of pairs of correlations among the independent variables are very small, so I do not expect to have multicollienarity problems among then.
+
+### Checking for Multicollienarity
+
+I run the multicollienarity test:
+
+```{python}
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+# I import the library to run the regression model:
+import statsmodels.api as sm
+
+# I create a dataset with the indepdendent variables:
+X = XY.drop(axis=1,columns=['f1ry'])
+
+# VIF dataframe
+vif_data = pd.DataFrame(dtype='float64')
+vif_data["variable"] = X.columns
+    
+# calculating VIF for each variable
+vif_data["VIF"] = [variance_inflation_factor(X.dropna().values, i)
+                          for i in range(len(X.columns))]
+print(vif_data)
+# I add a column of 1's to the X dataframe to include the constant (beta0) in the model
+X=sm.add_constant(X)
+```
+
+epspw and owpspw have a VIF higher then 5. Although it is less than 10 (the most common critical value), I will drop one of them. Both have almost the same VIF value, so I will keep the operational eps since operational earnings (which comes from ebit) is a better measure of firm productivity compared to earnings (which comes from netincome).
+
+```{python}
+XY.drop(axis=1,columns=['epspw'],inplace=True)
+
+```
+
+
+Now I run the multiple regression to examine how much the financial ratios and firm size help to explain the future stock return one quarter in the future.
+
+## Estimation of the multiple regression model using the panel data
+
+I estimate the regression model:
+
+```{python}
+import statsmodels.api as sm
+XYc=sm.add_constant(XY)
+# I estimate the model
+model1 = sm.OLS.from_formula('f1ry ~ oepspw + bmrw + revgrowthw + egrowthw + pmw + atow + sizeg_medium + sizeg_large',data=XYc,missing='drop').fit()
+
+print(model1.summary())
+```
+
+When including a categorical variable using the corresponding dummies, we can write 1 regression equation for each group.
+
+Then, for small firms, the regression equation is the following:
+
+Small firms: sizeg_medium = 0 and sizeg_large = 0, then:
+
+$$
+E[f1ry]=0.0737+0.6253(oepspw)-0.1343(bmrw)-0.0064(revgrowthw)-0.0024(egrowthw)+0.0021(pmw)-0.0303(atow)
+$$
+
+For medium firms: sizeg_medium = 1 and sizeg_large = 0, then:
+
+$$
+
+E[f1ry]=(0.0737+0.0415) +0.6253(oepspw)-0.1343(bmrw)-0.0064(revgrowthw)-0.0024(egrowthw)+0.0021(pmw)-0.0303(atow)
+
+$$
+
+The intercept of the regression equation for the medium-firms increases in 0.0415, which is the beta coefficient of the medium dummy variable.
+
+For large firms: sizeg_medium=0 and sizeg_large = 1, then:
+
+$$
+E[f1ry]=(0.0737+0.0674) +0.6253(oepspw)-0.1343(bmrw)-0.0064(revgrowthw)-0.0024(egrowthw)+0.0021(pmw)-0.0303(atow)
+$$
+
+Compared with small firms, the intercept of the regression equation for the large-firms increases in 0.0674, which is the beta coefficient of the large dummy variable.
+
+### Interpretation of the regression model
+
+The independent variables explain model explains around 21.8% of the variability of the dependent variable (Future annual stock returns). All p-values of independent variables are much less than 0.05, so there is statistical evidence at least at the 95% confidence level, that all variables are linearly related to future annual returns.
+
+Operating earnings per share divided by price (oepspw) and profit margin have a positive and significant relationship with the future stock annual returns. Book-to-market ratio (bmrw), revenue growth (revgrowthw) and earnings growth (egrowthw) have a negative and significant relationship with future stock annual returns.
+
+Compared to small firms, after considering the effect of all financial ratios, medium firms offer +4.15% future annual returns above. This difference between future annual returns of small firms and medium firms is significant.
+
+Compared to small firms, after considering the effect of all financial ratios, large firms offer +6.7% future annual returns above. This difference is significiant.
+
+epspw is the variable with the highest explanatory power since its absolute t value is the highest, followed by bmrw.
+
+Considering the effect of all other explanatory variables, for each +1.0 unit increase of epspw, future annual stock returns is expected to increase in +0.62 (62 percentual points). In the real world epspw never changes in 1 unit since epspw is a %. We can re-frame the interpretation using increases of 0.1 in the independent variables instead of +1.0. For each +0.1 increase of epspw, future annual stock return is expected to increase in +0.062 units (6.2 percentual points) assuming that the rest of the explanatory variables do not change.
+
+For each +0.1 increase of bmrw, future annual stock return is expected to decrease in 0.013 units (1.3 percentual points) assuming that the rest of the explanatory variables do not change.
+
+For each +0.1 increase of revenue annual growth, future annual stock return is expected to decresae in 0.00064 (0.064 percentual points) assuming that the rest of the explanatory variables do not change.
+
+For each +0.1 increase of annual earnings growth, future annual stock return is expected to decrease in about 0.00024 (0.024 percentual points) assuming that the rest of the explanatory variables do not change.
+
+Regarding the effect of size, the base group of comparison is the small firms, so the coefficients of size_medium and size_large dummy variables refer to the small group. We can say the following.
+
+Compared to the small firms, medium-size firms usually have significant higher average future annual stock returns; medium-size firms have an average future return of 4.15 percent points higher than the average future return of small firms.
+
+Compared to the small firms, large firms usually have significant higher average annual stock returns; large firms have an average future return of 6.74 percent points higher than the average future return of small firms.
+
+Now I add the interaction between firm size and operating earnings per share. To add an interaction term, I need to multiply 2 independent variables and add it to the model. The sm.OLS has a convenient way to include this term, just by putting the 2 independent variables separated by a semicolon ":"
+
+```{python}
+model2 = sm.OLS.from_formula('f1ry ~ oepspw + bmrw + revgrowthw + egrowthw + pmw + atow + sizeg_medium + sizeg_large + sizeg_medium:oepspw + sizeg_large:oepspw',data=XYc,missing='drop').fit()
+print(model2.summary())
+```
+Interestingly, after adding these interactions effects, 2 variables became non significant: earnings growth and asset turn over (pvalue=0.165). 
+
+With these 2 interaction terms, we can write 3 regressions, 1 for each size group:
+
+For small firms, sizeg_medium = sizeg_large =0, then:
+
+$$
+E[f1ry] = 0.0613+0.6519(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+$$
+
+For medium firms, sizeg=medium=1 and sizeg_large=0, then:
+
+$$
+E[f1ry] = (0.0613+0.0383) +(0.6519-0.1950)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+E[f1ry] = (0.0996) +(0.4569)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+
+$$
+Compared to the equation for small firms, the equation for medium firms had a higher intercept (beta0=0.0996), and the oepspw beta coefficient decreased from 0.6519 to 0.4569 (b1=0.4569). 
+Then, compared to medium firms, small firms have a significant higher effect of oepsw on future stock returns.
+
+Now, the equation for large firm:
+For large firms, sizeg_medium=0 and sizeg_large=0, then:
+$$
+E[f1ry] = (0.0613+0.1140) +(0.6519-0.8432)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+E[f1ry] = (0.1753) + (-0.1913)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+
+$$
+Compared to the equation for small firms, the equation for large firms had a higher intercept (beta0=0.1753 vs 0.0613), and the oepspw beta coefficient decreased from +0.6519 to -0.1913 (b1=-0.1913). It is interesting to see that the effect of oepspw for the case of large firms is actually negative, but the intercept is very high! Then, for large firms, if earnings per share drops in one year, it is likely that next year future returns will move up. 
+
+The direct effect of oepspw on future annual returns increased a little bit from 0.62 to 0.65. Most of the relationships are similar than the previous model.
+
+The interaction effects are negative and significant. What does this mean? First, I can see that the bigger the firm, the less the effect of oepspw on future stock return. I start interpreting the interaction effect between the medium dummy and operational earnings per share.
+
+Compared to small firms, the effect of oepspw on future annual returns for medium firms is 0.195 less. In other words, the effect of oepspw on future annual returns for small firms is 0.195 higher compared to the effect (beta coefficient) of oepspw on future annual returns for medium firms.
+
+Compared to small firms, the effect of oepspw on future annual returns for large firms is less in 0.84 points. In other words, the effect of oepspw on future annual returns for small firms is 0.84 points higher compared to the effect (beta coefficient) of oepspw on future annual returns for large firms.
+
+
+
+## Multiple regression using cross-sectional data
+
+I now use the data of the last fiscal year (2022) and run a cross-sectional regression model (instead of using all the history).
+
+I create a dataset with the fiscal year=2022. I will keep the firm ticker and set it to index.  
+
+```{python}
+XY2022 = dataind[dataind['yearf']==2022].copy()
+# I reset the index to get the firm as column:
+XY2022.reset_index(inplace=True)
+
+XY2022 = XY2022[["firm","f1ry","oepspw","bmrw","revgrowthw","egrowthw","pmw","atow","sizeg_medium","sizeg_large"]]
+
+# I set firm as the index to identify each row:
+XY2022.set_index(['firm'], inplace=True)
+
+```
+
+I estimate the regression model with this dataset:
+
+```{python}
+XY2022c = sm.add_constant(XY2022)
+model3 = sm.OLS.from_formula('f1ry ~ oepspw + bmrw + revgrowthw + egrowthw + pmw + atow + sizeg_medium + sizeg_large + sizeg_medium:oepspw + sizeg_large:oepspw',data=XY2022c,missing='drop').fit()
+print(model3.summary())
+```
+Comparison with the model that uses all historical years. Using the 2022 cross-sectional dataset:
+
+- bmrw, revgrowthw, egrowth, pnw and ato became non significant! 
+- oepspw keeps its positive statistical effect
+- size dummies became more positive
+- the interaction effect for large firms is not significant
+- the interaction effect for medium firms became positive (and significant); this means that compared to small firms, for medium firms the effect of epspw on future  returns is significantly greater (in +0.42) . 
+- Surprisingly, the R-squared of the model increased from 22% to 53.2%, even with less significant variables! 
+
+In the US financial market, the 2022 year was a very bad year. The whole market lost about 25% of its market value! It seems that in recession or difficult times, earnings and size keep their importance, but all other variables become insignificant.
+
+# Regression Diagnosis
+
+Before the diagnosis, I will calculate the variance-covariance matrix using matrix algebra.
+
+## Variance-Covariance matrix
+
+I start calculating the variance-covariance matrix using matrix algebra.
+
+The variance-covariance matrix has variances in its diagonal and covariances in its off-diagonal terms:
+
+$$
+COV=\begin{bmatrix}VAR(X_1) & COV(X_1,X_2)& ... &COV(X_1,X_n)\\
+COV(X_2,X_1) & VAR(X_2)& ... &COV(X_2,X_n)\\
+... & ... & ... & ...\\
+COV(X_n,X_1) & ...& ... &VAR(X_n^2)\\
+\end{bmatrix}
+$$
+
+The variance of one random variable is the expected value of the squared deviations from the mean:
+
+$$
+Var(X)=E[X-\bar{X}]^2 = E[X^2+\bar{X}^2-2X\bar{X}]
+$$
+
+Since $E[X]=\bar{X}$, and it is constant:
+
+$$
+Var(X)=E[X^2]+\bar{X}^2-2\bar{X}^2=E[X^2]-\bar{X}^2
+$$
+
+Variance can be expressed as the expected value of squared X minus its squared mean.
+
+Covariance between 2 random variables is the expected value of the product deviations from respective means:
+
+$$
+COV(X,Y)=E[(X-\bar{X})(Y-\bar{Y})]=E[XY]-E[X\bar{Y}]-E[\bar{X}Y]+\bar{X}\bar{Y}
+$$ Since $E[X\bar{Y}]=\bar{X}\bar{Y}$, and $E[\bar{X}Y]=\bar{X}\bar{Y}$:
+
+$$
+COV(X,Y)=E[XY]-2\bar{X}\bar{Y}+\bar{X}\bar{Y}=E[XY]-\bar{X}\bar{Y}
+$$
+
+The covariance can be expressed as the expected value of the product of both variables minus the product of both means.
+
+The expected value of X squared can be calculated in matrix operation as:
+
+$$
+E[X^2] = (1/(n-1))X'X
+$$
+
+$X'X$ results in a matrix where its diagonal is the sum of squares of each variable, and the off-diagonals are the sum of product of pairs of variables. When we divide each of these terms by (n-1) we get the variances and all pair covariances.
+
+If I define a vector of X means as $M_x$:
+
+$$
+M_{x}=\begin{bmatrix}\bar{X_{1}}\\
+\bar{X_{2}}\\
+...\\
+\bar{X_{n}}
+\end{bmatrix}
+$$ The product $M_xM_x'$ will have the means of each X squared in its diagonal, and the product of means in the off-diagonal:
+
+$$
+M_xM'_x=\begin{bmatrix}\bar{X_{1}^{2}} & \bar{X_1}\bar{X_2}& ... &\bar{X_1}\bar{X_n}\\
+\bar{X_2}\bar{X_1} & \bar{X_{2}^{2}}& ... &\bar{X_2}\bar{X_n}\\
+... & ... & ... & ...\\
+\bar{X_n}\bar{X_1} & ...& ... &\bar{X_{n}^{2}}\\
+\end{bmatrix}
+$$
+
+If I subtract this matrix from the previous matrix $E[X^2]$ I will get the variance-covariance matrix.
+
+Before doing calculations, I will drop all null values. 
+
+```{python}
+XY2022=XY2022.dropna()
+
+XY2022.shape
+```
+
+I ended up with the same number of valid observations that was reported in the last regression. Now I will continue calculating the variance-covariance matrix.
+
+I now separate the X and Y datasets with this XY dataset. I will not use the cons column since that is used only for the regression:
+
+```{python}
+X=XY2022[["oepspw","bmrw","revgrowthw","egrowthw","pmw","atow","sizeg_medium","sizeg_large"]]
+Y = XY2022["f1ry"].to_frame()
+
+```
+
+With the X matrix I calculate the matrix $E[X^2]$
+
+```{python}
+pd.options.display.float_format = '{:,.4f}'.format
+
+n = X.shape[0]
+Ex2 = X.transpose() @ X / (n-1)
+Ex2
+
+# I can also use np.matmul from numpy:
+#Ex = np.matmul(X.transpose(),X) / (n-1)
+#Ex
+```
+
+Now I calculate the series of X means (mean by columns):
+
+```{python}
+Mx = X.mean()
+Mx
+Mx.shape
+
+```
+
+Now I calculate the variance-covariance matrix.
+
+I first calculate the outer product of the vector Mx to get a matrix with the sum of squared means and product means:
+
+```{python}
+Mx2= np.outer(Mx,Mx.transpose())
+Mx2
+
+```
+
+I now subtract this matrix of mean products from the matrix Ex of expected values of the X squared:
+
+```{python}
+COV = Ex2 - n/(n-1) * Mx2
+COV
+```
+
+I multiplied times (n/(n-1)) to adjust for (n-1) degrees of freedom.
+
+I can test my calculation with the numpy.cov function:
+
+```{python}
+cov1=X.cov()
+type(cov1)
+cov1
+```
+
+I got the same result.
+
+## Correlation matrix
+
+I now calculate the correlation matrix using the covariance matrix.
+
+The correlation matrix has the following values:
+
+$$
+CORR=\begin{bmatrix}1 & CORR(X_1,X_2)& ... &CORR(X_1,X_n)\\
+CORR(X_2,X_1) & 1 & ... &CORR(X_2,X_n)\\
+... & ... & ... & ...\\
+CORR(X_n,X_1) & ...& ... &1\\
+\end{bmatrix}
+$$
+
+Covariance between 2 random variable is a measure of linear relationship between them, but its magnitude is not easy to interpret since it can have any negative, zero or positive number. Correlation is a standardized version of covariance that it is possible to provide a meaningful interpretation.
+
+Correlation between 2 random variables is a measure of linear relationship between them, but measured in %. It has values from -1 to +1; if the correlation is +1 both variables are equal or they move exactly in the same proportion in the same direction; if correlation is -1 one variable moves exactly in opposite direction. If we have a positive correlation (\<1), one variable moves in the same direction with a probability equal to this correlation.
+
+For 2 variables we can express correlation as the standardized version of their covariance:
+
+$$
+CORR(x,y) = \frac{COV(x,y)}{SD(x)SD(y)}
+$$
+
+Now, if I have more than 2 variables where each is a column of a matrix, I can calculate a correlation matrix where the diagonal will be equal to 1, and the off-diagonals will be the pairs of correlations.
+
+I can calculate this correlation matrix with the following matrix operation:
+
+$$
+CORR =D^{-1}COVD^{-1}
+$$
+
+Where D is the diagonal matrix of standard deviations of each variable; it has the standard deviations of all Xi variables in its diagional, and zero in its off-diagonals.
+
+I can get the standard deviations from the variance-covariance matrix. I extract the diagonal to get the variances, and then calculate the squared root to get the standard deviations:
+
+```{python}
+SD = np.sqrt(np.diag(COV))
+SD
+# i can check whether the calculated standard deviations are correct:
+X.std()
+
+```
+
+I create the D matrix:
+
+```{python}
+D =np.diag(SD)
+D
+```
+
+I calculate the correlation matrix:
+
+```{python}
+CORR = np.linalg.inv(D) @ COV @ np.linalg.inv(D)
+CORR
+
+```
+
+I can compare my calculation with the corr function from pandas:
+
+```{python}
+corr1 = X.corr()
+corr1
+```
+
+I got the same result.
+
+
+## Regression Diagnosis
+
+I will do diagnostic analysis with this multiple regression model.
+
+I first calculate the beta coefficients using matrix algebra
+
+Remember that a multiple regression model can be expressed in matrix algebra as:
+
+$$
+\hat{y} =Xb
+$$ 
+
+And the regression coefficients can be estimated as follows:
+
+$$
+b=(X'X)^{-1}X'y
+$$
+
+Then I estimate the beta coefficients of the previous regression:
+
+```{python}
+# Using matrix algebra to estimate the beta coefficients:
+XY2022=XY2022.dropna()
+
+Xc = XY2022.drop(columns=['f1ry'],axis=1)
+Xc=sm.add_constant(Xc)
+Y = XY2022["f1ry"].to_frame()
+
+xtx = Xc.transpose() @ Xc
+xty = Xc.transpose() @ Y 
+invtxt = np.linalg.inv(xtx)
+betas = invtxt @ xty
+betas
+```
+Now I estimate the standard errors of the beta coefficients using matrix algebra:
+
+I first calculate the predicted Y values and the errors:
+
+
+```{python}
+Yhat = np.matmul(Xc, betas)
+Yhat.columns=['Yhat']
+Yhat['Y'] = Y['f1ry']
+Yhat['errors'] = Yhat.Y - Yhat.Yhat 
+Yhat['errors'].std()
+# The standard errors of the beta coefficients are:
+stderrbetas = Yhat['errors'].var() * invtxt
+stderrbetas = np.sqrt(stderrbetas.diagonal())
+stderrbetas
+```
+
+
+```{python}
+model2 = sm.OLS.from_formula('f1ry ~ oepspw + bmrw + revgrowthw + egrowthw + pmw + atow + sizeg_medium + sizeg_large', data=XY2022c,missing='drop').fit()
+print(model2.summary())
+```
+```{python}
+SSR = pow(Yhat['Yhat'] - Yhat['Y'].mean(),2).sum()
+SST = pow(Yhat['Y'] - Yhat['Y'].mean(),2).sum()
+SSE = pow(Yhat['Yhat'] - Yhat['Y'],2).sum()
+R2 = SSR / SST
+R2
+```
+
+
+### Outliers vs leverage vs influential observations
+
+Usually outliers are considered those extreme values of a variable. In the context of simple regression diagnosis, a point is considered outlier when the point is not following the general trend or relationship with the dependent variable. In the context of multiple regression analysis, an outlier observation is an observation that is not following the general trend of the relationship between the dependent variable and the independent variables.
+
+For simple regression (1 independent variable), a leverage point is an extreme value of the independent variable without considering the general trend with the dependent variable. For a multiple regression with p independent variables, a specific observation i with p values where 1 or more can be extreme or the combination of the values is rare or extreme.
+
+In a multiple regression, an observation can be influential if it is an outlier and/or a leverage point that can significantly influence the value of the regression coefficients or their standard errors.
+
+### Detection of leverage points
+
+Remember that a multiple regression model can be expressed in matrix algebra as:
+
+$$
+\hat{y} =Xb
+$$ 
+
+And the regression coefficients can be estimated as follows:
+
+$$
+b=(X'X)^{-1}X'y
+$$
+
+Then, the predicted values of y can be expressed in matrix algebra as:
+
+$$
+\hat{y}=X(X'X)^{-1}X'y
+$$ We can define a matrix H with only X terms to reduce this expression:
+
+$$
+H=X(X'X)^{-1}X'
+$$
+
+Then, the predicted values can be expressed in terms of this H matrix:
+
+$$
+\hat{y}= Hy
+$$
+
+This H matrix is called the *Hat* matrix since it is the matrix that *puts* the *hat* to the observed y values to get the predicted values.
+
+Then, a specific predicted value $\hat{y_i{$ will be a linear combination of real $y_i$ values weighted with the specific $h_{ij}$ values:
+
+$$
+\hat{y_i} = h_{i1}y_1+h_{i2}y_2+h_{i3}y_3+...+h_{in}y_n
+$$
+
+Where $n$ is the \# of observations of the dataset.
+
+Then, a predicted $\hat{y_i}$ value depends on all real values of the variable $y$ and specific values of the row i of the H matrix. The H matrix dimension is $nxn$; n rows and n columns.
+
+A specific $h_{ij}$ is considered a **leverage** that quantifies the influence that the real value $y_i$ has on the predicted $y_i$ value. The $h_{ii}$ is a measure of **distance** between the values of the $i$ observation and their corresponding means.
+
+The diagonal of the H matrix has all the $h_{ii}$ values. The sum of the H diagional terms is equal to the \# of beta coefficients including the beta0 (constant) (=p+1).
+
+An observation i can be considered a *leveraged and possible* influential observation if the $h_{ii}$ value is greater than 3\*(p+1)/n:
+
+$$ 
+h_{ii}>3(\frac{p+1}{n})
+$$
+
+Let's calculate the H matrix with the X values:
+
+```{python}
+# Add the constant to X1:
+#X1=sm.add_constant(X)
+# Calculate the Hat matrix:
+# H = X (X'X)^(-1) X':
+H = np.dot(Xc,np.dot(np.linalg.inv(np.dot(Xc.transpose(),Xc)),Xc.transpose()))
+# I could use also np.matmul instead of np.dot or @
+#H2 = np.matmul(X1,np.matmul(np.linalg.inv(np.matmul(X1.transpose(),X1)),X1.transpose()))
+# H2 endup as a dataframe, and H ends up as an array of (nxn) dimension
+
+H.shape
+
+```
+
+I can test whether the H is correct by estimating the predicted y values:
+
+```{python}
+
+Yhat1 = np.dot(H,Y)
+Yhat1
+# The beta coefficients can be estimated as: 
+b = np.dot(np.linalg.inv(np.dot(Xc.transpose(),Xc)),np.dot(Xc.transpose(),Y))
+b
+#  Doing the same matrix algebra with the @ operand:
+betas = np.linalg.inv(Xc.transpose() @ Xc) @ (Xc.transpose() @ Y )
+betas
+# It seems that using the @ operand leaves the betas vector as a dataframe, while using
+#   numpy matrix operations leaves the beta vector as array
+
+#I can calculate the predicted values using the b coefficient vector:
+Yhat2 = np.dot(Xc,b)
+Yhat2
+# I calculate the predicted values with the predict function of the regression object:
+Yhat3 = model2.predict()
+Yhat3
+```
+
+The 3 methods of prediction for $\hat{y_i}$ ended up the same result, so H is correctly estimated.
+
+I get the diagonal of the H matrix, the $h_{ii}$ values:
+
+```{python}
+h = np.diag(H)
+```
+
+I calculate the cutoff point to define a possible influential leverage point, which is equal to 3(p+1)/n:
+
+```{python}
+#p is the # of independent variables; X1 has the constant, so the # of X1 columns
+#   will be equal to p+1
+p = Xc.shape[1] - 1
+cutoffh = 3*Xc.shape[1] / Xc.shape[0]
+
+```
+
+I create a dataframe with the h values and a binary column to identify possible influential leverage points:
+
+```{python}
+# I create the dataframe with the index equal to the stock tickers:
+hdf = pd.DataFrame(h,index=Xc.index,columns=["h"])
+# I create the binary variable to identify possible influential points:
+hdf["leverage"]=np.where(hdf['h']>cutoffh,1,0)
+# I see  how many possible influential points there are:
+hdf.leverage.sum()
+hdf[hdf['leverage']==1]
+
+```
+
+There are 82 possible influential leverage points.
+
+I will continue identify possible outliers with standardized residuals and deleted standardized residuals before I define which observations are influential.
+
+### Detection of outliers
+
+With residuals of the regression we can identify possible outliers. A residual is the difference between a real $y_i$ value and its corresponding prediction $\hat{y_i}$ value:
+
+$$
+e_i=y_i-\hat{y_i}
+$$
+
+```{python}
+import statsmodels.tools.eval_measures as eval
+# I use the errors for each observation:
+# I calculate the squared errors for each observation:
+errorssq = np.square(Yhat['errors']).to_frame()
+# I calculate the sum of squared errors:
+SSE = errorssq.sum()
+# I calculate the mean squared errors:
+MSE = SSE / (n)
+MSE1 = SSE / (n-p+1)
+# i calculate MSE using a function from statsmodels:
+mse = eval.mse(Y,Yhat2)
+rmse = eval.rmse(Y,Yhat2)
+# Note that statsmodels calculates MSE using as denominator n instead of (n-p+1)!
+# Which is correct? or more adequate?
+```
+
+The estimated standard deviation of each error is given by:
+
+$$
+s(e_i)=\sqrt{MSE(1-h_{ii})}
+$$
+
+Then, the standardized residual is equal to the residual divided by its standard deviation:
+
+$$
+stres_i=\frac{e_i}{s(e_i)}
+$$
+
+An observation with an aobsolute value of standardized residual greater than 3 is considered an outlier.
+
+Let's calculate the standardized residuals for all observations. I use the same hdf dataframe:
+
+```{python}
+hdf['error'] = Yhat['errors']
+hdf['stres']= hdf['error'] / np.sqrt((mse*(1-hdf['h'])))
+hdf['stres2'] = hdf['error']/np.sqrt(mse*(n-1)/n)
+hdf
+```
+
+I identify which observations have an absolute value of stres\>3:
+
+```{python}
+hdf[np.abs(hdf['stres'])>3].count()
+
+hdf[(hdf['leverage']==1) & (np.abs(hdf['stres'])>3)].count()
+
+```
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['stres'])>3)]
+```
+
+I identified 6 observations that can be considered as influential since they have very high leverage and their absolute standardized residual is higher than 3.
+
+The deleted residuals, also called the studentized residuals, are other more effective measure to identify outliers.
+
+The idea is to run a n regression models and for each regression model the observation i is deleted from the model and its deleted residual is calculated, and its corresponding standared error.
+
+The specific residual using this idea is:
+
+$$
+d_i=y_i-\hat{y_{(i)}}
+$$
+
+Where $\hat{y{(i)}}$ is the predicted value of y for observation i using a regression model that was estimated without that observation.
+
+The studentized or deleted residual is a standardized version of this residual:
+
+$$
+delres_i = \frac{d_i}{s(d_i)}
+$$
+
+$$
+delres_i=\frac{d_i}{\sqrt{MSE_{(i)}(1-h_{ii})}}
+$$
+
+The calculation for each deleted residual using this idea is very heavy since I need to calculate n regressions. Fortunately, there is an alternative formula that arrive to the same estimation:
+
+$$
+delres_i=stres_i\sqrt{\frac{n-p-2}{n-p-1-stres_i}}
+$$
+
+If an observation has a $abs(delres)>3$, then the observation is considered outlier. Let's calculate this deleted residual for all observations:
+
+```{python}
+hdf['delres']= hdf['stres']* np.sqrt((n-p-2)/(n-p-1-np.square(hdf['stres'])))
+```
+
+I identify which observations have an absolute value of delres\>3:
+
+```{python}
+hdf[np.abs(hdf['delres'])>3].count
+```
+
+There are 14 possible influential observations according to deleted residuals.
+
+I identify which observations have abs(delres)\>3 with high leverage:
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['delres'])>3)]
+
+```
+
+These are the same 6 observations I had identified with the standardized residuals.
+
+I can use the functions related to regression diagnosis from the statsmodels library:
+
+```{python}
+from statsmodels.stats.outliers_influence import OLSInfluence
+influence=OLSInfluence(model2)
+influence.resid_std
+influence.resid_studentized
+influence.hat_matrix_diag
+
+```
+
+```{python}
+hdf
+```
+
+Othere 2 measures to identify influential points are:
+
+-   Difference in Fits (DFFITS)
+-   Cook's Distances
+
+The DFFITS is calculated as follows:
+
+$$
+DFFITS = \frac{(\hat{y_i}-\hat{y_{(i)}})}{MSE_ih_{ii}}
+$$
+
+The $\hat{y_{(i)}}$ is the prediction of $y_i$ without considering the observation i. The $MSE_i$ is the MSE without considering the observation i.
+
+I will use the functions from statsmodels to estimate DFFITS:
+
+```{python}
+influence.dffits
+```
+
+An observation is considered influential if its absolute value is greater than:
+
+$$
+2\sqrt{\frac{p+2}{n-p-2}}
+$$ I create a column for DFFITS:
+
+```{python}
+hdf['dffits']=influence.dffits[0]
+hdf
+
+```
+
+I select observations that are considered outliers according to their DFFITS:
+
+```{python}
+cutoff_dffit =(2*np.sqrt((p+2)/(n-p-2)))
+hdf[np.abs(hdf['dffits'])> cutoff_dffit]
+```
+
+Observations with high leverage and high DFFITS:
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['dffits'])> cutoff_dffit)]
+```
+
+Cook Distance $D_i$ measures how much ALL predicted values change when the observation i is deleted. The formula is:
+
+$$
+D_i = \frac{(y_i-\hat{_i})^2(h_{ii})}{(p+1)MSE(1-h_{ii})^2}
+$$
+
+Fortunately, statsmodels already calculated these D values:
+
+```{python}
+hdf['cookd']=influence.cooks_distance[0]
+hdf
+```
+
+If $D_i>4/n$, then the observation i is considered influential:
+
+```{python}
+hdf[hdf['cookd']>(4/n)]
+```
+
+According to the Cook distances, there are 77 cases.
+
+
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['dffits'])> cutoff_dffit) & hdf['cookd']>(4/n)]
+
+```
+```{python}
+hdf[(hdf['leverage']==1) & (np.abs(hdf['dffits'])> cutoff_dffit) & hdf['cookd']>(4/n)].count()
+
+```
+
+
+Then, I need to make a decision of which observations I consider as influential, and then drop them and re-run a final model.
+
+I think that the deleted residuals are a good measure to use in this context. In this context I am interested in having a good regression model that provide information about the level of explanatory power for the independent variables. I am not focusing on the predicted values of future stock returns, so I do not use DFFITS. I will not restrict for the condition of the leverage of the observations since I leave with only 6 observations to be dropped.
+
+Then the observations I consider influential are:
+
+```{python}
+tobedeleted = hdf[np.abs(hdf['delres'])>3]
+
+```
+
+I delete them from the dataset:
+
+```{python}
+tobedeleted.index
+```
+
+```{python}
+X1 = Xc.merge(tobedeleted, how='left', left_index=True, right_index=True, indicator=True)
+
+X1=X1.query("_merge == 'left_only'")[['const', 'oepspw', 'bmrw', 'revgrowthw', 'egrowthw', 'pmw', 'atow','sizeg_medium', 'sizeg_large']]
+X1.columns
+Xc.shape
+X1.shape
+X1
+
+Y1 = tobedeleted.merge(Y, how='right', left_index=True, right_index=True, indicator=True)
+
+Y1=Y1.query("_merge == 'right_only'")['f1ry']
+Y1.shape
+Y1
+```
+
+Now I run the regression model:
+
+```{python}
+model4 = sm.OLS(Y1,X1,missing='drop').fit()
+print(model4.summary())
+
+```
+
+Comparing with original model:
+
+```{python}
+print(model2.summary())
+```
+
+Earnings per share and size dummy coefficients changed a little bit, but the bmrw coefficient changed a lot. It was not significant and now in the new model is significant! 
+
+I would prefer using model 3 as my final model for analysis and conclusions.

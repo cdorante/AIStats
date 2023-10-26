@@ -3,7 +3,7 @@ title: "Project Block 2: Advanced Statistics: Issues in multiple regression and 
 author: "Alberto Dorantes D."
 date: "Sep 18, 2023"
 
-abstract: This project is composed of 2 parts: 1) Advanced topics of multiple regression models, and 2) Basics of Time-series regression models
+abstract: "This project is composed of 2 parts: 1) Advanced topics of multiple regression models, and 2) Basics of Time-series regression models"
 
 editor: visual
 jupyter: python3
@@ -123,7 +123,7 @@ For each deliverable you have to submit a Jupyter Notebook (.ipynb and .html fil
 The evaluation criteria will be:
 
 | Section                                    | Weight | Notes                                                                                                                                                                                    |
-|---------------|---------------|-------------------------------------------|
+|----------------|----------------|---------------------------------------|
 | Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
 | Statistical modeling                       | 40%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
 | Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                  |
