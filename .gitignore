@@ -2,7 +2,7 @@
 .Rproj.user/
 # quarto
 .quarto/
-$ markdown files
+# markdown files
 Workshop01_files/
 Workshop02_files/
 Workshop03_files/
@@ -16,3 +16,4 @@ Statistics_Module_Project1_files/
 Project2_Statistics_Modules_files/
 # ignorar archivos de datos:
 *.csv
+/.quarto/
