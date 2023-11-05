@@ -8,28 +8,19 @@ import statsmodels.api as sm
 import plotly.express as px
 from matplotlib.pyplot import xlabel
 
-
 df = pd.read_csv('Indicadores.csv')
 df = df.sort_values(by='Periodo').reset_index(drop=True)
 
 px.line(x = df["Periodo"], y = df["Valor"] , labels = {"x":"Periodo","y":"Valor"} , title="ÍNDICE GLOBAL DE ACTIVIDAD ECONÓMICA (MÉXICO)"")
-
 df['ln(Valor)'] = np.log(df['Valor'])
-
 print(adfuller(df['ln(Valor)'])[1])
-
 df['First_diff']= df['ln(Valor)']  - np.log(df['Valor']).shift(1)
 df['Anual_diff']= df['ln(Valor)']  - np.log(df['Valor']).shift(12)
 df
 
 print(adfuller(df['Anual_diff'].dropna())[1])
-
-
 plot = plot_acf(df['Anual_diff'].dropna(), lags = 12)
-
 plot = plot_pacf(df['Anual_diff'].dropna(), lags = 12)
-
-
 d = 0 
 D = 1
 P = 0
