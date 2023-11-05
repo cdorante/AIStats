@@ -31,11 +31,11 @@ The first part we use the same panel dataset of US firms, and the last regressio
 
 Here are the directions given to students:
 
-----------
-Entregable: Preprocesamiento y análisis de datos multivariados.                                                                                 |
-Tienes que utilizar el dataset que usaste en el Bloque 1.                                                  Tienes que utilizar las variables explicativas y dependientes de tu ÚLTIMO modelo que hiciste en el entregable del Bloque 1. Recuerda que las variables independientes deben ser razones financieras así como las variables dummy (0/1) de la variable de tamaño ("size").                                               
-Realiza un análisis exploratorio de las variables:                                                                                                                                                                    Calcula matriz de varianza y covarianza, así como matriz de correlación de las variables independientes y la dependiente. Explicar qué es la varianza, covarianza y correlación. Interpreta la matriz de correlación. Tiene que utilizar álgebra matricial y corroborar resultados con funciones de Python.                                                                                                                                 Corre pruebas estadísticas para detectar outliers y leverage points. Tiene que utilizar álgebra matricial para las pruebas y explicar claramente cómo funcionan las pruebas. Puede utilizar funciones de Python para corroborar resultados.                                                                                                                                                                                                Hace un análisis de multicolinealidad explicando la prueba e implicaciones en el modelo. Propone e implementa soluciones a los problemas de los puntos anteriores para que el modelo sea el más adecuado. Estima e interpreta un modelo de regresión múltiple después de atender los problemas anteriores. Tiene que utilizar álgebra matricial para estimar coeficientes y errores estándar del modelo de regresión, y utilizar funciones de Python para corroborar resultados.
--------------
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Entregable: Preprocesamiento y análisis de datos multivariados. \|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Tienes que utilizar el dataset que usaste en el Bloque 1. Tienes que utilizar las variables explicativas y dependientes de tu ÚLTIMO modelo que hiciste en el entregable del Bloque 1. Recuerda que las variables independientes deben ser razones financieras así como las variables dummy (0/1) de la variable de tamaño ("size").                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Realiza un análisis exploratorio de las variables: Calcula matriz de varianza y covarianza, así como matriz de correlación de las variables independientes y la dependiente. Explicar qué es la varianza, covarianza y correlación. Interpreta la matriz de correlación. Tiene que utilizar álgebra matricial y corroborar resultados con funciones de Python. Corre pruebas estadísticas para detectar outliers y leverage points. Tiene que utilizar álgebra matricial para las pruebas y explicar claramente cómo funcionan las pruebas. Puede utilizar funciones de Python para corroborar resultados. Hace un análisis de multicolinealidad explicando la prueba e implicaciones en el modelo. Propone e implementa soluciones a los problemas de los puntos anteriores para que el modelo sea el más adecuado. Estima e interpreta un modelo de regresión múltiple después de atender los problemas anteriores. Tiene que utilizar álgebra matricial para estimar coeficientes y errores estándar del modelo de regresión, y utilizar funciones de Python para corroborar resultados. |
 
 Then, I start replicating the data management and running the same regression model for the Manufacturing industry
 
@@ -603,7 +603,7 @@ Mx.shape
 
 ```
 
-Now I calculate the variance-covariance matrix. 
+Now I calculate the variance-covariance matrix.
 
 I first calculate the outer product of the vector Mx to get a matrix with the sum of squared means and product means:
 
@@ -628,7 +628,7 @@ I can test my calculation with the numpy.cov function:
 cov1=X1.cov()
 type(cov1)
 cov1
-```hhg
+```
 
 I got the same result.
 
@@ -646,9 +646,9 @@ CORR(X_n,X_1) & ...& ... &1\\
 \end{bmatrix}
 $$
 
-Covariance between 2 random variable is a measure of linear relationship between them, but its magnitude is not easy to interpret since it can have any negative, zero or positive number. Correlation is a standardized version of covariance that it is possible to provide a meaningful interpretation. 
+Covariance between 2 random variable is a measure of linear relationship between them, but its magnitude is not easy to interpret since it can have any negative, zero or positive number. Correlation is a standardized version of covariance that it is possible to provide a meaningful interpretation.
 
-Correlation between 2 random variables is a measure of linear relationship between them, but measured in %. It has values from -1 to +1; if the correlation is +1 both variables are equal or they move exactly in the same proportion in the same direction; if correlation is -1 one variable moves exactly in opposite direction. If we have a positive correlation (<1), one variable moves in the same direction with a probability equal to this correlation. 
+Correlation between 2 random variables is a measure of linear relationship between them, but measured in %. It has values from -1 to +1; if the correlation is +1 both variables are equal or they move exactly in the same proportion in the same direction; if correlation is -1 one variable moves exactly in opposite direction. If we have a positive correlation (\<1), one variable moves in the same direction with a probability equal to this correlation.
 
 For 2 variables we can express correlation as the standardized version of their covariance:
 
@@ -656,23 +656,24 @@ $$
 CORR(x,y) = \frac{COV(x,y)}{SD(x)SD(y)}
 $$
 
-Now, if I have more than 2 variables where each is a column of a matrix, I can calculate a correlation matrix where the diagonal will be equal to 1, and the off-diagonals will be the pairs of correlations. 
+Now, if I have more than 2 variables where each is a column of a matrix, I can calculate a correlation matrix where the diagonal will be equal to 1, and the off-diagonals will be the pairs of correlations.
 
 I can calculate this correlation matrix with the following matrix operation:
 
 $$
 CORR =D^{-1}COVD^{-1}
 $$
-Where D is the diagonal matrix of standard deviations of each variable; it has the standard deviations of all Xi variables in its diagional, and zero in its off-diagonals. 
+
+Where D is the diagonal matrix of standard deviations of each variable; it has the standard deviations of all Xi variables in its diagional, and zero in its off-diagonals.
 
 I can get the standard deviations from the variance-covariance matrix. I extract the diagonal to get the variances, and then calculate the squared root to get the standard deviations:
-
 
 ```{python}
 SD = np.sqrt(np.diag(COV))
 SD
 # i can check whether the calculated standard deviations are correct:
 X1.std()
+
 ```
 
 I create the D matrix:
@@ -689,6 +690,7 @@ CORR = np.linalg.inv(D) @ COV @ np.linalg.inv(D)
 CORR
 
 ```
+
 I can compare my calculation with the corr function from pandas:
 
 ```{python}
@@ -706,21 +708,20 @@ sn.heatmap(corr1, annot=True)
 plt.show()
 
 ```
-The highest correlation in magnitude is between the size dummies (-0.57). This is expected due to the nature of the variables. Among the numeric variables, the highest correlation in magnitude is between earnings per share (epspw) and book-to-market ratio (bmrw) with a correlation of -0.15. The correlation between epspw and the size_large dummy is relevant (+0.31), indicating that the bigger the firm, the bigger its earnings per share deflated by price. 
 
+The highest correlation in magnitude is between the size dummies (-0.57). This is expected due to the nature of the variables. Among the numeric variables, the highest correlation in magnitude is between earnings per share (epspw) and book-to-market ratio (bmrw) with a correlation of -0.15. The correlation between epspw and the size_large dummy is relevant (+0.31), indicating that the bigger the firm, the bigger its earnings per share deflated by price.
 
 ## Regression Diagnosis
 
 I will do diagnostic analysis with this multiple regression model.
 
-### Outliers vs leverage vs influential observations 
+### Outliers vs leverage vs influential observations
 
-Usually outliers are considered those extreme values of a variable. In the context of simple regression diagnosis, a point is considered outlier when the point is not following the general trend or relationship with the dependent variable.  In the context of multiple regression analysis, an outlier observation is an observation that is not following the general trend of the relationship between the dependent variable and the independent variables.
+Usually outliers are considered those extreme values of a variable. In the context of simple regression diagnosis, a point is considered outlier when the point is not following the general trend or relationship with the dependent variable. In the context of multiple regression analysis, an outlier observation is an observation that is not following the general trend of the relationship between the dependent variable and the independent variables.
 
 For simple regression (1 independent variable), a leverage point is an extreme value of the independent variable without considering the general trend with the dependent variable. For a multiple regression with p independent variables, a specific observation i with p values where 1 or more can be extreme or the combination of the values is rare or extreme.
 
-In a multiple regression, an observation can be influential if it is an outlier and/or a leverage point that can significantly influence the value of the regression coefficients or their standard errors. 
-
+In a multiple regression, an observation can be influential if it is an outlier and/or a leverage point that can significantly influence the value of the regression coefficients or their standard errors.
 
 ### Detection of leverage points
 
@@ -728,8 +729,7 @@ Remember that a multiple regression model can be expressed in matrix algebra as:
 
 $$
 \hat{y} =Xb
-$$
-And the regression coefficients can be estimated as follows:
+$$ And the regression coefficients can be estimated as follows:
 
 $$
 b=(X'X)^{-1}X'y
@@ -739,8 +739,7 @@ Then, the predicted values of y can be expressed in matrix algebra as:
 
 $$
 \hat{y}=X(X'X)^{-1}X'y
-$$
-We can define a matrix H with only X terms to reduce this expression:
+$$ We can define a matrix H with only X terms to reduce this expression:
 
 $$
 H=X(X'X)^{-1}X'
@@ -751,6 +750,7 @@ Then, the predicted values can be expressed in terms of this H matrix:
 $$
 \hat{y}= Hy
 $$
+
 This H matrix is called the *Hat* matrix since it is the matrix that *puts* the *hat* to the observed y values to get the predicted values.
 
 Then, a specific predicted value $\hat{y_i{$ will be a linear combination of real $y_i$ values weighted with the specific $h_{ij}$ values:
@@ -758,23 +758,22 @@ Then, a specific predicted value $\hat{y_i{$ will be a linear combination of rea
 $$
 \hat{y_i} = h_{i1}y_1+h_{i2}y_2+h_{i3}y_3+...+h_{in}y_n
 $$
-Where $n$ is the # of observations of the dataset. 
+
+Where $n$ is the \# of observations of the dataset.
 
 Then, a predicted $\hat{y_i}$ value depends on all real values of the variable $y$ and specific values of the row i of the H matrix. The H matrix dimension is $nxn$; n rows and n columns.
 
-A specific $h_{ij}$ is considered a **leverage** that quantifies the influence that the real value $y_i$ has on the predicted $y_i$ value. The $h_{ii}$ is a measure of **distance** between the values of the $i$ observation and their corresponding means. 
+A specific $h_{ij}$ is considered a **leverage** that quantifies the influence that the real value $y_i$ has on the predicted $y_i$ value. The $h_{ii}$ is a measure of **distance** between the values of the $i$ observation and their corresponding means.
 
-The diagonal of the H matrix has all the $h_{ii}$ values. The sum of the H diagional terms is equal to the # of beta coefficients including the beta0 (constant) (=p+1). 
+The diagonal of the H matrix has all the $h_{ii}$ values. The sum of the H diagional terms is equal to the \# of beta coefficients including the beta0 (constant) (=p+1).
 
-An observation i can be considered a *leveraged and possible* influential observation if the $h_{ii}$ value is greater than 3*(p+1)/n:
+An observation i can be considered a *leveraged and possible* influential observation if the $h_{ii}$ value is greater than 3\*(p+1)/n:
 
-$$
+$$ 
 h_{ii}>3(\frac{p+1}{n})
-
 $$
 
 Let's calculate the H matrix with the X values:
-
 
 ```{python}
 # Add the constant to X1:
@@ -789,6 +788,7 @@ H = np.dot(X1,np.dot(np.linalg.inv(np.dot(X1.transpose(),X1)),X1.transpose()))
 H.shape
 
 ```
+
 I can test whether the H is correct by estimating the predicted y values:
 
 ```{python}
@@ -805,7 +805,8 @@ Yhat2
 Yhat3 = model2.predict()
 Yhat3
 ```
-The 3 methods of prediction for $\hat{y_i}$ ended up the same result, so H is correctly estimated. 
+
+The 3 methods of prediction for $\hat{y_i}$ ended up the same result, so H is correctly estimated.
 
 I get the diagonal of the H matrix, the $h_{ii}$ values:
 
@@ -836,7 +837,7 @@ hdf[hdf['leverage']==1]
 
 ```
 
-There 63 possible influential leverage points. 
+There 63 possible influential leverage points.
 
 I will continue identify possible outliers with standardized residuals and deleted standardized residuals before I define which observations are influential.
 
@@ -847,6 +848,7 @@ With residuals of the regression we can identify possible outliers. A residual i
 $$
 e_i=y_i-\hat{y_i}
 $$
+
 ```{python}
 import statsmodels.tools.eval_measures as eval
 # I calculate the errors for each observation:
@@ -876,7 +878,8 @@ Then, the standardized residual is equal to the residual divided by its standard
 $$
 stres_i=\frac{e_i}{s(e_i)}
 $$
-An observation with an aobsolute value of standardized residual greater than 3 is considered an outlier.  
+
+An observation with an aobsolute value of standardized residual greater than 3 is considered an outlier.
 
 Let's calculate the standardized residuals for all observations. I use the same hdf dataframe:
 
@@ -887,32 +890,32 @@ hdf['stres2'] = hdf['error']/np.sqrt(MSE1*(n-1)/n)
 hdf
 ```
 
-I identify which observations have an absolute value of stres>3:
+I identify which observations have an absolute value of stres\>3:
 
 ```{python}
 hdf[np.abs(hdf['stres'])>3].count()
 
 hdf[(hdf['leverage']==1) & (np.abs(hdf['stres'])>3)].count()
 
-
 ```
 
 ```{python}
 hdf[(hdf['leverage']==1) & (np.abs(hdf['stres'])>3)]
 ```
+
 I identified 6 observations that can be considered as influential since they have very high leverage and their absolute standardized residual is higher than 3.
 
 The deleted residuals, also called the studentized residuals, are other more effective measure to identify outliers.
 
-The idea is to run a n regression models and for each regression model the observation i is deleted from the model and its deleted residual is calculated, and its corresponding standared error. 
+The idea is to run a n regression models and for each regression model the observation i is deleted from the model and its deleted residual is calculated, and its corresponding standared error.
 
-The specific residual using this idea is: 
+The specific residual using this idea is:
 
 $$
 d_i=y_i-\hat{y_{(i)}}
 $$
 
-Where $\hat{y{(i)}}$ is the predicted value of y for observation i using a regression model that was estimated without that observation. 
+Where $\hat{y{(i)}}$ is the predicted value of y for observation i using a regression model that was estimated without that observation.
 
 The studentized or deleted residual is a standardized version of this residual:
 
@@ -936,7 +939,7 @@ If an observation has a $abs(delres)>3$, then the observation is considered outl
 hdf['delres']= hdf['stres']* np.sqrt((n-p-2)/(n-p-1-np.square(hdf['stres'])))
 ```
 
-I identify which observations have an absolute value of delres>3:
+I identify which observations have an absolute value of delres\>3:
 
 ```{python}
 hdf[np.abs(hdf['delres'])>3].count
@@ -944,14 +947,14 @@ hdf[np.abs(hdf['delres'])>3].count
 
 There are 14 possible influential observations according to deleted residuals.
 
-I identify which observations have abs(delres)>3 with high leverage:
+I identify which observations have abs(delres)\>3 with high leverage:
 
 ```{python}
 hdf[(hdf['leverage']==1) & (np.abs(hdf['delres'])>3)]
 
 ```
 
-These are the same 6 observations I had identified with the standardized residuals. 
+These are the same 6 observations I had identified with the standardized residuals.
 
 I can use the functions related to regression diagnosis from the statsmodels library:
 
@@ -970,8 +973,8 @@ hdf
 
 Othere 2 measures to identify influential points are:
 
-- Difference in Fits (DFFITS)
-- Cook's Distances
+-   Difference in Fits (DFFITS)
+-   Cook's Distances
 
 The DFFITS is calculated as follows:
 
@@ -979,7 +982,7 @@ $$
 DFFITS = \frac{(\hat{y_i}-\hat{y_{(i)}})}{MSE_ih_{ii}}
 $$
 
-The $\hat{y_{(i)}}$ is the prediction of $y_i$ without considering the observation i. The $MSE_i$ is the MSE without considering the observation i. 
+The $\hat{y_{(i)}}$ is the prediction of $y_i$ without considering the observation i. The $MSE_i$ is the MSE without considering the observation i.
 
 I will use the functions from statsmodels to estimate DFFITS:
 
@@ -991,14 +994,14 @@ An observation is considered influential if its absolute value is greater than:
 
 $$
 2\sqrt{\frac{p+2}{n-p-2}}
-$$
-I create a column for DFFITS:
+$$ I create a column for DFFITS:
 
 ```{python}
 hdf['dffits']=influence.dffits[0]
 hdf
 
 ```
+
 I select observations that are considered outliers according to their DFFITS:
 
 ```{python}
@@ -1011,7 +1014,8 @@ Observations with high leverage and high DFFITS:
 ```{python}
 hdf[(hdf['leverage']==1) & (np.abs(hdf['dffits'])> cutoff_dffit)]
 ```
-Cook Distance  $D_i$ measures how much ALL predicted values change when the observation i is deleted. The formula is:
+
+Cook Distance $D_i$ measures how much ALL predicted values change when the observation i is deleted. The formula is:
 
 $$
 D_i = \frac{(y_i-\hat{_i})^2(h_{ii})}{(p+1)MSE(1-h_{ii})^2}
@@ -1030,11 +1034,11 @@ If $D_i>1$, then the observation i is considered influential:
 hdf[hdf['cookd']>1]
 ```
 
-According to the Cook distances, there is no influential observations. 
+According to the Cook distances, there is no influential observations.
 
 Then, I need to make a decision of which observations I consider as influential, and then drop them and re-run a final model.
 
-I think that the deleted residuals are a good measure to use in this context. In this context I am interested in having a good regression model that provide information about the level of explanatory power for the independent variables. I am not focusing on the predicted values of future stock returns, so I do not use DFFITS. I will not restrict for the condition of the leverage of the observations since I leave with only 6 observations to be dropped. 
+I think that the deleted residuals are a good measure to use in this context. In this context I am interested in having a good regression model that provide information about the level of explanatory power for the independent variables. I am not focusing on the predicted values of future stock returns, so I do not use DFFITS. I will not restrict for the condition of the leverage of the observations since I leave with only 6 observations to be dropped.
 
 Then the observations I consider influential are:
 
@@ -1064,6 +1068,7 @@ Y1_1=Y1_1.query("_merge == 'right_only'")['F1ret']
 Y1_1.shape
 Y1_1
 ```
+
 Now I run the regression model:
 
 ```{python}
@@ -1071,13 +1076,13 @@ model3 = sm.OLS(Y1_1,X1_1,missing='drop').fit()
 print(model3.summary())
 
 ```
+
 Comparing with original model:
+
 ```{python}
 print(model2.summary())
 ```
-Earnings per share and size dummy coefficients changed signficantly! 
 
-I would prefer using model 3 as my final model for analysis and conclusions.  
+Earnings per share and size dummy coefficients changed signficantly!
 
-
-
+I would prefer using model 3 as my final model for analysis and conclusions.

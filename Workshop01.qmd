@@ -5,7 +5,7 @@ author:
  - Alberto Dorantes D., Ph.D.
  - Monterrey Tech, Queretaro Campus
 
-abstract: In this workshop we review the basics of a) descriptive statistics, b) the histogram, c) data trasformations and cleaning, and d) the normal distribution.  
+abstract: "In this workshop we review the basics of a) descriptive statistics, b) the histogram, c) data trasformations and cleaning, and d) the normal distribution."  
 
 editor: visual
 jupyter: python3
@@ -88,7 +88,7 @@ For example, if we want to know what is the typical size of all companies that t
 The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (sorted alphabetically)
 
 | Firm       | row \# | Industry           | 2018 Total Assets (in thousand pesos) |
-|------------|--------|--------------------|---------------------------------------|
+|--------------|--------------|--------------|------------------------------|
 | ACCEL      | 1      | Services           | \$6,454,560.00                        |
 | AEROMEXICO | 2      | Transport Services | \$76,772,848.00                       |
 | ...        | ...    | ...                | ...                                   |
@@ -100,7 +100,7 @@ The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (
 We sort the list from the lowest to the highest value of 2018 total assets:
 
 | Firm          | row \# | Industry           | Size Rank | 2018 Total Assets (in thousand pesos) |
-|---------------|--------|--------------------|-----------|---------------------------------------|
+|------------|------------|------------|------------|------------------------|
 | INGEAL        | 98     | Food & Beverages   | 1         | \$171,104.00                          |
 | HIMEXSA       | 88     | Textile            | 2         | \$494,378.00                          |
 | ...           | ...    | ...                | ...       | ...                                   |
