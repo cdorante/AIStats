@@ -5,7 +5,7 @@ author:
  - Alberto Dorantes D., Ph.D.
  - Monterrey Tech, Queretaro Campus
 
-abstract: This is a solution of Part 1 of the final project for Advanced Statistics for AI, Block 2.
+abstract: "This is a solution of Part 1 of the final project for Advanced Statistics for AI, Block 2."
 
 editor: visual
 jupyter: python3
@@ -45,9 +45,10 @@ Why some firms systematically offer stock returns higher than than others? Which
 
 The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
 
-| Variable           | Description                                                                                                                                                                                    |
+| Variable \| Description \|
+
+| -------------      | -----------------------------------------------------------                                                                                                                                    |
 |-------------|-----------------------------------------------------------|
-|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | firm               | Unique code of the company (also called ticker)                                                                                                                                                |
 | q                  | Quarter date                                                                                                                                                                                   |
 | fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                                                           |
@@ -80,17 +81,16 @@ The variables related to sales and expenses are cumulative for each fiscal year.
 
 The firmsus2023.csv is a catalog of all active and cancelled US firms:
 
-| Variable          | Description                                           |
-
-|-------------------|-----------------------------------------------------|
-|-------------------|-------------------------------------------------------|
-| firm              | Unique code of the company (also called ticker)       |
-| name              | Name of the firm                                      |
-| status            | Status of the firm: active or cancelled               |
-| partind           | Percent participation in the S&P500 market index      |
-| naics1            | North American Industry Classification Code - Level 1 |
-| naics2            | North American Industry Classification Code - Level 2 |
-| SectorEconomatica | Economatica Industry classification                   |
+| Variable            | Description                                             |
+|--------------------|----------------------------------------------------|
+| ------------------- | ------------------------------------------------------- |
+| firm                | Unique code of the company (also called ticker)         |
+| name                | Name of the firm                                        |
+| status              | Status of the firm: active or cancelled                 |
+| partind             | Percent participation in the S&P500 market index        |
+| naics1              | North American Industry Classification Code - Level 1   |
+| naics2              | North American Industry Classification Code - Level 2   |
+| SectorEconomatica   | Economatica Industry classification                     |
 
 In the following sections you will find specific directions to calculate new variables/ratios, provide descriptive statistics and do a statistical analysis to aim the objective.
 
@@ -222,13 +222,13 @@ For each deliverable you have to submit a Jupyter Notebook (.ipynb and .html fil
 
 The evaluation criteria will be:
 
-| Section                                    | Weight | Notes                                                                                                                                                                                    |
-|------------|------------|------------------------------------------------|
-|--------------------------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
-| Statistical modeling                       | 40%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
-| Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                  |
-|                                            |        |                                                                                                                                                                                          |
+| Section                                      | Weight   | Notes                                                                                                                                                                                      |
+|---------------|---------------|-------------------------------------------|
+| -------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Data management and Descriptive statistics   | 50%      | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                              |
+| Statistical modeling                         | 40%      | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance   |
+| Conclusion                                   | 10%      | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                    |
+|                                              |          |                                                                                                                                                                                            |
 
 # Solution
 
@@ -370,14 +370,12 @@ I select the most recent annual fiscal data for all firms. I select those rows w
 ```{python}
 # I select one industry
 
-numind = 1
+#numind = 1
 #numind = 2
-#numind = 3
+numind = 3
 #numind = 4
 print(numind)
-# I do not consider rows with fiscal years less than 2000 and greater than the last complete fiscal year (2022)
-datay = data.loc[( (data['fiscalmonth']==12) & (data['yearf']>1999) & (data['yearf']<2023))].copy()
-
+datay = data.loc[(data['fiscalmonth']==12)].copy()
 if numind==1:
   dataind = datay.loc[(datay['industria']=="Industrias manufactureras")].copy()
 elif numind==2:
@@ -842,6 +840,7 @@ Small firms: sizeg_medium = 0 and sizeg_large = 0, then:
 $$
 E[f1ry]=0.0737+0.6253(oepspw)-0.1343(bmrw)-0.0064(revgrowthw)-0.0024(egrowthw)+0.0021(pmw)-0.0303(atow)
 $$
+
 For medium firms: sizeg_medium = 1 and sizeg_large = 0, then:
 
 $$

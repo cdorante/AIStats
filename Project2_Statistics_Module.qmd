@@ -4,10 +4,7 @@ author: "Alberto Dorantes D."
 date: "Sep 18, 2023"
 
 abstract: "This project is composed of 2 parts: 1) Advanced topics of multiple regression models, and 2) Basics of Time-series regression models"
-<<<<<<< HEAD
 
-=======
->>>>>>> 238d12735f8b70536218b18fd5170162f627a590
 editor: visual
 jupyter: python3
 format:
@@ -155,7 +152,7 @@ You have to do the following:
 
 # Evaluation criteria
 
-This is an individual assighment. Each student must do an original work. Please avoid possible interpretations of plagiarism.
+This is an individual assignment. Each student must do an original work. Please avoid possible interpretations of plagiarism.
 
 For each deliverable you have to submit a Jupyter Notebook (.ipynb and .html files). document
 
@@ -169,15 +166,12 @@ The evaluation criteria will be:
 
 Each part will be graded as follows:
 
-| Section                                    | Weight | Notes                                                                                                                                                                                    |
-<<<<<<< HEAD
-|----------------|----------------|---------------------------------------|
-| Data management and Descriptive statistics | 50%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
-| Statistical modeling                       | 40%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
-=======
-|--------------------------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Data management and Descriptive statistics | 40%    | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
-| Statistical modeling                       | 50%    | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
->>>>>>> 238d12735f8b70536218b18fd5170162f627a590
-| Conclusion                                 | 10%    | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                  |
-|                                            |        |                                                                                                                                                                                          |
++--------------------------------------------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| | Section                                  | Weight     | Notes                                                                                                                                                                                    |
++============================================+============+==========================================================================================================================================================================================+
+| Data management and Descriptive statistics | 40%        | Document your work. You have to explain what you did and also you have to clearly responded to each of the business questions                                                            |
++--------------------------------------------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Statistical modeling                       | 50%        | Document your work. Make sure you provide a very clear interpretation of your models. Remember that you must interpret each coefficient and their corresponding statistical significance |
++--------------------------------------------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Conclusion                                 | 10%        | Provide a concise conclusion of your analysis according to the result of your models. Make sure you respond the main business questions                                                  |
++--------------------------------------------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+

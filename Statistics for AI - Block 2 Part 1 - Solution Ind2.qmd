@@ -46,7 +46,7 @@ Why some firms systematically offer stock returns higher than than others? Which
 The dataus2023q2 dataset has a panel-data (also called long format) structure. Each row has financial information for one US firm and 1 period (a quarter). All \$ amounts are in thousands ('1000s). Here is a data dictionary of the columns:
 
 | Variable           | Description                                                                                                                                                                                    |
-|----------------------|--------------------------------------------------|
+|------------------------|------------------------------------------------|
 | firm               | Unique code of the company (also called ticker)                                                                                                                                                |
 | q                  | Quarter date                                                                                                                                                                                   |
 | fiscalmonth        | Month of the year when the firm closes a fiscal year                                                                                                                                           |
@@ -80,7 +80,7 @@ The variables related to sales and expenses are cumulative for each fiscal year.
 The firmsus2023.csv is a catalog of all active and cancelled US firms:
 
 | Variable          | Description                                           |
-|------------------------|-----------------------------------------------|
+|-------------------------|----------------------------------------------|
 | firm              | Unique code of the company (also called ticker)       |
 | name              | Name of the firm                                      |
 | status            | Status of the firm: active or cancelled               |
@@ -371,7 +371,9 @@ numind = 2
 #numind = 3
 #numind = 4
 print(numind)
-datay = data.loc[(data['fiscalmonth']==12)].copy()
+# I do not consider rows with fiscal years less than 2000 and greater than the last complete fiscal year (2022)
+datay = data.loc[( (data['fiscalmonth']==12) & (data['yearf']>1999) & (data['yearf']<2023))].copy()
+
 if numind==1:
   dataind = datay.loc[(datay['industria']=="Industrias manufactureras")].copy()
 elif numind==2:
@@ -839,11 +841,9 @@ $$
 
 For medium firms: sizeg_medium = 1 and sizeg_large = 0, then:
 
-\$\$
-
-E\[f1ry\]=(0.0737+0.0415) +0.6253(oepspw)-0.1343(bmrw)-0.0064(revgrowthw)-0.0024(egrowthw)+0.0021(pmw)-0.0303(atow)
-
-\$\$
+$$
+E[f1ry]=(0.0737+0.0415) +0.6253(oepspw)-0.1343(bmrw)-0.0064(revgrowthw)-0.0024(egrowthw)+0.0021(pmw)-0.0303(atow)
+$$
 
 The intercept of the regression equation for the medium-firms increases in 0.0415, which is the beta coefficient of the medium dummy variable.
 
@@ -900,13 +900,27 @@ $$
 
 For medium firms, sizeg=medium=1 and sizeg_large=0, then:
 
-\$\$ E\[f1ry\] = (0.0613+0.0383) +(0.6519-0.1950)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow) E\[f1ry\] = (0.0996) +(0.4569)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+$$ 
+E[f1ry] = (0.0613+0.0383) +(0.6519-0.1950)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow) 
+$$
 
-\$\$ Compared to the equation for small firms, the equation for medium firms had a higher intercept (beta0=0.0996), and the oepspw beta coefficient decreased from 0.6519 to 0.4569 (b1=0.4569). Then, compared to medium firms, small firms have a significant higher effect of oepsw on future stock returns.
+$$
+E[f1ry] = (0.0996) +(0.4569)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+$$ 
 
-Now, the equation for large firm: For large firms, sizeg_medium=0 and sizeg_large=0, then: \$\$ E\[f1ry\] = (0.0613+0.1140) +(0.6519-0.8432)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow) E\[f1ry\] = (0.1753) + (-0.1913)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+Compared to the equation for small firms, the equation for medium firms had a higher intercept (beta0=0.0996), and the oepspw beta coefficient decreased from 0.6519 to 0.4569 (b1=0.4569). Then, compared to medium firms, small firms have a significant higher effect of oepsw on future stock returns.
 
-\$\$ Compared to the equation for small firms, the equation for large firms had a higher intercept (beta0=0.1753 vs 0.0613), and the oepspw beta coefficient decreased from +0.6519 to -0.1913 (b1=-0.1913). It is interesting to see that the effect of oepspw for the case of large firms is actually negative, but the intercept is very high! Then, for large firms, if earnings per share drops in one year, it is likely that next year future returns will move up.
+Now, the equation for large firm: For large firms, sizeg_medium=0 and sizeg_large=0, then: 
+
+$$ 
+E[f1ry] = (0.0613+0.1140) +(0.6519-0.8432)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow) 
+$$
+
+$$
+E[f1ry] = (0.1753) + (-0.1913)(oepspw)-0.1265(bmrw)-0.0071(revgrowthw)-0.0015(egrowthw)+(0.0021)pmw-0.0219(atow)
+$$ 
+
+Compared to the equation for small firms, the equation for large firms had a higher intercept (beta0=0.1753 vs 0.0613), and the oepspw beta coefficient decreased from +0.6519 to -0.1913 (b1=-0.1913). It is interesting to see that the effect of oepspw for the case of large firms is actually negative, but the intercept is very high! Then, for large firms, if earnings per share drops in one year, it is likely that next year future returns will move up.
 
 The direct effect of oepspw on future annual returns increased a little bit from 0.62 to 0.65. Most of the relationships are similar than the previous model.
 

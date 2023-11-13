@@ -1,0 +1,316 @@
+---
+title: "Solution for the Project 2 (Block 2, Statistics for AI)"
+bibliography: references.bib
+author:  
+ - Alberto Dorantes D., Ph.D.
+ - Monterrey Tech, Queretaro Campus
+
+abstract: This is a solution of Part 2 of the final project for Advanced Statistics for AI, Block 2.
+
+editor: visual
+jupyter: python3
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-title: Content
+    toc-location: left
+    toc_float:
+      collase: false
+    code-fold: false
+    theme: united
+    highlight-style: breezedark
+    number-sections: true
+    fontsize: 1.1em
+    linestretch: 1.7
+---
+
+# Part 2 - Forecasting Queretaro industrial activity
+
+You have to design an ARIMA-SARIMA model to forecast the Querétaro "Indice de Actividad Industrial". INEGI publishes a monthly index of the industrial activity for each state and at the national level. You can download this index Googling it ("inegi bie índice de actividad industrial Querétaro")
+
+Download the csv file and import it in Python.
+
+You have to do the following:
+
+-   Calibrate an ARIMA-SARIMA model for this index. Follow the calibration steps explain in class ([HERE](https://rpubs.com/cdorante/ec2004_w4)is a document with the calibration process).
+
+-   You have to document your data management steps and the calibration process
+
+-   You have to CLEARLY INTERPRET the final calibrated model with YOUR WORDS
+
+-   You have to forecast the industrial index for Querétaro up to 2030. What is the expected average annual growth for 6-7 years?
+
+# Simulation of random walk with drift
+
+```{python}
+import pandas as pd
+import yfinance as yf
+import numpy as np
+import statistics as st
+
+```
+
+I download the Mexican market index to calculate the parameters for a random walk with drift
+
+```{python}
+MXX = yf.download(tickers = "^MXX", start = "2000-01-02", interval="1d")
+# I select the adjusted column:
+MXX = MXX['Adj Close']
+MXX
+```
+See my Workshop (https://rpubs.com/cdorante/fz2020_w1) for the formulas to estimate the parameters of the random walk with a drift
+
+I estimate the drift parameter using the first and last log values:
+
+```{python}
+lnmxx = np.log(MXX)
+N = len(lnmxx)
+N
+```
+
+I estimate the phi0:
+
+```{python}
+phi0 = (lnmxx[-1] - lnmxx[0]) / N
+
+```
+
+I estimate the volatility (standard deviation) of the error:
+
+```{python}
+sigma = np.std(lnmxx) / np.sqrt(N)
+sigma
+```
+I assign the initial value of the simulated series equal to the real value:
+
+```{python}
+y0 = lnmxx[0]
+```
+
+For the random walk, the phi1 is always equal to 1
+
+```{python}
+phi1 = 1
+```
+
+Now I simulate from day 2 to N according to a random walk with drift:
+
+```{python}
+ysimln = []
+ysimln.append(y0)
+for i in range(1,N):
+  error=np.random.normal(0,sigma)
+  ysimln.append(phi0 + phi1 * ysimln[i-1] + error)
+```
+
+
+```{python}
+
+ysim = pd.DataFrame(lnmxx)
+ysim['ysimln'] = ysimln
+ysim
+
+```
+I plot both:
+
+```{python}
+import matplotlib
+from matplotlib.pyplot import * 
+clf()
+plot(ysim['Adj Close'],color = 'r')
+plot(ysim['ysimln'], color = 'b')
+legend(['original log IPyC','Random wok with drift'],loc = 'upper left')
+show()
+```
+I finally get the exponential of both columns to plot the real index vs the sumulated:
+
+```{python}
+ysim['IPyC'] =np.exp(ysim['Adj Close'])
+ysim['simIPyC'] = np.exp(ysim['ysimln'])
+clf()
+plot(ysim['IPyC'],color = 'r')
+plot(ysim['simIPyC'], color = 'b')
+legend(['original IPyC','Random wok with drift'],loc = 'upper left')
+show()
+```
+
+
+# Solution 
+
+I downloaded the Querétaro Industrial Activity index from INEGI (https://www.inegi.org.mx/app/indicadores/?tm=0)
+
+
+I import the csv dataset:
+
+```{python}
+import pandas as pd
+iaiqro = pd.read_csv("iaiqro.csv")
+iaiqro = iaiqro.sort_values(by='Periodos').reset_index(drop=True)
+iaiqro.shape
+iaiqro
+```
+I plot the original index:
+
+```{python}
+clf()
+plot(iaiqro['iaiqro'])
+title('Querétaro Industrial Activity')
+show()
+```
+I take the log of the index
+
+```{python}
+iaiqro['logiaiqro'] = np.log(iaiqro['iaiqro'])
+clf()
+plot(iaiqro['logiaiqro'])
+title('Log of Querétaro Industrial Activity')
+show()
+```
+
+The series looks like non-stationary. Since I have monthly data, I start checking whether the seasonal difference of the log series, which is the annual growth month by month, is stationary. I run the Dicky-Fuller test: 
+
+```{python}
+
+iaiqro['anngrowth'] = iaiqro['logiaiqro'] - iaiqro['logiaiqro'].shift(12)
+clf()
+plot(iaiqro['anngrowth'])
+title('Annual growth of Qro industrial activity')
+show()
+
+
+```
+
+
+```{python}
+from statsmodels.tsa.stattools import adfuller
+test1 = adfuller(iaiqro['anngrowth'].dropna())
+# The pvalue is the second element of the tuple:
+print(test1[1])
+```
+Since the pvalue<0.05, I can treat the annual growth as stationary, so I define D=1 and d=1.
+
+I start analyzing autocorrelations of the annual growth variable:
+
+
+```{python}
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+clf()
+plot_acf(iaiqro['anngrowth'].dropna(), lags=12, zero=False)
+show()
+clf()
+plot_pacf(iaiqro['anngrowth'].dropna(), lags=12 ,zero=False)
+show()
+
+
+```
+
+I can see a typical AR(1) signature since the AC plot has positive autocorrelations that die slowly and the partial AC die suddenly after the lag 1 autocorrelation. 
+
+Interpretation of the AC plot:
+
+The annual growth of the industrial activity is positively and significantly correlated with its own annual growth of the previous month, 2, 3,4 and 5 months ago. When considering partial autocorrelations, the annual growth is only positively and significantly related with its past month annual growth. In other words, after considering the autocorrelations of the past month annual growth with the current annual growth, the autocorrelations of the current annual growth with 2, 3, 4, 5 months ago are not significantly positive. 
+
+Then, I start defining p=1 for the first ARIMA-SARIMA model:
+
+p=1, d=0, q=0, P=0, D=1, Q=1
+
+
+```{python}
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+model1 = SARIMAX(iaiqro['logiaiqro'].dropna(), order = (1, 0, 0), seasonal_order = (0, 1, 0, 12), trend = 'c')
+model1fit = model1.fit()
+
+print(model1fit.summary())
+
+```
+The AR(1) term is positive and statistically significant, as expected. 
+
+I now check the autocorrelations of the residuals of this model to see whether I can add another term:
+
+```{python}
+# I do not use the first 12 rows since there is no way to calculate predictions nor errors for the first 12 months since
+#   I am using annual growth
+errors = model1fit.resid.iloc[12:]
+clf()
+plot_acf(errors, lags=12, zero = False)
+show()
+```
+The autocorrelation of the errors with its own errors of 12 months ago is negative and significant. Then, I can add 1 seasonal term, which can be an MA or AR. Since it is negative autocorrelation I add a seasonal MA term. Then, Q=1:
+
+```{python}
+model2 = SARIMAX(iaiqro['logiaiqro'].dropna(), order = (1, 0, 0), seasonal_order = (0, 1, 1, 12), trend = 'c')
+model2fit = model2.fit()
+
+print(model2fit.summary())
+
+```
+
+I see that the seasonal MA term is negative and significant as expected. 
+
+I finally check the autocorrelations of the residuals of this last model:
+
+```{python}
+errors = model2fit.resid.iloc[12:]
+clf()
+plot_acf(errors, lags=12, zero = False)
+show()
+
+```
+
+Now the residual looks like a white noise since there is no significant autocorrelations with the past 12 months. Then, I finish the calibration of the model and proceed to forecast the series.
+
+
+```{python}
+predictions = model2fit.predict(start=12, end=len(iaiqro))
+# I forecast 6.5 years, from Jul 2023 to Dec 2030, which are 78 months
+forecast = model2fit.forecast(78)
+# I get the exponential to get forecast values in index (not in log)
+predictions_iaiqro = np.exp(predictions)
+forecast_iaiqro = np.exp(forecast)
+clf()
+plot(iaiqro['iaiqro'], color= 'g')
+plot(predictions_iaiqro, color='r')
+plot(forecast_iaiqro, color = 'b')
+legend(['Real index','Predictions of index','Forecast of index'], loc = 'lower right')
+show()
+```
+
+I now incorporate a dummy variable to incorporate the effect of the COVID.
+
+```{python}
+
+iaiqro['month'] =iaiqro['Periodos'] + "/01"
+#iaiqro['mdate'] = pd.PeriodIndex(iaiqro.Periodos,freq="M")
+
+#iaiqro['mdate']= pd.to_datetime(iaiqro['month'], format = "%Y/%m/%d")
+
+#iaiqro['date'] = pd.to_datetime(iaiqro.month) 
+
+iaiqro['covid'] = np.where( ((iaiqro['Periodos'] >='2020/04') & (iaiqro['Periodos']<'2021/04')),1,0)
+model3 = SARIMAX(iaiqro['logiaiqro'].dropna(), exog = iaiqro['covid'], order = (1, 0, 0), seasonal_order = (0, 1, 1, 12), trend = 'c')
+model3fit = model3.fit()
+print(model3fit.summary())
+
+```
+
+```{python}
+covid_shock = pd.DataFrame(0, index = np.arange(78), columns = ['covid'])
+covid_shock.head(5)
+#predictions = model3fit.predict(start=12, exog = iaiqro['covid'], end=len(iaiqro))
+
+# I forecast 6.5 years, from Jul 2023 to Dec 2030, which are 78 months
+forecast3 = model3fit.forecast(78, exog = covid_shock)
+# I get the exponential to get forecast values in index (not in log)
+#predictions_iaiqro = np.exp(predictions)
+forecast3_iaiqro = np.exp(forecast3)
+clf()
+plot(iaiqro['iaiqro'], color= 'g')
+#plot(predictions_iaiqro, color='r')
+plot(forecast3_iaiqro, color = 'b')
+legend(['Real index','Predictions of index','Forecast of index'], loc = 'lower right')
+show()
+```
+
