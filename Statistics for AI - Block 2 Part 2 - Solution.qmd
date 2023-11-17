@@ -59,6 +59,7 @@ MXX = yf.download(tickers = "^MXX", start = "2000-01-02", interval="1d")
 MXX = MXX['Adj Close']
 MXX
 ```
+
 See my Workshop (https://rpubs.com/cdorante/fz2020_w1) for the formulas to estimate the parameters of the random walk with a drift
 
 I estimate the drift parameter using the first and last log values:
@@ -82,6 +83,7 @@ I estimate the volatility (standard deviation) of the error:
 sigma = np.std(lnmxx) / np.sqrt(N)
 sigma
 ```
+
 I assign the initial value of the simulated series equal to the real value:
 
 ```{python}
@@ -104,7 +106,6 @@ for i in range(1,N):
   ysimln.append(phi0 + phi1 * ysimln[i-1] + error)
 ```
 
-
 ```{python}
 
 ysim = pd.DataFrame(lnmxx)
@@ -112,6 +113,7 @@ ysim['ysimln'] = ysimln
 ysim
 
 ```
+
 I plot both:
 
 ```{python}
@@ -123,6 +125,7 @@ plot(ysim['ysimln'], color = 'b')
 legend(['original log IPyC','Random wok with drift'],loc = 'upper left')
 show()
 ```
+
 I finally get the exponential of both columns to plot the real index vs the sumulated:
 
 ```{python}
@@ -135,11 +138,9 @@ legend(['original IPyC','Random wok with drift'],loc = 'upper left')
 show()
 ```
 
-
-# Solution 
+# Solution
 
 I downloaded the Querétaro Industrial Activity index from INEGI (https://www.inegi.org.mx/app/indicadores/?tm=0)
-
 
 I import the csv dataset:
 
@@ -150,6 +151,7 @@ iaiqro = iaiqro.sort_values(by='Periodos').reset_index(drop=True)
 iaiqro.shape
 iaiqro
 ```
+
 I plot the original index:
 
 ```{python}
@@ -158,6 +160,49 @@ plot(iaiqro['iaiqro'])
 title('Querétaro Industrial Activity')
 show()
 ```
+
+I convert the Periodo column to a date type since now it is an object type:
+
+```{python}
+iaiqro.dtypes
+
+iaiqro['Periodos'] = pd.to_datetime(iaiqro['Periodos'])
+```
+
+It could not convert the column to a date, so may be there is 1 or more rows with wierd characters. At the end of the error message it says "Unknown string format: 2021/01 /p1..". I checked the content of the dataset:
+
+```{python}
+iaiqro['Periodos'].str.contains("/p1").sum()
+```
+
+There is 1 row with the text /p1 in the column Periods. I delete that substring. I use the split function so I only keep the first substring that is the date:
+
+```{python}
+iaiqro['Periodos'] = iaiqro['Periodos'].str.split().str[0]
+
+```
+
+I now check whether there are more rows with that substring:
+
+```{python}
+iaiqro['Periodos'].str.contains("/p1").sum()
+```
+
+There is no rows with the /p1 substring. I try now to convert this column to a date:
+
+```{python}
+iaiqro['Periodos'] = pd.to_datetime(iaiqro['Periodos'])
+iaiqro.dtypes
+```
+
+I set the Periodos as the index of the data frame:
+
+```{python}
+iaiqro.set_index('Periodos', inplace=True)
+#iaiqro['Periodos'] = iaiqro.index
+iaiqro
+```
+
 I take the log of the index
 
 ```{python}
@@ -168,7 +213,7 @@ title('Log of Querétaro Industrial Activity')
 show()
 ```
 
-The series looks like non-stationary. Since I have monthly data, I start checking whether the seasonal difference of the log series, which is the annual growth month by month, is stationary. I run the Dicky-Fuller test: 
+The series looks like non-stationary. Since I have monthly data, I start checking whether the seasonal difference of the log series, which is the annual growth month by month, is stationary. I run the Dicky-Fuller test:
 
 ```{python}
 
@@ -181,17 +226,16 @@ show()
 
 ```
 
-
 ```{python}
 from statsmodels.tsa.stattools import adfuller
 test1 = adfuller(iaiqro['anngrowth'].dropna())
 # The pvalue is the second element of the tuple:
 print(test1[1])
 ```
-Since the pvalue<0.05, I can treat the annual growth as stationary, so I define D=1 and d=1.
+
+Since the pvalue\<0.05, I can treat the annual growth as stationary, so I define D=1 and d=1.
 
 I start analyzing autocorrelations of the annual growth variable:
-
 
 ```{python}
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
@@ -205,16 +249,15 @@ show()
 
 ```
 
-I can see a typical AR(1) signature since the AC plot has positive autocorrelations that die slowly and the partial AC die suddenly after the lag 1 autocorrelation. 
+I can see a typical AR(1) signature since the AC plot has positive autocorrelations that die slowly and the partial AC die suddenly after the lag 1 autocorrelation.
 
 Interpretation of the AC plot:
 
-The annual growth of the industrial activity is positively and significantly correlated with its own annual growth of the previous month, 2, 3,4 and 5 months ago. When considering partial autocorrelations, the annual growth is only positively and significantly related with its past month annual growth. In other words, after considering the autocorrelations of the past month annual growth with the current annual growth, the autocorrelations of the current annual growth with 2, 3, 4, 5 months ago are not significantly positive. 
+The annual growth of the industrial activity is positively and significantly correlated with its own annual growth of the previous month, 2, 3,4 and 5 months ago. When considering partial autocorrelations, the annual growth is only positively and significantly related with its past month annual growth. In other words, after considering the autocorrelations of the past month annual growth with the current annual growth, the autocorrelations of the current annual growth with 2, 3, 4, 5 months ago are not significantly positive.
 
 Then, I start defining p=1 for the first ARIMA-SARIMA model:
 
 p=1, d=0, q=0, P=0, D=1, Q=1
-
 
 ```{python}
 from statsmodels.tsa.arima.model import ARIMA
@@ -226,7 +269,8 @@ model1fit = model1.fit()
 print(model1fit.summary())
 
 ```
-The AR(1) term is positive and statistically significant, as expected. 
+
+The AR(1) term is positive and statistically significant, as expected.
 
 I now check the autocorrelations of the residuals of this model to see whether I can add another term:
 
@@ -238,6 +282,7 @@ clf()
 plot_acf(errors, lags=12, zero = False)
 show()
 ```
+
 The autocorrelation of the errors with its own errors of 12 months ago is negative and significant. Then, I can add 1 seasonal term, which can be an MA or AR. Since it is negative autocorrelation I add a seasonal MA term. Then, Q=1:
 
 ```{python}
@@ -248,7 +293,7 @@ print(model2fit.summary())
 
 ```
 
-I see that the seasonal MA term is negative and significant as expected. 
+I see that the seasonal MA term is negative and significant as expected.
 
 I finally check the autocorrelations of the residuals of this last model:
 
@@ -261,7 +306,6 @@ show()
 ```
 
 Now the residual looks like a white noise since there is no significant autocorrelations with the past 12 months. Then, I finish the calibration of the model and proceed to forecast the series.
-
 
 ```{python}
 predictions = model2fit.predict(start=12, end=len(iaiqro))
@@ -282,7 +326,7 @@ I now incorporate a dummy variable to incorporate the effect of the COVID.
 
 ```{python}
 
-iaiqro['month'] =iaiqro['Periodos'] + "/01"
+#iaiqro['month'] =iaiqro['Periodos'] + "/01"
 #iaiqro['mdate'] = pd.PeriodIndex(iaiqro.Periodos,freq="M")
 
 #iaiqro['mdate']= pd.to_datetime(iaiqro['month'], format = "%Y/%m/%d")
@@ -313,4 +357,3 @@ plot(forecast3_iaiqro, color = 'b')
 legend(['Real index','Predictions of index','Forecast of index'], loc = 'lower right')
 show()
 ```
-
