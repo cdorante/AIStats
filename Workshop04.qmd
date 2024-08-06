@@ -370,7 +370,9 @@ $$
 
 $$
 b_1=\frac{Cov(x,y)}{Var(x)}
-$$ Interestingly, from this final formula for $b_1$, which is the slope of the regression line, we can see that $b_1$ is **how much y covariates with x with respect to the variability of x**. This is actually the concept of a slope of a line! it is the **sensitivity** of how much y changes when x changes. Then, $b_1$ can be seen as the expected rate of change of y with respect to x, which is a derivative!
+$$ 
+
+Interestingly, from this final formula for $b_1$, which is the slope of the regression line, we can see that $b_1$ is **how much y covariates with x with respect to the variability of x**. This is actually the concept of a slope of a line! it is the **sensitivity** of how much y changes when x changes. Then, $b_1$ can be seen as the expected rate of change of y with respect to x, which is a derivative!
 
 How the $b_1$ coefficient and the correlation between x and y are related? We learned that correlation measures the linear relationship between 2 variables. Also, $b_1$ measures the linear relationship between 2 variables, however, there is an important difference. Let's see the correlation formula:
 

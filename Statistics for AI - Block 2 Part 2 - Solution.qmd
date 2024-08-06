@@ -263,8 +263,8 @@ p=1, d=0, q=0, P=0, D=1, Q=1
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-model1 = SARIMAX(iaiqro['logiaiqro'].dropna(), order = (1, 0, 0), seasonal_order = (0, 1, 0, 12), trend = 'c')
-model1fit = model1.fit()
+model1 = SARIMAX(iaiqro['logiaiqro'].dropna(), order = (1, 0, 0), seasonal_order = (0, 1, 0, 12), trend = 'c', simple_differencing=True)
+model1fit = model1.fit(disp=False)
 
 print(model1fit.summary())
 
@@ -277,7 +277,8 @@ I now check the autocorrelations of the residuals of this model to see whether I
 ```{python}
 # I do not use the first 12 rows since there is no way to calculate predictions nor errors for the first 12 months since
 #   I am using annual growth
-errors = model1fit.resid.iloc[12:]
+#errors = model1fit.resid.iloc[12:]
+errors = model1fit.resid
 clf()
 plot_acf(errors, lags=12, zero = False)
 show()
@@ -286,8 +287,8 @@ show()
 The autocorrelation of the errors with its own errors of 12 months ago is negative and significant. Then, I can add 1 seasonal term, which can be an MA or AR. Since it is negative autocorrelation I add a seasonal MA term. Then, Q=1:
 
 ```{python}
-model2 = SARIMAX(iaiqro['logiaiqro'].dropna(), order = (1, 0, 0), seasonal_order = (0, 1, 1, 12), trend = 'c')
-model2fit = model2.fit()
+model2 = SARIMAX(iaiqro['logiaiqro'].dropna(), order = (1, 0, 0), seasonal_order = (0, 1, 1, 12), trend = 'c', simple_differencing=True)
+model2fit = model2.fit(disp=0)
 
 print(model2fit.summary())
 
@@ -298,7 +299,8 @@ I see that the seasonal MA term is negative and significant as expected.
 I finally check the autocorrelations of the residuals of this last model:
 
 ```{python}
-errors = model2fit.resid.iloc[12:]
+#errors = model2fit.resid.iloc[12:]
+errors = model2fit.resid
 clf()
 plot_acf(errors, lags=12, zero = False)
 show()
