@@ -4,35 +4,42 @@ bibliography: references.bib
 author:  
  - Alberto Dorantes D., Ph.D.
  - Monterrey Tech, Queretaro Campus
- - Aug 15, 2023
+ - Aug 7, 2024
 
 abstract: In this workshop we learn about a) The Central Limit Theore and b) Hypothesis Testing.   
 
-editor: visual
-jupyter: python3
+
 format:
   html: 
     toc: true
-    toc-depth: 4
-    toc-title: Content
+    toc-title: Content    
     toc-location: left
-    toc_float:
-    collase: false
-    code-fold: false
+    toc-float: true
     theme: united
-    highlight-style: breezedark
+    highlight-style: zenburn
     number-sections: true
-    fontsize: 1.1em
-    linestretch: 1.7
+    fontsize: 0.9em
+    html-math-method: katex
+  
+jupyter: python3  
 ---
 
 # Workshop Directions
 
+You have to work on Google Colab for all your workshops. In Google Colab, you **MUST LOGIN** with your \@tec.mx account and then create a google colab document for each workshop.
+
+You **must share** each Colab document (workshop) with the following accounts:
+
+- cdorante.tec@gmail.com 
+- cdorante@tec.mx 
+
+You must give **Edit** privileges to these accounts.
+
 You have to follow this workshop in class to learn about topics. You have to do your own Markdown note/document for every workshop we cover.
 
-You must submit your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
+Rename your Notebook as "W1-Statistics-AI-YourFirstName-YourLastname".
 
--   Write the Workshop #, your Name, and date
+You **must submit** your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
 
 -   You have to **REPLICATE** and **RUN** all the Python code, and
 
@@ -69,9 +76,9 @@ $$
 
 Then the function is equal to zero for values outside the range between a and b.
 
-$(1 / (b-a))$ is the probability for any value between a and b to show up. Then, any value between $a$ and $b$ has the same probability to show up. 
+$(1 / (b-a))$ is the probability for any value between a and b to show up. Then, any value between $a$ and $b$ has the same probability to show up.
 
-The area under the function (the rectangle created with this function) is $(b-a)(1 / (b-a))$, which is 1 (100%) since it is a PDF. 
+The area under the function (the rectangle created with this function) is $(b-a)(1 / (b-a))$, which is 1 (100%) since it is a PDF.
 
 For example, if a=0 and b=40, then for the range from 0 to 40 the function is $f(x)=1/40$. If we imagine the plot of this function, this will be a rectangle with base = 40 and height = 1/40, so the area will be equal to 1.
 
@@ -80,19 +87,39 @@ The expected value of this x random variable is given by:
 $$
 E(x)=\frac{a+b}{2}
 $$ 
+
 Why this is true?
 
 Let's apply the expected value to the PDF:
 
 $$
-E\left[x\right]=\int_{_{-\infty}}^{+\infty}Xf\left(x\right)dx
+E\left[x\right]=\int_{_{-\infty}}^{+\infty}xf\left(x\right)dx
 $$
 
+$$
+E\left[x\right]=\int_{_{-\infty}}^{+\infty}x\frac{1}{b-a}dx
+$$
+Since $a$ and $b$ are constants:
+
+$$
+E\left[x\right]=\frac{1}{b-a}\int_{_{-\infty}}^{+\infty}xdx
+$$
+Solving for the defined integral and considering the range of the uniform 
+
+$$
+ E\left[x\right]=\frac{1}{b-a}\frac{X^2}{2}\mid^{b}_{a}
+$$
+
+$$
+ E\left[x\right]=\frac{1}{b-a}\frac{b^{2}-a^{2}}{2}=\frac{(b-a)(b+a)}{2(b-a)}=\frac{(b+a)}{2}
+$$
 
 This is actually the mid point of the range from a to b.
 
-If a=0 and b=40, then the expected value of x will be: $$
-E(x)= 40/2 = 20
+If a=0 and b=40, then the expected value of x will be: 
+
+$$
+E[x]= 40/2 = 20
 $$
 
 The expected value of a random variable is the *theoretical* mean of the random variable according to its probability distribution.
@@ -101,7 +128,63 @@ The variance of a variable with the uniform distribution is:
 
 $$
 Var(x)=\frac{(b-a)^2}{12}
-$$ In our example, a=0, b=40, then the expected variance of x will be:
+$$ 
+Why this is true?
+
+According to the definition of Expected value of a continuous random variable:
+
+$$
+E\left[x\right]=\int_{_{-\infty}}^{+\infty}xf\left(x\right)dx
+$$
+
+In this case, the Variance is the Expected value of the squared difference, and we learned from previous workshop that it is also equal to: 
+
+$$
+E\left[(x-E[x])^2\right]=E[x^2]-\overline{x}^2=E[x^2]-E[x]^2
+$$
+
+We now $E[x]$. We need to estimate $E[x^2]$. Then:
+
+$$
+E[x^2] = \int_{_{-\infty}}^{+\infty}x^2f\left(x\right)dx
+$$
+
+Solving the integral:
+
+$$
+E[x^2] = \int_{_{a}}^{b}x^2\frac{1}{b-a}= \frac{x^3}{3(b-a)}\mid^b_a
+$$
+
+$$
+E[x^2] = \frac{1}{3(b-a)}\left(\frac{b^3}{3}-\frac{a^3}{3}\right)
+$$
+
+Factorizing $b^3-a^3$:
+
+$$
+E[x^2]=\frac{(b-a)(b^2+ab+a^2)}{3(b-a)}=\frac{b^2+ab+a^2}{3}
+$$
+
+Now the Variance of X is:
+
+$$
+VAR(x)= E[x^2] - E[x]^2
+$$
+
+Then:
+
+$$
+VAR(x)= \frac{b^2+ab+a^2}{3} - \left(\frac{(b+a)}{2}\right)^2
+$$
+
+Simplifying we get: 
+
+$$
+VAR(x) = \frac{\left( b-a\right)^2}{12}
+$$
+
+
+In our example, a=0, b=40, then the expected variance of x will be:
 
 $$
 Var(x)=(40-0)^2 / 12 = 133.333
@@ -149,7 +232,7 @@ plt.show()
 
 A)  CALCULATE THE MEAN AND STANDARD DEVIATION OF THIS SIMULATED UNIFORM x VARIABLE. HOW CLOSE WERE THESE MEAN AND STANDARD DEVIATION FROM THE THEORETICAL MEAN AND STANDARD DEVIATION?
 
-B)  INTERPET THE ABOVE HISTOGRAM. WHAT DO YOU SEE? EXPLAIN WITH YOUR WORDS.
+B)  INTERPRET THE ABOVE HISTOGRAM. WHAT DO YOU SEE? EXPLAIN WITH YOUR WORDS.
 
 Now generate 10,000 groups of 25 uniform random variables to end up in a matrix of 10,000 rows and 25 columns:
 
@@ -161,6 +244,7 @@ P = Uniform(0,40) ** 25
 XVECTOR =RV(P)
 # Simulate 10,000 vectors to get a matrix  
 xmatrix=XVECTOR.sim(10000)
+
 
 ```
 
@@ -257,6 +341,9 @@ Now we get the mean of each vector (row) to get 10,000 sample means:
 # Simulate 10,000 means of each random vector of 25 uniform distributed numbers: 
 ymean = RV(P,mean).sim(10000)
 ymean
+# Another way to get the 10,000 means from the previous ymatrix is: 
+#ymean1 = ymatrix.array.mean(axis=1)
+
 ```
 
 Now do a histogram of these sample means of Y.
@@ -304,7 +391,9 @@ Let's define a random variable X as a the weight of students X1, X2, ... XN. The
 
 $$
 \bar{X}=\frac{1}{N}\left(X_{1}+X_{2}+...+X_{N}\right)
-$$ We can estimate the variance of this mean as follows:
+$$ 
+
+We can estimate the variance of this mean as follows:
 
 $$
 VAR\left(\bar{X}\right)=VAR\left(\frac{1}{N}\left(X_{1}+X_{2}+...+X_{N}\right)\right)
@@ -318,7 +407,9 @@ $$
 
 $$
 VAR\left(\bar{X}\right)=\left(\frac{1}{N}\right)^{2}\left[VAR\left(X_{1}\right)+VAR\left(X_{2}\right)+...+VAR\left(X_{N}\right)\right]
-$$ Since the variance of $X_1$ is the same as the variance of $X_2$ and it is also the same for any $X_N$, then:
+$$ 
+
+Since the variance of $X_1$ is the same as the variance of $X_2$ and it is also the same for any $X_N$, then:
 
 $$
 VAR\left(\bar{X}\right)=\left(\frac{1}{N}\right)^{2}N\left[VAR\left(X\right)\right]
