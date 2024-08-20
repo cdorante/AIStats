@@ -50,11 +50,366 @@ The submissions of your workshops is a **REQUISITE** for grading your final deli
 
 I strongly recommended you to write your OWN NOTES about the topics as if it were your study NOTEBOOK.
 
-# Applying the Linear Regression Model: Estimate a market regression model
+# Introduction
 
-Now it's time to use real data to better understand Regression models.
+Up to know we have learn about
 
-We download monthly prices for Alfa (ALFAA.MX) and the Mexican market index IPCyC (\^MXX) from Yahoo Finance from January 2019 to July 2024. With these prices we calculate continuously compounded (cc) returns of Alfa and the Market (MXX) and drop NA values:
+-   Descriptive Statistics
+
+-   The Histogram
+
+-   The Central Limit Theorem
+
+-   Hypothesis Testing
+
+-   Covariance and Correlation
+
+Without the idea of summarizing data with descriptive statistics, we cannot conceive the histogram. Without the idea of the histogram we cannot conceive the CLT, and without the CLT we cannot make inferences for hypothesis testing. We can apply hypothesis testing to test claims about random variables. These random variables can be one mean, difference of 2 means, correlation, and also coefficients of the **linear regression model**. But what is the linear regression model?
+
+We learned that covariance and correlation are measures of linear relationship between 2 random variables, X and Y. The simple regression model also measures the linear relationship between 2 random variables (X and Y), but the difference is that X is supposed to explain the movements Y, so Y depends on the movement of X, the independent variable. In addition, the regression model estimates a linear equation (regression line) to represent how much Y (on average) moves with movements of X, and what is the expected value of Y when X=0.
+
+The simple linear regression model is used to understand the ***linear relationship*** between two variables assuming that one variable, the independent variable (IV), can be used as a predictor of the other variable, the dependent variable (DV).
+
+Besides using linear regression models to better understand how the dependent variable moves or changes according to changes in the independent variable, linear regression models are also used for prediction or forecasting of the dependent variable.
+
+The simple regression model considers only one independent variable, while the multiple regression model can include more than one independent variables. But both models only consider one dependent variable. Then, we can use regression models for:
+
+• Understanding the relationship between a dependent variable and a one or more independent variables - also called explanatory variables
+
+• Predicting or estimating the expected value of the dependent variable according to specific value of the independent variables
+
+In regression models it is assumed that there is a linear relationship between the dependent variable and the independent variables. It might be possible that in reality, the relation is not linear. A linear regression model does not capture non-linear relationships unless we do specific mathematical transformations of the variables.
+
+You must read my Lecture Note: [**Basics of Linear Regression Models in the context of Finance**](https://docs.google.com/viewer?a=v&pid=sites&srcid=ZWdhZGVyemMubmV0fGVjMjAwM3xneDozMjA2YmVjYjZjMmVjODA5). In this note I explain in detail the Linear Regression model, how it is estimated and how we can make inferences with the model.
+
+In this workshop I illustrate the simple regression model with an example from Finance: the Market Regression Model.
+
+The Market Model states that the expected return of a stock is given by its alpha coefficient ($α$) plus its market beta coefficient ($β$) times the market return. In mathematical terms:
+
+$$ 
+E[R_i] = α + β(R_M) 
+$$
+
+We can express the same equation using $β_0$ as alpha, and $β_1$ as market beta:
+
+$$
+E[R_i] = β_0 + β_1(R_M)
+$$
+
+We can estimate the $β_0$ and $β_1$ coefficients by running a simple linear regression model specifying that the market return is the independent variable and the stock return is the dependent variable. It is strongly recommended to use continuously compounded returns instead of simple returns to estimate the market regression model.
+
+The market regression model can be expressed as:
+
+$$
+r_{(i,t)} = b_0 + b_1*r_{(M,t)} + ε_t 
+$$
+
+Where:
+
+$ε_t$ is the error at time t. Thanks to the Central Limit Theorem, this error behaves like a Normal distributed random variable ∼ N(0, $σ_ε$) since the error is actually a linear combination of random variables; the error term $ε_t$ is expected to have mean=0 and a specific standard deviation $σ_ε$.
+
+$r_{(i,t)}$ is the return of the stock i at time t.
+
+$r_{(M,t)}$ is the market return at time t
+
+$b_0$ and $b_1$ are called regression coefficients
+
+# Interesting facts from history
+
+One of the most common methods to estimate linear regression models is called ordinary least squares, which was first developed by mathematicians to predict planets' orbits. On January 1st, 1801, the Italian priest and astronomer Giuseppe Piazzi discovered a small planetoid (asteroid) in our solar system, which he named Ceres. Piazzi observed and recorded 22 Ceres positions during 42 days, but suddenly Ceres was lost in glare of the Sun. Then, most Europeans astronomers started to find out a way to predict Cere's orbit. The great German mathematician Friedrich Carl Gauss successfully predicted Ceres' orbit using a least squares method he had developed in 1796, when he was 18 years old. Gauss applied his least squares method using the 22 Ceres observations and 6 explanatory variables. Gauss published his least square method until 1809 [@Gauss1809]; interestingly, the French mathematician Arien-Marie Legendre first published the least-squared method in 1805 [@Legendre1805].
+
+About 70 years later, the English anthropologist Francis Galton and the English mathematician Karl Pearson - leading founders of the Statistics discipline- used the foundations of the least-square method to first develop the linear regression model. Galton developed the conceptual foundation of regression models when he was studying the inherited characteristics of sweet peas. Pearson further developed Galton ideas following rigurous mathematical development.
+
+Pearson used to work in Galton's laboratory. When Galton died, Pearson wrote Galton's biography. In this biography [@Pearson1930], Pearson described how Galton came up with the idea of regression. In 1875 Galton gave sweet peas seeds to seven friends. All sweet peas seeds had uniform weights. His friends harvested the sweet peas and returned the plants to Galton. He did a graph to see the size of each plant compared with their respective parents' sizes. He found that all of them had parents with higher size. When graphing the offspring's size as the Y axis, and parents' size as the X axis, he tried to manually draw a line that could represent this relationship, and he found that the line slope was less than 1.0. He concluded that the size of these plants in their generation was "regressing" to the supposed mean of this specie (considering several generations).
+
+Two research articles by Galton [@Galton1886] and Pearson [@Pearson1930] written in 1886 and 1903 respectively further developed the foundations of regression models. They examined why sons of very tall fathers are usually shorter than their fathers, while sons of very short fathers are usually taller than their fathers. After collecting and analyzing data from hundreds of families, they concluded that the height of an individual in a community or population tends to "regress" to the average height of the such population where they were born. If the father is very tall, then his sons' height will "regress" to the average height of such population. If the father is very short, then his sons' height will also "regress" to such average height. They named their model as "regression" model. Nowadays the interpretation of regression models is not quite the same as "regress" to a specific average value. Nowadays regression models are used to examine linear relationships between a dependent variable and a set of independent variables.
+
+# Types of data structures
+
+The market model is a time-series regression model. In this model we looked at the relationship between 2 variables representing one feature or attribute (returns) of two "subjects" over time: a stock and a market index. The market model is an example of a regression model, but the data structure or type of data used is time-series data. These type of regression models are called pulled time-series regression.
+
+There are basically three types of data used in regression models:
+
+-   Time-series: each observation represents one period, and each column represents one or more variables, which are characteristics of one or more subjects. Then, we have one or more variables measured in several time periods.
+
+-   Cross-sectional: each observation represents one subject in only **one time period**, and each column represents variables or characteristics of the subjects.
+
+-   Panel data: this is a combination of time-series with cross-sectional structure.
+
+Then, we can consider the market model as a pulled "time-series" regression model.
+
+Another way to classify regression models is based on the number of independent variables. If the regression model considers only one independent variable, the the model is known as simple regression model. If the model considers more than one independent variable, the model is known as multiple regression model.
+
+# The OLS method
+
+The Ordinary Least Square is an optimization method to estimate the best values of the beta coefficients and their standard errors in a linear regression model.
+
+In the case of simple regression model, we need to estimate the best values of beta0 (the intercept) and beta1 coefficient (the slope of the regression line). If Y is the dependent variable and X the independent variable, the regression equation is as follows:
+
+$$
+y_i = b_0 + b_1(x_i) + \epsilon_i
+$$ The **regression line** is given by the expected value of Y (also called $\hat{Y}$):
+
+$$
+E[y_i] = b_0 + b_1(x_i) = \hat{y}_i
+$$
+
+In this case, i goes from 1 to N, the total number of observations of the sample.
+
+If we plot all pairs of $(x_i,y_i)$ we can first visualize whether there is a linear relationship between Y and X. In a scatter plot, each pair of $(x_i,y_i)$ is one point in the plot.
+
+The purpose of OLS is to find the best regression line that best represents all the points$(x_i,y_i)$. The beta0 and beta1 coefficients define the regression line. If beta0 changes, then the intercept of the line moves. If beta1 changes, then the slope of the line changes.
+
+To find the best regression line (beta0 and beta1), the OLS method tries to minimize the sum of squared errors of the regression equation. Then OLS is an optimization method with the following objective:
+
+Minimize $\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}$
+
+If we replace $\hat{Y}_i$ by the regression equation we get:
+
+Minimize $\sum_{i=1}^{N}\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]^{2}$
+
+Then, this sum can be seen as a function of $b_0$ and $b_1$. If $b_0$ changes, this sum changes; the same with $b_1$. Then we can re-write the optimization objective as:
+
+Minimize:
+
+$$
+f(b_{0},b_{1})=\sum_{i=1}^{N}\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]^{2}
+$$
+
+This is a quadratic function of 2 variables. If we get its 2 first partial derivatives (with respect to $b_0$ and $b_1$) and make them equal to zero we will get 2 equations and 2 unknowns, and the solution will be the optimal values of $b_0$ and $b_1$ that minimizes this sum of squared errors. The set of these 2 partial derivatives is also called the **gradient** of the function.
+
+If you remember basic geometry, if we imagine possible values of $b_0$ in the X axis and values of $b_1$ in the Y axis, then this function is actually a single-curved area (surface). The optimal point ($b_0, b_1$) will be the lowest point of this curved surface.
+
+Let's do an example with a dataset of only 4 observations:
+
+|  X  |  Y  |
+|:---:|:---:|
+|  1  |  2  |
+|  2  | -1  |
+|  7  | 10  |
+|  8  |  7  |
+
+If I do a scatter plot and a line that fits the points:
+
+```{python}
+#| code-fold: true
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+data = {'x':  [1,2,7,8],
+        'y': [2,-1,10,7]}
+df = pd.DataFrame(data)
+b1,b0 = np.polyfit(df.x,df.y,1)
+df['yhat'] = b0 + b1*df['x']
+#plt.clf()
+plt.scatter(df.x,df.y)
+plt.plot(df.x, df.yhat,c="orange")
+plt.xticks(np.arange(-4,14,1))
+plt.yticks(np.arange(-2,11,1))
+
+for i in range(4):
+  x=df.x.iloc[i]
+  ymin= df.y.iloc[i]
+  ymax=df.yhat.iloc[i]
+  if (ymin>ymax):
+    temp=ymax
+    ymax=ymin
+    ymin=temp
+  plt.vlines(x=x,ymin=ymin,ymax=ymax,color='r')
+
+plt.axhline(y=0)
+plt.axvline(x=0)
+
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.grid()
+plt.show()
+
+```
+
+The *error* of each point is the **red vertical line**, which is the distance between the point and the prediction of the regression line. This distance is given by the difference between the specific $y_i$ value and its predicted value:
+
+$$
+\epsilon_i=(y_i - \hat{y}_i)
+$$
+
+In this example, 2 errors are positive and 2 are negative.
+
+The purpose of OLS is to find the values of $b_0$ and $b_1$ such that the sum of the squared of all errors is minimized. Mathematically there is only one solution for a specific set of X and Y values.
+
+Let's return to the objective function, which is determined by both coefficients, $b_0$ and $b_1$.
+
+We can do a 3D plot for this function to have a better idea. It is a 3D plot since the function depends on 2 values: $b_0$ and $b_1$:
+
+```{python}
+#| code-fold: true
+
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+import collections
+# I define a function to get the sum of squared errors given a specific b0 and b1 coefficients:
+def sumsqerrors2(b1, b0,df):
+    return sum( ( df.y - (b0+b1*df.x)) **2)
+# Note that df is a dataframe, so this line of code performs a row-wise operation to avoid 
+#   writing a loop to sum each squared error for each observation
+
+# Create the plot:
+fig = plt.figure()
+
+ax = fig.add_subplot(1,1,1, projection='3d')
+# I create 20 possible values of beta0 and beta1:
+# beta1 will move between -1 and 3
+b1s = np.linspace(-1, 3.0, 20)
+# beta0 will move between -2 and 2:
+b0s = np.linspace(-2, 2, 20)
+# I create a grid with all possible combinations of beta0 and beta1 using the meshgrid function:
+# M will be all the b1s values, and B the beta0 values:
+M, B = np.meshgrid(b1s, b0s)
+# I calculate the sum of squared errors with all possible pairs of beta0 and beta1 of the previous grid:
+zs = np.array([sumsqerrors2(mp, bp, df) 
+        for mp, bp in zip(np.ravel(M), np.ravel(B))])
+# I reshape the zs (squared errors) from a vector to a grid of the same size as M (20x20)
+Z = zs.reshape(M.shape)
+
+ax.plot_surface(M, B, Z, rstride=1, cstride=1, color='b', alpha=0.5)
+
+ax.set_xlabel('b1')
+ax.set_ylabel('b0')
+ax.set_zlabel('sum sq.errors')
+
+plt.show()
+```
+
+We see that this function is single-curved. The sum of squared errors changes with different paired values ($b_0$,$b_1$). The lowest point of this surface will be the optimal values of ($b_0$, $b_1$) where the sum of squared error is the minimum of all. Then, how can we calculate this optimal point?
+
+Remembering a little bit of Calculus and simultaneous equations, we can do the following:
+
+-   Take the partial derivatives of the function with respect to its variables $b_0$ and $b_1$ and make it equal to zero:
+
+$$
+f(b_{0},b_{1})=\sum_{i=1}^{N}\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]^{2}
+$$
+
+$$
+\frac{\delta}{b_{0}}f(b_{0},b_{1})=2*(-1)*\sum_{i=1}^{N}\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]=0
+$$
+
+Dividing both sides by -2 we get:
+
+$$
+\sum_{i=1}^{N}\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]=0
+$$ {#eq-firsteq}
+
+Since $\left[(y_{i}-(b_{0}+b_{1}*x_{i})\right]$ is the error for the i observation, then this @eq-firsteq states that **the sum of all errors must be equal to zero**.
+
+Let's do the same for the other partial derivative:
+
+$$
+\frac{\delta}{b_{1}}f(b_{0},b_{1})=2*\sum_{i=1}^{N}\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]*(-x_i)=0
+$$
+
+Dividing both sides by -2 both:
+
+$$
+\sum_{i=1}^{N}(x_i)\left[y_{i}-(b_{0}+b_{1}*x_{i})\right]=0
+$$ {#eq-seceq}
+
+Now we have 2 equations with 2 unknowns. I this case, the unknown variables are $b_0$ and $b_1$, since the X and Y values are considered as given since the start of the problem.
+
+-   Solve the systems of equations
+
+We can further simplify both equations by applying the sum operator to each term:
+
+For @eq-firsteq:
+
+$$
+\sum_{i=1}^{N}y_{i}-N(b_{0})-b_{1}*\sum_{i=1}^{N}x_{i}=0
+$$
+
+Since $\bar{y}=\frac{1}{N}\sum_{i=1}^Ny_{i}$, then $\sum_{i=1}^{N}y_{i}=N*\bar{y}$, and the same for the x variable, then:
+
+$$
+N(\bar{y})-N(b_0)-b1(N)(\bar{x})=0
+$$ Dividing both sides by N:
+
+$$
+\bar{y}-b_0-b_1(\bar{x})=0
+$$
+
+This is another way to express @eq-firsteq. This form of the equation indicates that **the point** $(\bar{x},\bar{y})$ must be in the regression line since the error at this point is equal to zero!
+
+From previous equation, then we get that:
+
+$$
+b_0=\bar{y} - b_1\bar{x}
+$$
+
+After applying the sum to each term of @eq-seceq, it can be express as:
+
+$$
+\sum_{i=1}^{N}x_{i}y_{i}-b_{0}\sum_{i=1}^{N}x_{i}-b_{1}\sum_{i=1}^{N}x_{i}^2=0
+$$
+
+$$
+\sum_{i=1}^{N}x_{i}y_{i}-(b_{0})N\bar{x}-b_{1}\sum_{i=1}^{N}x_{i}^2=0
+$$
+
+Now we plug the $b_0$ formula from @eq-firsteq in this form of @eq-seceq:
+
+$$
+\sum_{i=1}^{N}x_{i}y_{i}-(\bar{y} - b_1\bar{x})N\bar{x}-b_{1}\sum_{i=1}^{N}x_{i}^2=0
+$$ Factorizing $b_1$:
+
+$$
+\sum_{i=1}^{N}x_{i}y_{i} - b_1(\sum_{i=1}^{N}x_{i}^2-N\bar{x}^2)-N\bar{x}\bar{y}=0
+$$
+
+Finally, we get the optimal value of $b_1$ as:
+
+$$
+b_1=\frac{\sum_{i=1}^{N}x_{i}y_{i}-N\bar{x}\bar{y}}{\sum_{i=1}^{N}x_{i}^2-N\bar{x}^2}
+$$
+
+If we divide the numerator and denominator by $1/N$ we get a formula for $b_1$ that is given in terms of variance and covariance:
+
+$$
+b_1=\frac{\frac{1}{N}\sum_{i=1}^{N}x_{i}y_{i}-\bar{x}\bar{y}}{\frac{1}{N}\sum_{i=1}^{N}x_{i}^2-\bar{x}^2}=\frac{E[xy]-\bar{x}\bar{y}}{E[x^2]-\bar{x}^2}
+$$
+
+$$
+b_1=\frac{Cov(x,y)}{Var(x)}
+$$ 
+
+Interestingly, from this final formula for $b_1$, which is the slope of the regression line, we can see that $b_1$ is **how much y covariates with x with respect to the variability of x**. This is actually the concept of a slope of a line! it is the **sensitivity** of how much y changes when x changes. Then, $b_1$ can be seen as the expected rate of change of y with respect to x, which is a derivative!
+
+How the $b_1$ coefficient and the correlation between x and y are related? We learned that correlation measures the linear relationship between 2 variables. Also, $b_1$ measures the linear relationship between 2 variables, however, there is an important difference. Let's see the correlation formula:
+
+$$
+Corr(x,y)=\frac{Cov(x,y)}{SD(x)SD(y)}
+$$
+
+We can express Covariance in terms of Correlation:
+
+$$
+Cov(x,y)=Corr(x,y)SD(x)SD(y)
+$$
+
+If we plug this formula in the $b_1$ formula:
+
+$$
+b_1=Corr(x,y)*\frac{SD(y)}{SD(x)}
+$$
+
+Then, we can see that $b_1$ is a type of *scaled correlation* since it is that is scaled by the ratio of both standard deviations, so $b_1$ provides information not only about relationship, but also about sensitivity of how much y changes in magnitude for each change in 1 unit of x!
+
+# CHALLENGE: Estimate a market regression model
+
+Now it's time to use real data to better understand this model. Download monthly prices for Alfa (ALFAA.MX) and the Mexican market index IPCyC (\^MXX) from Yahoo Finance from January 2018 to July 2022.
+
+You have to do the following:
+
+-   Calculate cc returns of both stocks and drop NA values
 
 ```{python}
 import yfinance as yf

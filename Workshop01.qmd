@@ -5,33 +5,41 @@ author:
  - Alberto Dorantes D., Ph.D.
  - Monterrey Tech, Queretaro Campus
 
+date: Aug 6, 2024
 abstract: "In this workshop we review the basics of a) descriptive statistics, b) the histogram, c) data trasformations and cleaning, and d) the normal distribution."  
 
-editor: visual
-jupyter: python3
+
 format:
   html: 
     toc: true
-    toc-depth: 4
-    toc-title: Content
+    toc-title: Content    
     toc-location: left
-    toc_float:
-    collase: false
-    code-fold: false
+    toc-float: true
     theme: united
-    highlight-style: breezedark
+    highlight-style: zenburn
     number-sections: true
-    fontsize: 1.1em
-    linestretch: 1.7
+    fontsize: 0.9em
+    html-math-method: katex
+  
+jupyter: python3  
 ---
 
 # Workshop Directions
 
+You have to work on Google Colab for all your workshops. In Google Colab, you **MUST LOGIN** with your \@tec.mx account and then create a google colab document for each workshop.
+
+You **must share** each Colab document (workshop) with the following accounts:
+
+- cdorante.tec@gmail.com 
+- cdorante@tec.mx 
+
+You must give **Edit** privileges to these accounts.
+
 You have to follow this workshop in class to learn about topics. You have to do your own Markdown note/document for every workshop we cover.
 
-You must submit your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
+Rename your Notebook as "W1-Statistics-AI-YourFirstName-YourLastname".
 
--   Write the Workshop #, your Name, and date
+You **must submit** your workshop before we start with the next workshop. What you have to write in your workshop? You have to:
 
 -   You have to **REPLICATE** and **RUN** all the Python code, and
 
@@ -88,7 +96,7 @@ For example, if we want to know what is the typical size of all companies that t
 The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (sorted alphabetically)
 
 | Firm       | row \# | Industry           | 2018 Total Assets (in thousand pesos) |
-|------------|--------|--------------------|---------------------------------------|
+|--------------|--------------|--------------|------------------------------|
 | ACCEL      | 1      | Services           | \$6,454,560.00                        |
 | AEROMEXICO | 2      | Transport Services | \$76,772,848.00                       |
 | ...        | ...    | ...                | ...                                   |
@@ -100,7 +108,7 @@ The 2018 total assets of the 146 Mexican public firms for 2018 are shown below (
 We sort the list from the lowest to the highest value of 2018 total assets:
 
 | Firm          | row \# | Industry           | Size Rank | 2018 Total Assets (in thousand pesos) |
-|---------------|--------|--------------------|-----------|---------------------------------------|
+|------------|------------|------------|------------|------------------------|
 | INGEAL        | 98     | Food & Beverages   | 1         | \$171,104.00                          |
 | HIMEXSA       | 88     | Textile            | 2         | \$494,378.00                          |
 | ...           | ...    | ...                | ...       | ...                                   |
@@ -240,16 +248,15 @@ BTC=yf.download(tickers="BTC-USD", start="2017-01-01",interval="1mo")
 Show the content of the data:
 
 ```{python}
-BTC
+BTC.head()
 ```
 
-Python automatically shows you only the first and last rows of the dataset. We can show the last values:
 
 ```{python}
 BTC.tail()
 ```
 
-For each period, Yahoo Finance keeps track of the open, high, low, close and adjusted prices. Also, it keeps track of volume that was traded in every period. The adjusted price is the closing price that is used to calculate returns. Adjusted prices consider dividend payments and also stock splits, while close prices do not.
+For each period, Yahoo Finance keeps track of the open, high, low, close and adjusted prices. Also, it keeps track of volume that was traded in every period. The adjusted price is the closing price that is used to calculate returns. Adjusted prices consider dividend payments and also stock splits, while close prices do not. Adjusted prices are used to calculate return - how much gain (in percentage) you would have make-
 
 Import the matplotlib and do a plot for the Bitcoin adjusted prices:
 
@@ -278,7 +285,9 @@ A financial simple return for a stock ($R_{t}$) is calculated as the simple perc
 
 $$
 R_{t}=\frac{\left(price_{t}-price_{t-1}\right)}{price_{t-1}}=\frac{price_{t}}{price_{t-1}}-1
-$$ For example, if the adjusted price of a stock at the end of January 2021 was \$100.00, and its previous (December 2020) adjusted price was \$80.00, then the monthly simple return of the stock in January 2021 will be:
+$$ 
+
+For example, if the adjusted price of a stock at the end of January 2021 was \$100.00, and its previous (December 2020) adjusted price was \$80.00, then the monthly simple return of the stock in January 2021 will be:
 
 $$
 R_{Jan2021}=\frac{price_{Jan2021}}{price_{Dec2020}}-1=\frac{100}{80}-1=0.25
@@ -296,11 +305,15 @@ The natural logarithm of a number is the **exponent** that the number e (=2.71..
 
 $$
 e^x = p
-$$ The way to get the value of x that satisfies this equality is actually getting the natural log of p:
+$$ 
+
+The way to get the value of x that satisfies this equality is actually getting the natural log of p:
 
 $$
 x = log_e(p)
-$$ Then, we have to remember that **the natural logarithm is actually an exponent that you need to raise the number e** to get a result or a specific number.
+$$ 
+
+Then, we have to remember that **the natural logarithm is actually an exponent that you need to raise the number e** to get a result or a specific number.
 
 The natural log is the logarithm of base $e$ (=2.71...). The number $e$ is an irrational number (it cannot be expressed as a division of 2 natural numbers), and it is also called the *Euler constant*. Leonard Euler (1707-1783) took the idea of the logarithm from the great mathematician Jacob Bernoulli, and discovered very astonishing features of the $e$ number. Euler is considered the most productive mathematician of all times. Some historians believe that Jacob Bernoulli discovered the number $e$ around 1690 when he was playing with calculations to know how an amount of money grows over time with an interest rate.
 
@@ -320,11 +333,15 @@ If the interest rate is 100%, then I would get:
 
 $$
 I_1=100*(1+1)=200
-$$ Then, the general formula to get the final amount of my investment at the beginning of year 2, for any interest rate R can be:
+$$ 
+
+Then, the general formula to get the final amount of my investment at the beginning of year 2, for any interest rate R can be:
 
 $$
 I_1=I_0*(1+R)
-$$ The (1+R) is the growth factor of my investment.
+$$ 
+
+The (1+R) is the growth factor of my investment.
 
 In Finance, the investment amount is called *principal*. If the interests are calculated (compounded) each month instead of each year, then I would end up with a higher amount at the end of the year.
 
@@ -392,7 +409,9 @@ Since the *natural logarithm function is the inverse of the exponential function
 
 $$
 ln\left(1+EffectiveRate\right)=r
-$$ In the previous example with a nominal rate of 100%, when doing a continuously compounding, then the effective rate will be:
+$$ 
+
+In the previous example with a nominal rate of 100%, when doing a continuously compounding, then the effective rate will be:
 
 $$
 \left(1+EffectiveRate\right)=e^{r}=2.7182
@@ -400,7 +419,9 @@ $$
 
 $$
 EffectiveRate=e^{r}-1 
-$$ Doing the calculation of the effective rate for this example:
+$$ 
+
+Doing the calculation of the effective rate for this example:
 
 $$
 EffectiveRate=e^{1}-1 = 2.7182.. - 1 = 1.7182 = 171.82\%
@@ -414,7 +435,9 @@ One way to calculate cc returns is by subtracting the log of the current price (
 
 $$
 r_{t}=log(price_{t})-log(price_{t-1})
-$$ This is also called as the difference of the log of the price.
+$$ 
+
+This is also called as the difference of the log of the price.
 
 We can also calculate cc returns as the log of the current adjusted price (at t) divided by the previous adjusted price (at t-1):
 
@@ -430,11 +453,9 @@ In Python we can get the previous value of a variable using the shift(n) functio
 BTC["R"] = (BTC["Adj Close"] / BTC["Adj Close"].shift(1)) - 1
 print(BTC["R"])
 ```
-
-Now we calculate cc returns in a new column using the shift function, or the diff function:
+We calculate cc returns in a new column using the shift function, or the diff function:
 
 ```{python}
-
 BTC["r"] = np.log(BTC['Adj Close']) - np.log(BTC['Adj Close'].shift(1))
 # Another way to do the same as above is appying the diff method to the log:  
 BTC["r2"] = np.log(BTC['Adj Close']).diff(1)
@@ -445,9 +466,7 @@ print(BTC.tail())
 # I keep a new object with only returns:
 BTCR = BTC[['R','r']].copy()
 
-
 ```
-
 We have a null value for the first day since we cannot calculate returns for day 1. We can drop the rows with NA values to ease data calculations:
 
 ```{python}
@@ -477,6 +496,9 @@ To know which days were the worse, we can do a selection based on a condition. L
 ```{python}
 BTCR[BTCR["R"]<-0.15]
 
+```
+```{python}
+BTCR[BTCR["R"]==BTCR["R"].min()]
 ```
 
 The worst month for the Bitcoin was June 2022.
@@ -571,7 +593,9 @@ The Probability Density Function (PDF) of a discrete random variable X is the pr
 
 $$
 f(x)=P(X=x_{i})
-$$ For example, when throwing a dice there are six possible outcomes: 1,2,3,4,5 and 6. All of them with the same probability since these outcomes are independent events. Every outcome has a 1/6 chance of happening. The PDF for a fair six-sided dice can be defined as:
+$$ 
+
+For example, when throwing a dice there are six possible outcomes: 1,2,3,4,5 and 6. All of them with the same probability since these outcomes are independent events. Every outcome has a 1/6 chance of happening. The PDF for a fair six-sided dice can be defined as:
 
 $$
 f(x)=P(X=x_{i})=\frac{1}{6}
@@ -585,7 +609,9 @@ Mathematically we can express the Cumulative Density Function (CDF) as:
 
 $$
 f(x)={\sum_{i=1}^{n}}P(X=x_{i})
-$$ Following the example of the dice, we can compute the CDF for every possible outcome as follows:
+$$ 
+
+Following the example of the dice, we can compute the CDF for every possible outcome as follows:
 
 $P(X\leq1)=\frac{1}{6}=0.17$
 
@@ -624,7 +650,9 @@ $$
 
 $$ 
 \sideset{}{_{a}^{b}}\intop f(x),dx=P(a\leq x\leq b) 
-$$ The probability that a continuous random variable X is between a and b, is equal to the area under the PDF on the interval \[a,b\]. For example, if a PDF is defined as $f(x)=3x^{2};0<=x<=1$ we can then compute the CDF for the interval between 0.5 and 1 as follows:
+$$ 
+
+The probability that a continuous random variable X is between a and b, is equal to the area under the PDF on the interval \[a,b\]. For example, if a PDF is defined as $f(x)=3x^{2};0<=x<=1$ we can then compute the CDF for the interval between 0.5 and 1 as follows:
 
 $PDF=f(x)=3x^{2}$
 
@@ -650,7 +678,9 @@ In statistics, the most popular continuous PDF is the well-known "bell-shaped" n
 
 $$
 f(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{\left(-\frac{1}{2}\frac{(x-\mu)^{2}}{\sigma^{2}}\right)}\
-$$ where x can take any real value $-\infty<x<\infty$
+$$ 
+
+where x can take any real value $-\infty<x<\infty$
 
 where $\mu$ is the mean of the distribution and $\sigma^{2}$ is the variance of the distribution. For simplification purposes, the normal distribution can also be denoted as $X\sim N(\mu,\sigma^{2})$ where X is the continuous random variable, $"\sim"$ means *distributed as* and N means *normal distribution*.
 
